@@ -1,10 +1,30 @@
-¿ØÖÆÆ÷£ºmodules:  ->  apply.php ²é¿´¿ØÖÆÆ÷  applyFill ÐÂÔö¿ØÖÆÆ÷
-²éÑ¯api¼°±íµ¥×Ö¶Î£ºhttp://lejubang.com/api
-ÊÓÍ¼£ºtpl
+# DevStandard #
 
-download·½·¨·â×°Ö±½ÓÏÂÔØ
+----------
 
-progress£º
-ÕÒµ½Â·ÓÉURL¶ÔÓ¦µÄ·½·¨¼°±í
-Ç°¶Ë¿ª·¢Á÷³Ì£º1¡¢ÐÞ¸ÄÒ³ÃæÃû³ÆÎªflow_set¶ÔÓ¦µÄÃû³Æ£»2¡¢applyfillÖÐ×¢Èë$this->isLogin()·½·¨£¬äÖÈ¾±»ÐÞ¸ÄÒ³Ãæ£»4¡¢µ±Ç°Ö÷Ò³Ãæ×¢ÈëÌø×ª·½·¨fill_apply()£»4¡¢ÔÚÒ³ÃæÍ·Ð´Èë·â×°ºÃµÄ×éÀà·½·¨£»5¡¢±íµ¥Ìî³ä+ajax±àÐ´£¨Tips£ºURL£©
-ºó¶Ë£º4¡¢±àÐ´ÐÂÔö/¸üÐÂ·½·¨£»£¨¶ÔÓ¦appÄ£¿é£©£¨Tips£º²ÎÊýÎ»ÖÃºÍapp/web¶ËsendUpcoming·½·¨µÄ²»Í¬£©
+æŽ§åˆ¶å™¨ï¼šmodules:  ->  apply.php æŸ¥çœ‹æŽ§åˆ¶å™¨  applyFill æ–°å¢žæŽ§åˆ¶å™¨
+
+æŸ¥è¯¢apiåŠè¡¨å•å­—æ®µï¼šhttp://lejubang.com/api
+è§†å›¾ï¼štpl
+
+downloadæ–¹æ³•å°è£…ç›´æŽ¥ä¸‹è½½
+
+progressï¼š
+æ‰¾åˆ°è·¯ç”±URLå¯¹åº”çš„æ–¹æ³•åŠè¡¨
+å‰ç«¯å¼€å‘æµç¨‹ï¼š
+
+
+
+
+1. ä¿®æ”¹é¡µé¢åç§°ä¸ºflow_setå¯¹åº”çš„åç§°ï¼›
+2. applyfillä¸­æ³¨å…¥`$this->isLogin()`æ–¹æ³•ï¼Œæ¸²æŸ“è¢«ä¿®æ”¹é¡µé¢ï¼›
+3. å½“å‰ä¸»é¡µé¢æ³¨å…¥è·³è½¬æ–¹æ³•`fill_apply()`ï¼›
+4. åœ¨é¡µé¢å¤´å†™å…¥å°è£…å¥½çš„ç»„ç±»æ–¹æ³•ï¼›
+5. è¡¨å•å¡«å……+ajaxç¼–å†™ï¼ˆTipsï¼šURLï¼‰
+
+
+åŽç«¯ï¼š
+
+1. ç¼–å†™æ–°å¢ž/æ›´æ–°æ–¹æ³•ï¼›ï¼ˆå¯¹åº”appæ¨¡å—ï¼‰
+2. Tipsï¼šå‚æ•°ä½ç½®å’Œ`app/web`ç«¯sendUpcomingæ–¹æ³•çš„ä¸åŒ
+3. Tipsï¼š`index/main`ä¸­å¯¹OAç³»ç»Ÿæ•°æ®çš„å°è£…
