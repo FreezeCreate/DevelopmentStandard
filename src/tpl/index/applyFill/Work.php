@@ -22,26 +22,26 @@
 					</tr>
 					<tr>
 						<td class="FrameGroupName"><i class="colorRed">*</i>标题 ：</td>
-						<td colspan="3"><input class="input long" type="text" name="title" id="" value="" /></td>
+						<td colspan="3"><input class="input long" type="text" name="title" id="" value="<?php echo $result['title']; ?>" /></td>
 					</tr>
 					<tr>
 						<td class="FrameGroupName">分配给 ：</td>
 						<td colspan="3">
-							<input class="input long text1" type="text" name="distname" id="" value="" readonly="readonly"/>
-							<input class="text2" type="hidden" name="distid" id="" value="" />
+							<input class="input long text1" type="text" name="distname" id="" value="<?php echo $result['distname']; ?>" readonly="readonly"/>
+							<input class="text2" type="hidden" name="distid" id="" value="<?php echo $result['distid']; ?>" />
 							<span class="btn btn-success btn-sm" onclick="ChousPerson(Use, 'one', '.text1', '.text2', this)">选择</span>
 						</td>
 					</tr>
 					<tr>
 						<td class="FrameGroupName">开始时间：</td>
-						<td><input class="input dates" type="text" name="start" readonly="readonly" placeholder="点击选择"/></td>
+						<td><input class="input dates" type="text" name="start" value="<?php echo $result['start']; ?>" readonly="readonly" placeholder="点击选择"/></td>
 						<td class="FrameGroupName">截止时间 ：</td>
-						<td><input class="input dates" type="text" name="end" readonly="readonly" placeholder="点击选择" /></td>
+						<td><input class="input dates" type="text" name="end" value="<?php echo $result['end']; ?>" readonly="readonly" placeholder="点击选择" /></td>
 					</tr>
 					<tr>
 						<td class="FrameGroupName">说明 ：</td>
 						<td colspan="3">
-							<textarea rows="4" class="input" name="content"></textarea>
+							<textarea rows="4" class="input" name="content"><?php echo $result['content']; ?></textarea>
 						</td>
 					</tr>
 <!--					<tr>
@@ -55,7 +55,13 @@
 					<tr>
 						<td class="FrameGroupName">相关文件 ：</td>
 						<td colspan="3">
-							<ul class="FileBox"></ul>
+							<ul class="FileBox">
+								<?php
+								foreach($result['files'] as $_v){
+									echo '<li class="FileItem"><span class="FileItemNam colorBlu"><a itemid="'.$_v['id'].'" class="download">'.$_v['filename'].'</a></span></li>';
+								}
+								?>
+							</ul>
 							<input class="None addFileVal" type="file" name="files" id="files" />
 							<span class="addFile">+添加文件</span>
 						</td>

@@ -27,8 +27,8 @@
             	<tr>
                     <td class="FrameGroupName">调动人员 ：</td>
                     <td colspan="3">
-                        <input class="input long text1" type="text" name="tranuname" value="" readonly="readonly"/>
-                        <input class="input text2" type="hidden" name="tranuid" value="" />
+                        <input class="input long text1" type="text" name="tranuname" value="<?php echo $result['tranuname'] ?>" readonly="readonly"/>
+                        <input class="input text2" type="hidden" name="tranuid" value="<?php echo $result['tranuid'] ?>" />
                         <!--<span class="btn btn-success btn-sm" onclick="ChousPerson(Use, 'one', '.uname', '.uid', this)">选择</span>-->
                         <span class="btn btn-success btn-sm" onclick="ChousPerson(Use, 'one', '.text1', '.text2', this)">选择</span>
                     </td>
@@ -36,8 +36,8 @@
             	<tr>
                     <td class="FrameGroupName">调动后部门 ：</td>
                     <td colspan="3">
-                        <input class="input long text1" type="text" name="eudept" readonly="readonly"/>
-                        <input class="input text2" type="hidden" name="eudeptid"  />
+                        <input class="input long text1" type="text" name="eudept" value="<?php echo $result['eudept'] ?>" readonly="readonly"/>
+                        <input class="input text2" type="hidden" name="eudeptid" value="<?php echo $result['eudeptid'] ?>" />
                         <!--<span class="btn btn-success btn-sm" onclick="ChousPerson(Use, 'two', '.text1', '.text2', this)">选择</span>-->
                         <span class="btn btn-success btn-sm" onclick="ChousPerson(Dep, 'one', '.text1', '.text2', this)">选择</span>
                     </td>
@@ -45,8 +45,8 @@
                 <tr>
                     <td class="FrameGroupName">调动后部职位：</td>
                     <td colspan="3">
-                        <input class="input long text1" type="text" name="eposition" readonly="readonly"/>
-                        <input class="input text2" type="hidden" name="epositionid"  />
+                        <input class="input long text1" type="text" name="eposition" readonly="readonly" value="<?php echo $result['eposition'] ?>"/>
+                        <input class="input text2" type="hidden" name="epositionid" value="<?php echo $result['epositionid'] ?>" />
                         <!--<span class="btn btn-success btn-sm" onclick="ChousPerson(Use, 'two', '.text1', '.text2', this)">选择</span>-->
                         <span class="btn btn-success btn-sm" onclick="ChousPerson(Pos1, 'one', '.text1', '.text2', this)">选择</span>
                     </td>
@@ -55,22 +55,26 @@
                     <td class="FrameGroupName">调动类型 ：</td>
                     <td colspan="3">
                     	<select name="type" class="input">
-                    		<option value="平调">平调</option>
-                    		<option value="晋升">晋升</option>
-                    		<option value="降职">降职</option>
+                            <option <?php echo $result['type']==='平调'?'selected=""':''; ?> value="平调">平调</option>
+                            <option <?php echo $result['type']==='晋升'?'selected=""':''; ?> value="晋升">晋升</option>
+                            <option <?php echo $result['type']==='降职'?'selected=""':''; ?> value="降职">降职</option>
                     	</select>
                     </td>
                 </tr>
                 <tr>
                     <td class="FrameGroupName"><i class="colorRed">*</i>调动说明 ：</td>
                     <td colspan="3">
-                        <textarea rows="10" name="explain" class="input"></textarea>
+                        <textarea rows="10" name="explain" class="input"><?php echo $result['explain'] ?></textarea>
                     </td>
                 </tr>
                 <tr>
 					<td class="FrameGroupName">相关文件 ：</td>
 					<td colspan="3">
-						<ul class="FileBox"></ul>
+                        <ul class="FileBox">
+                            <?php foreach ($result['files'] as $v) { ?>
+                                <li class="FileItem"><span class="FileItemNam download" itemid="<?php echo $v['id'] ?>"><?php echo $v['filename'] ?></span><input type="hidden" name="files[]" value="<?php echo $v['id'] ?>"/><span class="DelFile">删除</span></li>
+                            <?php } ?>
+                        </ul>
 						<input class="None addFileVal" type="file" name="files" id="files" value="" />
 						<span class="addFile">+添加文件</span>
 					</td>

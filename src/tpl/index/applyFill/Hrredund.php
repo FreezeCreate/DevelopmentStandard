@@ -7,7 +7,8 @@
 	<body>
 		<div class="MainHtml">
 			<form action="" method="" id="check_form" onsubmit="return false;" enctype="multipart/form-data">
-			<div class="framemain">
+				<input type="hidden" name="id" value="<?php echo $result['id'] ?>"/>
+				<div class="framemain">
 				<div class="FrameTableTitl">离职申请</div>
 				<table class="FrameTableCont">
 					<tr>
@@ -30,31 +31,35 @@
 						<td class="FrameGroupName">离职类型 ：</td>
 						<td colspan="3">
 							<select name="type"class="input">
-								<option value="自动离职">自动离职</option>
-								<option value="退休">退休</option>
-								<option value="病辞">病辞</option>
-								<option value="辞退">辞退</option>
-								<option value="辞职">辞职</option>
+								<option <?php echo $result['type']==='自动离职'?'selected=""':''; ?> value="自动离职">自动离职</option>
+								<option <?php echo $result['type']==='退休'?'selected=""':''; ?> value="退休">退休</option>
+								<option <?php echo $result['type']==='病辞'?'selected=""':''; ?> value="病辞">病辞</option>
+								<option <?php echo $result['type']==='辞退'?'selected=""':''; ?> value="辞退">辞退</option>
+								<option <?php echo $result['type']==='辞职'?'selected=""':''; ?> value="辞职">辞职</option>
 
 							</select>
 						</td>
 					</tr>
 					<tr>
 						<td class="FrameGroupName">入职日期：</td>
-						<td><input class="input dates" type="text" name="entrydt" readonly="readonly" placeholder="点击选择"/></td>
+						<td><input class="input dates" type="text" name="entrydt" readonly="readonly" value="<?php echo empty($result['entrydt']) ? '' : $result['entrydt'] ?>" placeholder="点击选择"/></td>
 						<td class="FrameGroupName">离职日期 ：</td>
-						<td><input class="input dates" type="text" name="leavedt" readonly="readonly" placeholder="点击选择"/></td>
+						<td><input class="input dates" type="text" name="leavedt" readonly="readonly" value="<?php echo empty($result['leavedt']) ? '' : $result['leavedt'] ?>" placeholder="点击选择"/></td>
 					</tr>
 					<tr>
 						<td class="FrameGroupName">离职说明 ：</td>
 						<td colspan="3">
-							<textarea rows="4" name="cause" class="input"></textarea>
+							<textarea rows="4" name="cause" class="input"><?php echo $result['cause'] ?></textarea>
 						</td>
 					</tr>
 					<tr>
 						<td class="FrameGroupName">相关文件 ：</td>
 						<td colspan="3">
-							<ul class="FileBox"></ul>
+							<ul class="FileBox">
+								<?php foreach ($result['files'] as $v) { ?>
+									<li class="FileItem"><span class="FileItemNam download" itemid="<?php echo $v['id'] ?>"><?php echo $v['filename'] ?></span><input type="hidden" name="files[]" value="<?php echo $v['id'] ?>"/><span class="DelFile">删除</span></li>
+								<?php } ?>
+							</ul>
 							<input class="None addFileVal" type="file" name="files" id="files" value="" />
 							<span class="addFile">+添加文件</span>
 						</td>

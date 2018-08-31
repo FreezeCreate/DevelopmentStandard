@@ -186,4 +186,23 @@ class process extends IndexController {
         
     }
 
+    //我的申请 删除
+    function del()
+    {
+        //params check
+        $id  = (int) htmlspecialchars($this->spArgs('id'));
+        $mid = (int) htmlspecialchars($this->spArgs('mid'));
+        if(!is_numeric($id) || !is_numeric($mid)) $this->msg_json(0, '分配id必须为数字');
+
+        //数据表del置1 flow_bill关联表del置1
+        $table_data = spClass('m_flow_set')->find(array('id' => $mid));
+        $model_name = 'm_'.$table_data['table'];
+
+        $del_id  = spClass($model_name)->find(array('id' => $id), '', 'id');
+        if($del_id){
+            spClass($model_name)->update(array('id' => $id), array('del' => 1));
+            spClass('m_flow_bill')->update(array('tid' => $id, 'modelid' => $mid), array('del' => 1));
+        }
+    }
+
 }

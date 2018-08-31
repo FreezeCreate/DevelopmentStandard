@@ -12,20 +12,20 @@ class applyFill extends IndexController {
      * ***** */
 
     function Infor() {
-        $user = $this->islogin();
+        $user    = $this->islogin();
         $m_infor = spClass('m_infor');
-        $id = (int) htmlspecialchars($this->spArgs('id'));
-        $result = $m_infor->find(array('id' => $id));
+        $id      = (int) htmlspecialchars($this->spArgs('id'));
+        $result  = $m_infor->find(array('id' => $id));
         $this->result = $result;
     }
 
     function saveInfor() {
-        $user = $this->islogin();
-        $data['title'] = htmlspecialchars($this->spArgs('title'));
-        $data['receid'] = trim(htmlspecialchars($this->spArgs('receid')), ',');
+        $user             = $this->islogin();
+        $data['title']    = htmlspecialchars($this->spArgs('title'));
+        $data['receid']   = trim(htmlspecialchars($this->spArgs('receid')), ',');
         $data['recename'] = trim(htmlspecialchars($this->spArgs('recename')), ',');
-        $data['content'] = htmlspecialchars($this->spArgs('content'));
-        $m_infor = spClass('m_infor');
+        $data['content']  = htmlspecialchars($this->spArgs('content'));
+        $m_infor          = spClass('m_infor');
         $m_infor->save($data,$user);
     }
     
@@ -34,14 +34,14 @@ class applyFill extends IndexController {
      * ***** */
 
     function Work() {
-        $user = $this->islogin();
+        $user   = $this->islogin();
         $m_work = spClass('m_work');
-        $id = (int) htmlspecialchars($this->spArgs('id'));
+        $id     = (int) htmlspecialchars($this->spArgs('id'));
         $result = $m_work->find(array('id' => $id));
 
         if (!empty($result['files'])) {
             $m_file = spClass('m_file');
-            $files = $m_file->findAll('id in (' . $result['files'] . ')', '', 'id,filename');
+            $files  = $m_file->findAll('id in (' . $result['files'] . ')', '', 'id,filename');
             $result['files'] = $files;
         } else {
             $result['files'] = array();
@@ -52,10 +52,10 @@ class applyFill extends IndexController {
 
     //更新/插入
     function saveWork() {
-        $user = $this->islogin();
-        $data['title'] = htmlspecialchars($this->spArgs('title'));
+        $user           = $this->islogin();
+        $data['title']  = htmlspecialchars($this->spArgs('title'));
         $data['distid'] = (int) htmlspecialchars($this->spArgs('uid'));
-        $data['start'] = htmlspecialchars($this->spArgs('start'));
+        $data['start']  = htmlspecialchars($this->spArgs('start'));
         $end = htmlspecialchars($this->spArgs('end'));
         if ($end) {
             $data['end'] = $end;
@@ -88,11 +88,11 @@ class applyFill extends IndexController {
                 $this->msg_json(0, '信息有误');
             }
         } else {
-            $data['uid'] = $user['id'];
-            $data['uname'] = $user['name'];
-            $data['shopid'] = $user['shopid'];
+            $data['uid']       = $user['id'];
+            $data['uname']     = $user['name'];
+            $data['shopid']    = $user['shopid'];
             $data['udeptname'] = $user['departmentname'];
-            $data['applydt'] = date('Y-m-d');
+            $data['applydt']   = date('Y-m-d');
             $ad = $m_work->create($data);
         }
         if ($ad) {
@@ -176,17 +176,25 @@ class applyFill extends IndexController {
 
     }
 
-    //删除任务
-    function delTask(){
-        $id = (int) htmlspecialchars($this->spArgs('id'));
-        if(!is_numeric($id)) $this->returnError('操作失败');
-
-        $work = spClass('m_work')->find(array('id' => $id), '', 'id');
-        if($work){
-            $up = spClass('m_work')->update(array('id' => $id), array('del' => 1));
-            $fb = spClass('m_flow_bill')->update(array('tid' => $id, 'modelid' => 9), array('del' => 1));
-        }
-    }
+    //删除任务 转移到了process/del() 方法下
+//    function delTask(){
+//        $id = (int) htmlspecialchars($this->spArgs('id'));
+//        if(!is_numeric($id)) $this->msg_json(0, '分配id必须为数字');
+//
+//        $work = spClass('m_work')->find(array('id' => $id), '', 'id');
+//        if($work){
+//            $up = spClass('m_work')->update(array('id' => $id), array('del' => 1));
+//            if($up != 1){
+//                $this->returnError('操作失败');
+//            }
+//
+//            $fb = spClass('m_flow_bill')->update(array('tid' => $id, 'modelid' => 9), array('del' => 1));
+//            if($fb != 1){   //更新第二条失败时，将第一条del回退
+//                spClass('m_work')->update(array('id' => $id), array('del' => 0));
+//                $this->returnError('操作失败');
+//            }
+//        }
+//    }
 
 
     //添加考勤奖惩
@@ -197,11 +205,11 @@ class applyFill extends IndexController {
     //编辑考勤参数
     function bjwork() {
         $user         = $this->islogin();
-        $id = (int) htmlspecialchars($this->spArgs('id'));
+        $id           = (int) htmlspecialchars($this->spArgs('id'));
         $m_kqsjgz     = spClass('m_kqsjgz');
         $this->result = $m_kqsjgz->find(array('id' => $id));
 
-        $hide_form = $this->spArgs('hide_form');    //初次点击和本页提交时的判断字段
+        $hide_form    = $this->spArgs('hide_form');    //初次点击和本页提交时的判断字段
         if(!empty($hide_form)){
             $data['stime'] = htmlspecialchars($this->spArgs('stime'));
             $data['etime'] = htmlspecialchars($this->spArgs('etime'));
@@ -230,7 +238,20 @@ class applyFill extends IndexController {
 
     //工作日报
     function Daily(){
-        $user = $this->islogin();
+        $user    = $this->islogin();
+        $m_daily = spClass('m_daily');
+        $id      = (int) htmlspecialchars($this->spArgs('id'));
+        $result  = $m_daily->find(array('id' => $id));
+
+        if (!empty($result['files'])) {
+            $m_file = spClass('m_file');
+            $files  = $m_file->findAll('id in (' . $result['files'] . ')', '', 'id,filename');
+            $result['files'] = $files;
+        } else {
+            $result['files'] = array();
+        }
+
+        $this->result = $result;
     }
 
     //添加工作日报
@@ -264,7 +285,7 @@ class applyFill extends IndexController {
     }
 
 
-    //办公用品新增页面
+    //办公用品
     function Officeapl(){
         $user        = $this->islogin();
         $m_officeapl = spClass('m_officeapl');
@@ -337,7 +358,20 @@ class applyFill extends IndexController {
 
     //转正页面
     function Hrpositive(){
-        $user = $this->islogin();
+        $user         = $this->islogin();
+        $m_hrpositive = spClass('m_hrpositive');
+        $id           = (int) htmlspecialchars($this->spArgs('id'));
+        $result       = $m_hrpositive->find(array('id' => $id));
+
+        if (!empty($result['files'])) {
+            $m_file          = spClass('m_file');
+            $files           = $m_file->findAll('id in (' . $result['files'] . ')', '', 'id,filename');
+            $result['files'] = $files;
+        } else {
+            $result['files'] = array();
+        }
+
+        $this->result = $result;
     }
 
     //转正申请
@@ -345,6 +379,7 @@ class applyFill extends IndexController {
         $user   = $this->islogin();
         $model  = spClass('m_hrpositive');
         $m_user = spClass('m_user');
+
         $arg    = array(
             'id'         => '',
             'entrydt'    => '入职日期',
@@ -352,8 +387,16 @@ class applyFill extends IndexController {
             'explain'    => '申请说明',
             'files'      => '',
         );
+
         $data = $this->receiveData($arg);
-        $id   = (int) $data['id'];
+        $id   = (int) htmlspecialchars($this->spArgs('id'));
+        if($data['entrydt'] > $data['positivedt']){
+            $this->returnError('转正日期需大于入职日期');
+        }
+
+        $files  = $this->spArgs('files');
+        if ($files) {$data['files'] = implode(',', $files);}
+
         unset($data['id']);
         $data['status'] = 1;
         if ($id) {
@@ -361,6 +404,7 @@ class applyFill extends IndexController {
             if (empty($re)) {
                 $this->returnError('信息有误', 1);
             }
+
             $up = $model->update(array('id' => $re['id']), $data);
             if ($up) {
                 $ad = $re['id'];
@@ -375,8 +419,6 @@ class applyFill extends IndexController {
             $data['cid']     = $user['cid'];
             $data['dname']   = $user['dname'];
             $data['position']= $user['pname'];
-            $files           = $this->spArgs('files');
-            if ($files) {$data['files'] = implode(',', $files);}
             $data['number']  = date('YmdHis') . rand(100, 999);
             $ad = $model->create($data);
         }
@@ -391,7 +433,20 @@ class applyFill extends IndexController {
 
     //离职页面
     function Hrredund(){
-        $user = $this->islogin();
+        $user       = $this->islogin();
+        $m_hrredund = spClass('m_hrredund');
+        $id         = (int) htmlspecialchars($this->spArgs('id'));
+        $result     = $m_hrredund->find(array('id' => $id));
+
+        if (!empty($result['files'])) {
+            $m_file = spClass('m_file');
+            $files  = $m_file->findAll('id in (' . $result['files'] . ')', '', 'id,filename');
+            $result['files'] = $files;
+        } else {
+            $result['files'] = array();
+        }
+
+        $this->result = $result;
     }
 
     //离职申请
@@ -415,7 +470,7 @@ class applyFill extends IndexController {
         $data['optid']   = $user['id'];
         $data['optname'] = $user['name'];
         $data['optdt']   = date('Y-m-d H:i:s');
-        $files            = $this->spArgs('files');
+        $files           = $this->spArgs('files');
         if ($files) {$data['files'] = implode(',', $files);}
 
         if ($id) {
@@ -447,7 +502,19 @@ class applyFill extends IndexController {
 
     //人事页面
     function Hrtransfer(){
-        $user = $this->islogin();
+        $user         = $this->islogin();
+        $m_hrtransfer = spClass('m_hrtransfer');
+        $id           = (int) htmlspecialchars($this->spArgs('id'));
+        $result       = $m_hrtransfer->find(array('id' => $id));
+
+        if (!empty($result['files'])) {
+            $m_file = spClass('m_file');
+            $files  = $m_file->findAll('id in (' . $result['files'] . ')', '', 'id,filename');
+            $result['files'] = $files;
+        } else {
+            $result['files'] = array();
+        }
+        $this->result = $result;
     }
 
     //人事调动
@@ -474,7 +541,7 @@ class applyFill extends IndexController {
             'files'       => '',
             );
         $data  = $this->receiveData($arg);
-        $id    = (int) $data['id'];
+        $id    = (int) htmlspecialchars($this->spArgs('id'));
         unset($data['id']);
         $model = spClass('m_hrtransfer');
         $tranu = $m_user->find(array('id' => $data['tranuid']), '', 'id,name,pname,dname');
@@ -501,7 +568,7 @@ class applyFill extends IndexController {
         $data['optid']   = $user['id'];
         $data['optname'] = $user['name'];
         $data['optdt']   = date('Y-m-d H:i:s');
-        $files            = $this->spArgs('files');
+        $files           = $this->spArgs('files');
         if ($files) {$data['files'] = implode(',', $files);}
         if ($id) {
             $re = $model->find(array('id' => $id, 'del' => 0), '', 'id');
@@ -531,7 +598,19 @@ class applyFill extends IndexController {
 
     //请假页面
     function Kqinfo(){
-        $user = $this->islogin();
+        $user     = $this->islogin();
+        $m_kqinfo = spClass('m_kqinfo');
+        $id       = (int) htmlspecialchars($this->spArgs('id'));
+        $result   = $m_kqinfo->find(array('id' => $id));
+
+        if (!empty($result['files'])) {
+            $m_file = spClass('m_file');
+            $files  = $m_file->findAll('id in (' . $result['files'] . ')', '', 'id,filename');
+            $result['files'] = $files;
+        } else {
+            $result['files'] = array();
+        }
+        $this->result = $result;
     }
 
     //请假申请
@@ -546,7 +625,7 @@ class applyFill extends IndexController {
             'explain' => '请假说明',
         );
         $data  = $this->receiveData($arg);
-        $id    = (int) $data['id'];
+        $id    = (int) htmlspecialchars($this->spArgs('id'));
         unset($data['id']);
         $model = spClass('m_kqinfo');
 
@@ -583,7 +662,19 @@ class applyFill extends IndexController {
 
     //打卡页面
     function Kqerr(){
-        $user = $this->islogin();
+        $user    = $this->islogin();
+        $m_kqerr = spClass('m_kqerr');
+        $id      = (int) htmlspecialchars($this->spArgs('id'));
+        $result  = $m_kqerr->find(array('id' => $id));
+
+        if (!empty($result['files'])) {
+            $m_file = spClass('m_file');
+            $files  = $m_file->findAll('id in (' . $result['files'] . ')', '', 'id,filename');
+            $result['files'] = $files;
+        } else {
+            $result['files'] = array();
+        }
+        $this->result = $result;
     }
 
     //打卡异常
@@ -597,8 +688,9 @@ class applyFill extends IndexController {
             'explain' => '异常说明',
             'files'   => '',
         );
+
         $data  = $this->receiveData($arg);
-        $id    = (int) $data['id'];
+        $id    = (int) htmlspecialchars($this->spArgs('id'));
         unset($data['id']);
         $model = spClass('m_kqerr');
         $data['status']  = 1;
@@ -662,7 +754,7 @@ class applyFill extends IndexController {
 
     //添加合同
     function addpersonnel() {
-        
+        dump(1);die;
     }
 
     //添加部门

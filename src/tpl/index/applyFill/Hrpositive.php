@@ -7,7 +7,8 @@
 	<body>
 		<div class="MainHtml">
 			<form action="" method="" id="check_form" onsubmit="return false;" enctype="multipart/form-data">
-			<div class="framemain">
+				<input type="hidden" name="id" value="<?php echo $result['id'] ?>"/>
+				<div class="framemain">
 				<div class="FrameTableTitl">转正申请</div>
 				<table class="FrameTableCont">
 					<tr>
@@ -20,14 +21,14 @@
 					</tr>
 					<tr>
 						<td class="FrameGroupName">入职日期：</td>
-						<td><input class="input dates" type="text" readonly="readonly" name="entrydt" placeholder="点击选择"/></td>
+						<td><input class="input dates" type="text" readonly="readonly" name="entrydt" placeholder="点击选择" value="<?php echo empty($result['entrydt']) ? '' : $result['entrydt'] ?>"/></td>
 						<td class="FrameGroupName">转正日期 ：</td>
-						<td><input class="input dates" type="text" readonly="readonly" name="positivedt" placeholder="点击选择"/></td>
+						<td><input class="input dates" type="text" readonly="readonly" name="positivedt" value="<?php echo empty($result['positivedt']) ? '' : $result['positivedt'] ?>" placeholder="点击选择"/></td>
 					</tr>
 					<tr>
 						<td class="FrameGroupName">申请说明 ：</td>
 						<td colspan="3">
-							<textarea rows="4" name="explain" class="input"></textarea>
+							<textarea rows="4" name="explain" class="input"><?php echo $result['explain'] ?></textarea>
 						</td>
 					</tr>
 					<!--<tr>
@@ -41,7 +42,11 @@
 					<tr>
 						<td class="FrameGroupName">相关文件 ：</td>
 						<td colspan="3">
-							<ul class="FileBox"></ul>
+							<ul class="FileBox">
+								<?php foreach ($result['files'] as $v) { ?>
+									<li class="FileItem"><span class="FileItemNam download" itemid="<?php echo $v['id'] ?>"><?php echo $v['filename'] ?></span><input type="hidden" name="files[]" value="<?php echo $v['id'] ?>"/><span class="DelFile">删除</span></li>
+								<?php } ?>
+							</ul>
 							<input class="None addFileVal" type="file" name="files" id="files" />
 							<span class="addFile">+添加文件</span>
 						</td>

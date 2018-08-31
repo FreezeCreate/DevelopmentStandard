@@ -13,7 +13,8 @@
 <body>
     <div class="MainHtml">
         <form action="" method="" id="check_form" onsubmit="return false;">
-        <div class="framemain">
+            <input type="hidden" name="id" value="<?php echo $result['id'] ?>"/>
+            <div class="framemain">
             <div class="FrameTableTitl">请假申请</div>
             <table class="FrameTableCont">
             	<tr>
@@ -26,26 +27,26 @@
                     <td class="FrameGroupName">请假类型 ：</td>
                     <td colspan="3">
                     	<select name="type"class="input">
-                    		<option value="事假">事假</option>
-                    		<option value="病假">病假</option>
-                    		<option value="年假">年假</option>
-                    	</select>
+                            <option <?php echo $result['type']==='事假'?'selected=""':''; ?> value="事假">事假</option>
+                            <option <?php echo $result['type']==='病假'?'selected=""':''; ?> value="病假">病假</option>
+                            <option <?php echo $result['type']==='年假'?'selected=""':''; ?> value="年假">年假</option>
+                        </select>
                     </td>
                 </tr>
             	<tr>
                     <td class="FrameGroupName">开始时间 ：</td>
                     <td>
-                        <input class="input dates" type="text" name="start" readonly="readonly"/>
+                        <input class="input dates" type="text" name="start"  value="<?php echo empty($result['start'])?'':$result['start']; ?>" readonly="readonly"/>
                     </td>
                     <td class="FrameGroupName">结束时间 ：</td>
                     <td>
-                        <input class="input dates" type="text" name="end" readonly="readonly"/>
+                        <input class="input dates" type="text" name="end" value="<?php echo empty($result['end'])?'':$result['end'] ?>" readonly="readonly"/>
                     </td>
                </tr>
             	<tr>
                     <td class="FrameGroupName">请假说明 ：</td>
                     <td colspan="3">
-                    	<textarea name="explain" class="input"></textarea>
+                    	<textarea name="explain" class="input"><?php echo $result['explain'] ?></textarea>
                     </td>
               </tr>
             </table>

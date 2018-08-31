@@ -30,6 +30,7 @@
             <table class="table borderTr textCenter">
                 <thead>
                     <tr class="b">
+<!--                        --><?php //dump($results);die;?>
                         <td>序号</td>
                         <td>模块</td>
                         <td>申请人</td>
@@ -59,7 +60,7 @@
                                         <li class="menu-item"><a onclick="check_apply(<?php echo $v['modelid'] . ',' . $v['tid'] ?>)">详情</a></li>
                                         <li class="menu-item"><a onclick="fill_apply(<?php echo $v['modelid'] . ',' . $v['tid'] ?>)">编辑</a></li>
                                         <?php /*if ($v['status'] != 0) { */?><!--<li class="menu-item void"><a class="color-gray" onclick="voidBox(<?php /*echo $v['id'] */?>)">作废</a></li>--><?php /*} */?>
-                                        <li class="menu-item"><a class="color-red" onclick="delBox(<?php echo $v['id'] ?>)">删除</a></li>
+                                        <li class="menu-item"><a class="color-red" onclick="delBox(<?php echo $v['modelid'] . ',' . $v['tid'] ?>)">删除</a></li>
                                     </ul>
                                 </div>
                             </td>
@@ -90,5 +91,23 @@
             }
         })
     })
+
+
+    function delBox(mid, id) {
+        Confirm('确定删除？',function(re){
+            if(re){
+                $.get("<?php echo spUrl($c, "del"); ?>", {mid: mid, id: id}, function(data) {
+//                    console.log(mid);
+                    if (data.status == 1) {
+                        $('.Results' + id).remove();
+                        table_sort();
+                    }
+                }, 'json');
+                Alert('操作成功');
+            }
+
+        });
+    }
+
 </script>
 </html>

@@ -13,7 +13,8 @@
 <body>
     <div class="MainHtml">
         <form action="" method="" id="check_form" onsubmit="return false;">
-        <div class="framemain">
+            <input type="hidden" name="id" value="<?php echo $result['id'] ?>"/>
+            <div class="framemain">
             <div class="FrameTableTitl">打卡异常</div>
             <table class="FrameTableCont">
             	<tr>
@@ -26,21 +27,21 @@
                     <td class="FrameGroupName">异常类型 ：</td>
                     <td colspan="3">
                     	<select name="type"class="input">
-                    		<option value="忘记打卡">忘记打卡</option>
-                    		<option value="打卡不成功">打卡不成功</option>
-                    	</select>
+                            <option <?php echo $result['type']==='忘记打卡'?'selected=""':''; ?> value="忘记打卡">忘记打卡</option>
+                            <option <?php echo $result['type']==='打卡不成功'?'selected=""':''; ?> value="打卡不成功">打卡不成功</option>
+                        </select>
                     </td>
                 </tr>
             	<tr>
                     <td class="FrameGroupName">选择日期 ：</td>
                     <td colspan="3">
-                        <input class="input dates" type="text" name="date" readonly="readonly"/>
+                        <input class="input dates" type="text" name="date" value="<?php echo empty($result['date'])?'':$result['date']; ?>" readonly="readonly"/>
                     </td>
                </tr>
             	<tr>
                     <td class="FrameGroupName">异常说明 ：</td>
                     <td colspan="3">
-                    	<textarea name="explain" class="input"></textarea>
+                    	<textarea name="explain" class="input"><?php echo $result['explain'] ?></textarea>
                     </td>
               </tr>
             </table>
@@ -77,6 +78,7 @@
                 Alert('提交失败');
             },
             success: function(data) {
+
                 if (data.code == 0) {
                     Alert(data.msg, function(){
                         parent.window.closHtml();

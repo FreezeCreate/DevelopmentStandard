@@ -41,8 +41,8 @@
                                 <div class="list-menu" style="display: inline-block;">
                                     操作  ＋
                                     <ul class="menu">
-                                        <li class="menu-item NewPop"data-url="<?php echo spUrl('apply', 'regularcont') ?>"data-title="转正申请详情"><a >详情</a></li>
-                                        <li class="menu-item NewPop"data-url="<?php echo spUrl('applyFill', 'addregula') ?>"data-title="编辑转正申请"><a >编辑</a></li>
+                                        <li class="menu-item NewPop"data-url="<?php echo spUrl('apply', 'Hrpositive', array('id' => $v['id'])) ?>"data-title="转正申请详情"><a >详情</a></li>
+                                        <li class="menu-item" onclick="fill_apply(12, <?php echo $v['id']?>)" data-title="编辑转正申请"><a >编辑</a></li>
                                         <li class="menu-item read deled"><a >删除</a></li>
                                     </ul>
                                 </div>

@@ -29,25 +29,25 @@
 					<tr>
 						<td class="FrameGroupName">物品类型 ：</td>
 						<td colspan="3">
-							<input class="input long text1" type="text" name="gname" value=""/>
+							<input class="input long text1" type="text" name="gname" value="<?php echo empty($result['gname']) ? '' : $result['gname']?>"/>
 						</td>
 					</tr>
 					<tr>
 						<td class="FrameGroupName">数量 ：</td>
 						<td colspan="3">
-							<input class="input" type="text" name="num" />
+							<input class="input" type="text" name="num" value="<?php echo empty($result['num']) ? '' : $result['num']?>" />
 						</td>
 					</tr>
 					<tr>
 						<td class="FrameGroupName">申请日期 ：</td>
 						<td colspan="3">
-							<input class="input dates" type="text" name="optdt" readonly="readonly" />
+							<input class="input dates" type="text" name="optdt" value="<?php echo empty($result['optdt']) ? '' : $result['optdt']?>" readonly="readonly" />
 						</td>
 					</tr>
 					<tr>
 						<td class="FrameGroupName">申请说明 ：</td>
 						<td colspan="3">
-							<textarea rows="4" class="input" name="explain"></textarea>
+							<textarea rows="4" class="input" name="explain"><?php echo empty($result['explain']) ? '' : $result['explain'] ?></textarea>
 						</td>
 					</tr>
 				</table>

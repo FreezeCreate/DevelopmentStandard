@@ -185,59 +185,52 @@ class apply extends IndexController {
 
     //任务管理 详情
     function Work() {
-        $mid = (int) htmlentities($this->spArgs('mid'));
         $id  = (int) htmlentities($this->spArgs('id'));
-        $this->findCheck($id, $mid);
+        $this->findCheck($id, 9);
 //        $this->findRemind($id, 9);
     }
 
     //人事调动 详情
     function Hrtransfer()
     {
-        $mid = (int) htmlentities($this->spArgs('mid'));
         $id  = (int) htmlentities($this->spArgs('id'));
-        $this->findCheck($id, $mid);
+        $this->findCheck($id, 14);
     }
 
 
     //打卡异常 详情
     function Kqerr()
     {
-        $mid = (int) htmlentities($this->spArgs('mid'));
         $id  = (int) htmlentities($this->spArgs('id'));
-        $this->findCheck($id, $mid);
+        $this->findCheck($id, 11);
     }
 
     //请假条 详情
     function Kqinfo()
     {
-        $mid = (int) htmlentities($this->spArgs('mid'));
         $id  = (int) htmlentities($this->spArgs('id'));
-        $this->findCheck($id, $mid);
+        $this->findCheck($id, 10);
     }
 
     //离职申请 详情
     function Hrredund()
     {
-        $mid = (int) htmlentities($this->spArgs('mid'));
         $id  = (int) htmlentities($this->spArgs('id'));
-        $this->findCheck($id, $mid);
+        $this->findCheck($id, 13);
     }
 
     //转正申请 详情
     function Hrpositive()
     {
-        $mid = (int) htmlentities($this->spArgs('mid'));
         $id  = (int) htmlentities($this->spArgs('id'));
-        $this->findCheck($id, $mid);
+        $this->findCheck($id, 12);
     }
 
     //办公用品申请 详情
     function Officeapl()
     {
-        $mid = (int) htmlentities($this->spArgs('mid'));
         $id  = (int) htmlentities($this->spArgs('id'));
-        $this->findCheck($id, $mid);
+        $this->findCheck($id, 7);
     }
 
 
@@ -272,10 +265,6 @@ class apply extends IndexController {
         
     }
 
-    //转正申请详情
-    function regularcont() {
-        
-    }
 
     //离职申请详情
     function leavecont() {

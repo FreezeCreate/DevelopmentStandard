@@ -71,7 +71,7 @@
     function del(id) {
         Confirm('确定删除？',function(re){
             if(re){
-                $.get("<?php echo spUrl("applyFill", "delTask"); ?>", {id: id}, function(data) {
+                $.get("<?php echo spUrl("process", "del"); ?>", {mid: 9, id: id}, function(data) {
                     if (data.status == 1) {
                         $('.Results' + id).remove();
                         table_sort();
