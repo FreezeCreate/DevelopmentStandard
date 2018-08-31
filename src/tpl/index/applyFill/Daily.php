@@ -94,9 +94,11 @@
 				Alert('提交失败');
 			},
 			success: function(data) {
-				if (data.status == 1) {
-					parent.window.closHtml();
-					Refresh();
+				if (data.code == 0) {
+					Alert(data.msg, function(){
+						parent.window.closHtml();
+						Refresh();
+					});
 				} else {
 					Alert(data.msg);
 				}
