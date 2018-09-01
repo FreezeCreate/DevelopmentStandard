@@ -43,7 +43,7 @@
                                     <ul class="menu">
                                         <li class="menu-item NewPop"data-url="<?php echo spUrl('apply', 'Hrpositive', array('id' => $v['id'])) ?>"data-title="转正申请详情"><a >详情</a></li>
                                         <li class="menu-item" onclick="fill_apply(12, <?php echo $v['id']?>)" data-title="编辑转正申请"><a >编辑</a></li>
-                                        <li class="menu-item read deled"><a >删除</a></li>
+                                        <li class="menu-item read"><a onclick="del(<?php echo $v['id'] ?>)">删除</a></li>
                                     </ul>
                                 </div>
                             </td>
@@ -57,12 +57,18 @@
 </body>
 </html>
 <script type="text/javascript">
-    $(document).on('click', '.deled', function() {
-        var that = $(this);
-        parent.window.Confirm('确定删除？', function(e) {
-            if (e) {
-                that.parent().parent().parent().parent().remove()
+    function del(id) {
+        Confirm('确定删除？',function(re){
+            if(re){
+                $.get("<?php echo spUrl("process", "del"); ?>", {mid: 12, id: id}, function(data) {
+                    if (data.status == 1) {
+                        $('.Results' + id).remove();
+                        table_sort();
+                    }
+                }, 'json');
+                Alert('操作成功');
             }
-        })
-    })
+
+        });
+    }
 </script>

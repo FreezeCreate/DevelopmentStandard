@@ -10,6 +10,7 @@ class apply extends IndexController {
 
     //审核处理
     function saveCheck() {
+//        dump($this->spArgs('status'));die;
         $user = $this->islogin();
         $m_flow_bill = spClass('m_flow_bill');
         $m_flow_course = spClass('m_flow_course');
@@ -40,7 +41,7 @@ class apply extends IndexController {
         $up = $model->update(array('id' => $re['id']), $data);
         if ($up) {
             $data_bill = array('optid' => $user['id'], 'optname' => $user['name'], 'optdt' => date('Y-m-d H:i:s'), 'status' => $status, 'checksm' => $checksm);
-            $pcourse = $m_flow_course->find(array('id' => $bill['cid']), '', 'id,name,courseact');
+            $pcourse = $m_flow_course->find(array('id' => $bill['cid'],'cid'=>$user['cid']), '', 'id,name,courseact');
             $pcourse['courseact'] = explode(',', $pcourse['courseact']);
             $act = array(2 => '驳回', 3 => '通过');
             foreach ($pcourse['courseact'] as $k => $v) {
@@ -48,9 +49,10 @@ class apply extends IndexController {
                 $act[$courseact[1]] = $courseact[0];
             }
             if ($status > 2) {
-                $course = $m_flow_course->find(array('pid' => $pcourse['id']), '', 'id,name,checktype,checktypeid');
+                $course = $m_flow_course->find(array('pid' => $pcourse['id'],'cid'=>$user['cid']), '', 'id,name,checktype,checktypeid');
                 if ($course) {
-                    $applyuser = spClass('m_user')->find(array('id' => $bill['uid']), '', 'id,name,shopid');
+//                    $applyuser = spClass('m_user')->find(array('id' => $bill['uid']), '', 'id,name,shopid');
+                    $applyuser = spClass('m_user')->find(array('id' => $bill['uid']), '', 'id,name,cid');
                     $chuser = $this->findcheckUser($course['checktype'], $course['checktypeid'], $applyuser);
                     $data_bill['cid'] = $course['id'];
                     $data_bill['cname'] = $course['name'];

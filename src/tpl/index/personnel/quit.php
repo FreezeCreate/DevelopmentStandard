@@ -64,7 +64,7 @@
         var that = $(this);
         parent.window.Confirm('确定删除？', function(e) {
             if (e) {
-                that.parent().parent().parent().parent().remove()
+                that.parent().parent().parent().parent().remove();
             }
         })
     })

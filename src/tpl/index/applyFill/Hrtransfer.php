@@ -21,6 +21,7 @@
 <body>
     <div class="MainHtml">
         <form action="" method="" id="check_form" onsubmit="return false;" enctype="multipart/form-data">
+        <input type="hidden" name="id" value="<?php echo $result['id'] ?>"/>
         <div class="framemain">
             <div class="FrameTableTitl">人事调动</div>
             <table class="FrameTableCont">
