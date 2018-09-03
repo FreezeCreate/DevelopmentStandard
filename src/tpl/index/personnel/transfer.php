@@ -10,7 +10,7 @@
                 <span class="btn btn-sm btn-primary mg-r-6">搜索</span>
                 <span class="btn btn-sm btn-primary mg-r-6 reset">重置</span>
                 <span class="btn btn-sm btn-primary mg-r-6" onclick="Refresh()">刷新</span>
-                <span class="btn btn-sm btn-primary pdX20 float-right NewPop"data-url="<?php echo spUrl('applyFill', 'adddiaod') ?>"data-title="添加调动">+ 添加</span>
+                <span class="btn btn-sm btn-primary pdX20 float-right NewPop"data-url="<?php echo spUrl('applyFill', 'Hrtransfer') ?>"data-title="添加调动">+ 添加</span>
             </form>
 
         </div>
@@ -44,9 +44,9 @@
                                 <div class="list-menu" style="display: inline-block;">
                                     操作  ＋
                                     <ul class="menu">
-                                        <li class="menu-item NewPop"data-url="<?php echo spUrl('apply', 'regularcont') ?>"data-title="转正申请详情"><a >详情</a></li>
-                                        <li class="menu-item NewPop"data-url="<?php echo spUrl('applyFill', 'addregula') ?>"data-title="编辑转正申请"><a >编辑</a></li>
-                                        <li class="menu-item read deled"><a >删除</a></li>
+                                        <li class="menu-item NewPop"data-url="<?php echo spUrl('apply', 'Hrtransfer', array('id' => $v['id'])) ?>"data-title="人事调动详情"><a >详情</a></li>
+                                        <li class="menu-item"onclick="fill_apply(14, <?php echo $v['id']?>)"data-title="编辑人事调动"><a >编辑</a></li>
+                                        <li class="menu-item read deled"><a onclick="del(<?php echo $v['id'] ?>)">删除</a></li>
                                     </ul>
                                 </div>
                             </td>
@@ -60,12 +60,18 @@
 </body>
 </html>
 <script type="text/javascript">
-    $(document).on('click', '.deled', function() {
-        var that = $(this);
-        parent.window.Confirm('确定删除？', function(e) {
-            if (e) {
-                that.parent().parent().parent().parent().remove()
+    function del(id) {
+        Confirm('确定删除？',function(re){
+            if(re){
+                $.get("<?php echo spUrl("process", "del"); ?>", {mid: 14, id: id}, function(data) {
+                    if (data.status == 1) {
+                        $('.Results' + id).remove();
+                        table_sort();
+                    }
+                }, 'json');
+                Alert('操作成功');
             }
-        })
-    })
+
+        });
+    }
 </script>

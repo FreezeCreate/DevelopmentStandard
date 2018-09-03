@@ -1,8 +1,17 @@
 	<?php require_once TPL_DIR . '/layout/con_header.php'; ?>
-		<link rel="stylesheet" type="text/css" href="<?php echo SOURCE_PATH; ?>/css/details.css"/>
+	<link rel="stylesheet" type="text/css" href="<?php echo SOURCE_PATH; ?>/css/details.css"/>
 	<script src="/source/js/ajaxfileupload.js" type="text/javascript" charset="utf-8"></script>
 
 	</head>
+	<style type="text/css">
+		.color-green{
+			color: green;
+		}
+		.color-red{
+			color: red;
+		}
+		
+	</style>
 	<body>
 		<div class="MainHtml">
 			<div class="framemain">
@@ -108,7 +117,7 @@
 									<td><a class="Btn Btn-info" onclick="do_sub()">提交处理</a></td>
 								</tr>-->
 								<div class="frameFoot">
-									<span class="btn btn-success pdX20 mg-r-30" onclick="do_sub()">确定</span>
+									<span class="btn btn-success pdX20 mg-r-30" onclick="do_sub()">提交处理</span>
 									<span class="btn btn-info pdX20"onclick="parent.window.closHtml()">取消</span>
 								</div>
 								</tbody>

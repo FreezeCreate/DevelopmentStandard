@@ -47,9 +47,9 @@
                                 <div class="list-menu" style="display: inline-block;">
                                     操作  ＋
                                     <ul class="menu">
-                                        <li class="menu-item NewPop"data-url="<?php echo spUrl('apply', 'personelcont') ?>"data-title="新增员工"><a >详情</a></li>
-                                        <li class="menu-item NewPop"data-url="<?php echo spUrl('applyFill', 'addpersonel') ?>"data-title="新增员工"><a >编辑</a></li>
-                                        <li class="menu-item read delled"><a >删除</a></li>
+                                        <li class="menu-item NewPop"data-url="<?php echo spUrl('apply', 'User', array('id' => $v['id'])) ?>"data-title="员工详情"><a >详情</a></li>
+                                        <li class="menu-item NewPop"data-url="<?php echo spUrl('applyFill', 'Personel', array('id' => $v['id'])) ?>"data-title="编辑员工"><a >编辑</a></li>
+                                        <li class="menu-item read delled"><a onclick="del(<?php echo $v['id'] ?>)">删除</a></li>
                                     </ul>
                                 </div>
                             </td>
@@ -63,12 +63,18 @@
 </body>
 </html>
 <script type="text/javascript">
-    $(document).on('click', '.delled', function() {
-        var that = $(this);
-        parent.window.Confirm('确定删除？', function(e) {
-            if (e) {
-                that.parent().parent().parent().parent().remove()
+    function del(id) {
+        Confirm('确定删除？',function(re){
+            if(re){
+                $.get("<?php echo spUrl($c, "del"); ?>", {id: id}, function(data) {
+                    if (data.status == 1) {
+                        $('.Results' + id).remove();
+                        table_sort();
+                    }
+                }, 'json');
+                Alert('操作成功');
             }
-        })
-    })
+
+        });
+    }
 </script>

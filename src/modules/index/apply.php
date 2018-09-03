@@ -10,7 +10,6 @@ class apply extends IndexController {
 
     //审核处理
     function saveCheck() {
-//        dump($this->spArgs('status'));die;
         $user = $this->islogin();
         $m_flow_bill = spClass('m_flow_bill');
         $m_flow_course = spClass('m_flow_course');
@@ -24,7 +23,7 @@ class apply extends IndexController {
             $this->msg_json(0, '您没有审核权限');
         }
         $model = spClass('m_' . $bill['table']);
-        $re = $model->find(array('id' => $bill['tid'], 'del' => 0));
+        $re = $model->find(array('id' => $bill['tid'], 'del' => 0));    //查找主表的数据
         if (empty($re)) {
             $this->msg_json(0, '审核信息有误');
         }
@@ -39,7 +38,7 @@ class apply extends IndexController {
         $files = empty($files) ? '' : implode(',', $files);
 
         $up = $model->update(array('id' => $re['id']), $data);
-        if ($up) {
+        if ($up) {  //主表存在数据
             $data_bill = array('optid' => $user['id'], 'optname' => $user['name'], 'optdt' => date('Y-m-d H:i:s'), 'status' => $status, 'checksm' => $checksm);
             $pcourse = $m_flow_course->find(array('id' => $bill['cid'],'cid'=>$user['cid']), '', 'id,name,courseact');
             $pcourse['courseact'] = explode(',', $pcourse['courseact']);
@@ -258,8 +257,11 @@ class apply extends IndexController {
     }
 
     //员工详情
-    function personelcont() {
-        
+    function User() {
+        $id             = (int) htmlentities($this->spArgs('id'));
+        if(!is_numeric($id)){$this->returnError('参数错误');}
+        $per_user       = spClass('m_user')->find(array('id' => $id));
+        $this->per_user = $per_user;
     }
 
     //员工审核详情

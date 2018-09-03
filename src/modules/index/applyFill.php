@@ -722,9 +722,101 @@ class applyFill extends IndexController {
         }
     }
 
+    //编辑员工页面
+    function Personel(){
+        $user    = $this->islogin();
+        $m_user  = spClass('m_user');
+        $id      = (int) htmlspecialchars($this->spArgs('id'));
+        $result  = $m_user->find(array('id' => $id));
+
+        $this->dep     = spClass('m_department')->findAll('','', 'id, name');
+        $this->role    = spClass('m_role')->findAll('' ,'', 'id, name');
+        $this->pos     = spClass('m_position')->findAll('','','id, name');
+
+        //用户显示
+        $this->per_user       = spClass('m_user')->find(array('id' => $id));
+
+        switch($result['dir'])
+        {
+            case 1:
+                $this->dir_name = '试用期';
+                break;
+            case 2:
+                $this->dir_name = '正式';
+                break;
+            case 3:
+                $this->dir_name = '实习生';
+                break;
+            case 4:
+                $this->dir_name = '兼职';
+                break;
+            case 5:
+                $this->dir_name = '合同工';
+                break;
+            case 6:
+                $this->dir_name = '离职';
+                break;
+            default:
+                $this->dir_name = '正式';
+                break;
+        }
+
+        if(!empty($result['role'])){
+            $this->my_role = json_decode($result['role']);
+        }else{
+            $this->my_role = array();
+        }
+        if(!empty($result['operat'])){
+            if(substr($result['operat'], -1) == ','){
+                $this->my_ope = explode(',', substr($result['operat'], 0, -1));
+            }else{
+                $this->my_ope = explode(',', $result['operat']);
+            }
+        }else{
+            $this->my_ope = array();
+        }
+
+        $this->result = $result;
+    }
+
+    //修改员工信息
+    function updateuser(){
+        $user   = $this->islogin();
+        $m_user = spClass('m_user');
+        $arg    = array(
+            'id'      => 'id',
+            'did'     => '部门',
+            'dname'   => '部门',
+            'pid'     => '职位',
+            'pname'   => '职位',
+            'superior'=> '直属上级',
+            'sname'   => '直属上级',
+            'positivedt' => '',
+            'entrydt'    => '',
+        );
+
+        $data               = $this->receiveData($arg);
+        $id                 = (int) htmlspecialchars($this->spArgs('id'));
+        $data['operate']    = htmlspecialchars(implode(',', $this->spArgs('operate')));
+        $data['operate']    = $data['operate'].',';
+        $data['role']       = json_encode($this->spArgs('role'));
+//        $data['positivedt'] = $this->spArgs('positivedt');
+//        $data['entrydt']    = $this->spArgs('entrydt');
+
+        unset($data['id']);
+        if ($id) {
+            $up = $m_user->update(array('id' => $id), $data);
+            if($up) return $this->returnSuccess('提交成功');
+            return $this->returnError('提交成功');
+        } else {
+            $this->returnError('提交失败');
+        }
+
+    }
+
     //添加员工
     function addpersonel() {
-        
+
     }
 
     //添加入职审核

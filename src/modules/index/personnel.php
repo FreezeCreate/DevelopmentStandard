@@ -171,4 +171,35 @@ class personnel extends IndexController {
         $this->page_con = $page_con;
     }
 
+    //用户数据置空处理
+    function del()
+    {
+        //params check
+        $id  = (int) htmlspecialchars($this->spArgs('id'));
+        if(!is_numeric($id)) $this->msg_json(0, '分配id必须为数字');
+        $model = spClass('m_user');
+
+        $find_data =$model->find(array('id' => $id));
+        if($find_data){
+            $update_data     = array(
+                'role'       => NULL,
+                'cid'        => 0,
+                'cid'        => NULL,
+                'did'        => NULL,
+                'dname'      => NULL,
+                'pid'        => NULL,
+                'pname'      => NULL,
+                'superior'   => NULL,
+                'entrydt'    => NULL,
+                'positivedt' => NULL,
+
+            );
+            $res = $model->update(array('id' => $id), $update_data);
+            if($res){
+                $this->msg_json(1, '操作成功');
+            }
+        }
+        $this->msg_json(0, '操作失败');
+    }
+
 }
