@@ -373,7 +373,7 @@ class main extends IndexController {
         $m_admin->update(array('id' => $admin['id']), array('lastonline' => date('Y-m-d H:i:s'))); //最后在线时间
         $m_flow_bill = spClass('m_flow_bill');
         $m_flow_todos = spClass('m_flow_todos');
-        $newbill = $m_flow_bill->findAll('del = 0 and nowcheckid like "%,' . $admin['id'] . ',%"');
+        $newbill = $m_flow_bill->findAll('del = 0 and nowcheckid like "%,' . $admin['id'] . ',%"','','',10);
         $todos = $m_flow_todos->findAll('uid = ' . $admin['id'] . ' and isread = 0');
         $infor = spClass('m_infor')->findAll('receid = "" and del = 0 and cid = '.$admin['cid'], 'date desc,id desc', 'id,title,type,date', 5);
         $infor = empty($infor) ? array() : $infor;

@@ -56,7 +56,7 @@ class salegoal extends AppController
     }
     
     /**
-     * 我的业绩-普通用户(TODO 是否需要重构我的下级的业绩)
+     * 我的业绩-普通用户(TODO 是否需要重构我的下级的业绩 根据导航无需TODO)
      */
     function mysaleUser()
     {
@@ -291,26 +291,34 @@ class salegoal extends AppController
     {
         if (empty($con)) $this->returnError('非法输入');
         $searchname = urldecode(htmlspecialchars($this->spArgs('searchname')));
-        $model     = spClass('m_sale_goal');
+        $model      = spClass('m_sale_goal');
         if (!empty($searchname)) {
-            $con .= ' and concat(salenum,salemoney,salename,saledname,goaltitle) like "%' . $searchname . '%"';
+            $con   .= ' and concat(salenum,salemoney,salename,saledname,goaltitle) like "%' . $searchname . '%"';
             $page_con['searchname'] = $searchname;
         }
         
         $results = $model->spPager($this->spArgs('page', 1), PAGE_NUM)->findAll($con,'optdt desc,id desc');
         $pager   = $model->spPager()->getPager();
         $result['pager'] = $pager;
-        
+        $sum = 0;
         foreach($results as $k=>$v){
+            $now_time = substr($v['goaldt'], 0, 7);
+            $contract = spClass('m_contract')->findAll('signdt like "%'.$now_time.'%"');
+            foreach ($contract as $_k => $_v){
+                $sum = $sum + $_v['money'];
+            }
+            $per = $sum/$v['salemoney'];
             $result['results'][$k] = array(
                 'id'          => $v['id'],
                 'saleid'      => $v['saleid'],
                 'salename'    => $v['salename'],
                 'saledname'   => $v['saledname'],
-                'optdt'       => $v['optdt'],
+                'goaldt'      => $v['goaldt'],
                 'goaltitle'   => $v['goaltitle'],
                 'goalstatus'  => $v['goalstatus'],
+                'per'         => $per,  //计划完成度
             );
+            $sum = 0;
         }
         $this->returnSuccess('成功', $result);
     }

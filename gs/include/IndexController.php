@@ -70,7 +70,7 @@ class IndexController extends spController {
         $admin = $m_admin->find("id = " . $id);
         if ($admin) {
             if ($_SESSION['admin']['id'] == 1) {
-                $con = 'hide = 0 and del = 0';
+                $con = 'hide = 0 and del = 0 and oid = 0';
             } else {
                 $role = json_decode($admin['role'], true);
                 foreach ($role as $k => $v) {
@@ -81,7 +81,7 @@ class IndexController extends spController {
                     }
                 }
                 if (strpos($pros . ',', ',' . $thisauth['id'] . ',') !== false || empty($thisauth)) {
-                    $con = 'id in (0' . $pros . ') and hide = 0 and del = 0';
+                    $con = 'id in (0' . $pros . ') and hide = 0 and del = 0 and oid = 0';
                     if ($admin['shopid'] > 1) {
                         $con .= ' and branch = 1';
                     }

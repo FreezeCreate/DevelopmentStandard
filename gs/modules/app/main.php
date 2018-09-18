@@ -53,12 +53,44 @@ class main extends AppController {
     }
     
     /**
-     * 客户类型
+     * 客户潜在类型
      */
     function custType()
     {
         $this->islogin();
         $result['results'] =  array(1 => '潜在客户', 2 => '用户', 3 => '已放弃');
+        $this->returnSuccess('成功', $result);
+    }
+    
+    /**
+     * 客户来源
+     */
+    function custSource()
+    {
+        $this->islogin();
+        $result['results'] =  array(1 => '网上开拓', 2 => '电话开拓', 3 => '线下开拓', 4 => '主动来访');
+        $this->returnSuccess('成功', $result);
+    }
+    /*
+     * 客户行业类型
+     */
+    function custJob()
+    {
+        $this->islogin();
+        $result['results'] =  array(
+            1 => "电气",
+            2 => "机械",
+            4 => "互联网",
+            5 => "餐饮",
+            6 => "医疗",
+            7 => "建筑",
+            8 => "交通",
+            9 => "物资",
+            10 => "办公",
+            11 => "体育",
+            12 => "旅游",
+            13 => "水利",
+        );
         $this->returnSuccess('成功', $result);
     }
     

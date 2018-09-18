@@ -1,0 +1,166 @@
+
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title></title>
+        <link rel="stylesheet" type="text/css" href="../../source/api/public.css"/>
+        <style>
+            td { border: 1px solid #ccc;}
+            .BgGray.textCenter { text-align: left !important; background: #fff !important; font-size: 18px; line-height: 40px; font-weight: 700;}
+        </style>
+    </head>
+    <body>
+        <div style="width: 900px;margin: 50px auto;">
+            <table class="table border">
+                <thead>
+                    <tr>
+                        <td colspan="5" class="textCenter BgGreen">添加合同</td>
+                    </tr>
+                </thead>
+                <tbody class="hover">
+                    <tr>
+                        <td colspan="5" class="BgGray textCenter">请求格式</td>
+                    </tr>
+                    <tr>
+                        <td>URL</td><td colspan="4">/app.php/custmang/saveContract?token=用户token</td>
+                    </tr>
+                    <tr>
+                        <td>HTTP请求方式</td><td colspan="4">JSON</td>
+                    </tr>
+                    <tr>
+                        <td>是否登录验证</td><td colspan="4">POST</td>
+                    </tr>
+                    <tr>
+                        <td colspan="5" class="BgGray textCenter">参数说明</td>
+                    </tr>
+                    <tr class="BgGray">
+                        <td>字段名</td>
+                        <td >参数名</td>
+                        <td>必填</td>
+                        <td >参数类型</td>
+                        <td >说明</td>
+                    </tr>
+                    <tr>
+                        <td>审核通过的合同接口id</td>
+                        <td>apply_id</td>
+                        <td>是</td>
+                        <td>int</td>
+                        <td>（<a class="colorGre" target="_blank" href="checkcontractapply.html">合同申请列表接口</a>）</td>
+                    </tr>
+                    <tr>
+                        <td>审核通过的合同接口名称</td>
+                        <td>apply_name</td>
+                        <td>是</td>
+                        <td>string</td>
+                        <td>（<a class="colorGre" target="_blank" href="checkcontractapply.html">合同申请列表接口</a>）</td>
+                    </tr>
+                    <tr>
+                        <td>说明</td>
+                        <td>explain</td>
+                        <td>否</td>
+                        <td>string</td>
+                        <td></td>
+                    </tr>
+                                        <tr>
+                        <td>合同金额</td>
+                        <td>money</td>
+                        <td>是</td>
+                        <td>string</td>
+                        <td></td>
+                    </tr>
+                                        <tr>
+                        <td>生效日期</td>
+                        <td>startdt</td>
+                        <td>是</td>
+                        <td>date</td>
+                        <td></td>
+                    </tr>
+                                        <tr>
+                        <td>截止日期</td>
+                        <td>enddt</td>
+                        <td>是</td>
+                        <td>date</td>
+                        <td></td>
+                    </tr>
+                                        <tr>
+                        <td>合同内容</td>
+                        <td>content</td>
+                        <td>是</td>
+                        <td>string</td>
+                        <td></td>
+                    </tr>
+                                        <tr>
+                        <td>签约日期</td>
+                        <td>signdt</td>
+                        <td>是</td>
+                        <td>date</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>手机</td>
+                        <td>phone</td>
+                        <td>否</td>
+                        <td>string</td>
+                        <td></td>
+                    </tr>
+                                        <tr>
+                        <td>附件id</td>
+                        <td>files</td>
+                        <td>否</td>
+                        <td>string</td>
+                        <td>附件id（<a class="colorGre" target="_blank" href="../upload/uploadfile.html">上传文件接口</a>），多个用“,”隔开</td>
+                    </tr>
+                    <tr>
+                        <td colspan="5" class="BgGray textCenter">正常返回结果</td>
+                    </tr>
+                    <tr class="BgGray">
+                        <td>字段名</td>
+                        <td >变量名</td>
+                        <td>必填</td>
+                        <td>类型</td>
+                        <td >说明</td>
+                    </tr>
+                    <tr>
+                        <td>返回信息</td>
+                        <td >msg</td>
+                        <td>是</td>
+                        <td>string</td>
+                        <td >成功</td>
+                    </tr>
+                    <tr>
+                        <td>返回状态码</td>
+                        <td >code</td>
+                        <td>是</td>
+                        <td>int</td>
+                        <td >0</td>
+                    </tr>
+                    <tr>
+                        <td colspan="5" class="BgGray textCenter">错误返回结果</td>
+                    </tr>
+                    <tr class="BgGray">
+                        <td>字段名</td>
+                        <td >变量名</td>
+                        <td>必填</td>
+                        <td>类型</td>
+                        <td >说明</td>
+                    </tr>
+                    <tr>
+                        <td>返回信息</td>
+                        <td >msg</td>
+                        <td>是</td>
+                        <td>string</td>
+                        <td >失败</td>
+                    </tr>
+                    <tr>
+                        <td>返回状态码</td>
+                        <td >code</td>
+                        <td>是</td>
+                        <td>int</td>
+                        <td >1</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </body>
+</html>

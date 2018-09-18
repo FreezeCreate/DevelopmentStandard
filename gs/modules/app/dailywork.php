@@ -4,12 +4,32 @@ class dailywork extends AppController
 {
     
     /**
-     * 工作计划列表
+     * 我的-工作计划列表
      */
-    function index()
+    function mydaily()
     {
         $admin     = $this->islogin();
         $con       = 'del = 0 and cid = ' . $admin['cid'];
+        $con      .= ' and workid='.$admin['id'];
+        $this->dailyCommon($con);
+    }
+    
+    /**
+     * 所有-工作计划列表
+     */
+    function alldaily()
+    {
+        $admin  = $this->islogin();
+        $con    = 'del = 0 and cid = ' . $admin['cid'];
+        $this->dailyCommon($con);
+    }
+    
+    /*
+     * 工作计划公共方法
+     */
+    function dailyCommon($con)
+    {
+        if (empty($con)) $this->returnError('非法输入');
         $searchname = urldecode(htmlspecialchars($this->spArgs('searchname'))); //按照计划标题查询
         $model     = spClass('m_work_deal');
         if (!empty($searchname)) {
@@ -17,23 +37,12 @@ class dailywork extends AppController
             $page_con['searchname'] = $searchname;
         }
         
-        
         $results = $model->spPager($this->spArgs('page', 1), PAGE_NUM)->findAll($con,'optdt desc,id desc');
         $pager   = $model->spPager()->getPager();
         $result['pager'] = $pager;
         
         foreach($results as $k=>$v){
             $result['results'][$k] = $v;
-            
-//             array(
-//                 'workname'   => $v['workname'],
-//                 'workstart'  => $v['workstart'],
-//                 'workend'    => $v['workend'],
-//                 'workstatus' => $v['workstatus'],
-//                 'worktitle'  => $v['worktitle'],
-//                 'workdname'  => $v['workdname'],
-//                 'workspeed'  => $v['workspeed'],
-//             );
         }
         $this->returnSuccess('成功', $result);
     }

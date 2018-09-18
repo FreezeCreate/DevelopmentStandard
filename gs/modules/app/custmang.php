@@ -14,31 +14,22 @@ class custmang extends AppController
      * 财务管理模块：
      *  收付款管理：
      * 
+     * TODO 供应商审核
      * 
-     * 我的客户，潜在客户 TODO 按照公司网站的来做
+     * 我的客户，潜在客户 TO DO 按照公司网站的来做 已完成
      * 
-     * 售后服务管理 TODO WILL
+     * 企业办公管理 TODO
+     * 
+     * 
+     * TODO
+     * 提醒的客户显示在最上面-合并提醒
+     * 无需回款列表-合并在合同管理中
+     * 合同列表渲染数据太少
+     * 合同列表统计的实收金额等需要渲染
      * 
      * 
      * 
-     * @var array
      */
-    
-    public $cust_type = array(
-        1  => '电气',
-        2  => '机械',
-        4  => '互联网',
-        5  => '餐饮',
-        6  => '医疗',
-        7  => '建筑',
-        8  => '交通',
-        9  => '物资',
-        10 => '办公',
-        11 => '体育',
-        12 => '旅游',
-        13 => '水利',
-    );
-    
     
     /**
      * 我的-潜在客户
@@ -68,36 +59,6 @@ class custmang extends AppController
         $admin  = $this->islogin();
         $con    = 'del = 0 and cid = ' . $admin['cid'];
         $con   .= ' and saleid='.$admin['id'].' and flowid=3';
-        $this->addmang($con);
-    }
-    /**
-     * 所有-潜在客户
-     */
-    function allLatentUser()
-    {
-        $admin  = $this->islogin();
-        $con    = 'del = 0 and cid = ' . $admin['cid'];
-        $con   .= ' and flowid=1';
-        $this->addmang($con);
-    }
-    /**
-     * 所有-跟进客户
-     */
-    function allFlowUser()
-    {
-        $admin  = $this->islogin();
-        $con    = 'del = 0 and cid = ' . $admin['cid'];
-        $con   .= ' and flowid=2';
-        $this->addmang($con);
-    }
-    /**
-     * 所有-签约客户
-     */
-    function allSignUser()
-    {
-        $admin  = $this->islogin();
-        $con    = 'del = 0 and cid = ' . $admin['cid'];
-        $con   .= ' and flowid=2';
         $this->addmang($con);
     }
     
@@ -133,25 +94,37 @@ class custmang extends AppController
 //         $page    = $pager['current_page'] == $pager['last_page'] ? '0' : $pager['next_page'];
         $result['pager'] = $pager;
         
-        foreach($results as $k=>$v){
-            $result['results'][$k] = $v;    //TODO 渲染所有数据 + 重写api文档 + 重构postman数据
-//             $salename = spClass('m_admin')->find('id='.$v['saleid'], '', 'id,username');
-//             $result['results'][$k] = array(
-//                 'id'         => $v['id'],
-//                 'type'       => $v['type'],
-//                 'cust_name'  => $v['cust_name'],
-//                 'custdname'  => $v['custdname'],
-//                 'phone'      => $v['phone'],
-//                 'address'    => $v['address'],
-//                 'noticetime' => $v['noticetime'],
-//                 'flowid'     => $v['flowid'],
-//                 'salename'   => $salename['username'],
-//             );
+        foreach ($results as $_k => $_v){
+            $record = spClass('m_cust_record')->findSql('select addtime,status,`explain` from '.DB_NAME.'_cust_record where fid='.$_v['id'].' order by id desc limit 1');
+            if ($record){
+                $results[$_k]['record_addtime'] = $record[0]['addtime'];
+                $results[$_k]['record_status']  = $record[0]['status'];
+                $results[$_k]['record_explain']  = $record[0]['explain'];
+            }else {
+                $results[$_k]['record_addtime'] = '';
+                $results[$_k]['record_status']  = '';
+                $results[$_k]['record_explain']  = '';
+            }
         }
-        $result['source'] = $GLOBALS['CUST_LAIYUAN'];
-        $result['type']   = $this->cust_type;
-        $result['status'] = array(1,2,3);
-        $result['sales']  = array_values($sale);
+        
+        foreach($results as $k=>$v){
+//             $result['results'][$k] = $v;
+            $salename = spClass('m_admin')->find('id='.$v['saleid'], '', 'id,username');
+            $result['results'][$k] = array(
+                'id'         => $v['id'],
+                'type'       => $v['type'],
+                'cust_name'  => $v['cust_name'],
+                'custdname'  => $v['custdname'],
+                'phone'      => $v['phone'],
+                'address'    => $v['address'],
+                'noticetime' => $v['noticetime'],
+                'flowid'     => $v['flowid'],
+                'salename'   => $salename['username'],
+                'record_status'  => $v['record_status'],    //跟进情况
+                'record_addtime' => $v['record_addtime'],    //最新跟进时间
+                'record_explain' => $v['record_explain'],    //最新跟进时间
+            );
+        }
         
         $this->returnSuccess('成功', $result);
     }
@@ -247,50 +220,50 @@ class custmang extends AppController
      * 客户跟进+状态的列表
      * 
      */
-    function flowLst()
-    {
-        $admin = $this->islogin();
-        $searchname          = urldecode(htmlspecialchars($this->spArgs('searchname')));
+//     function flowLst()
+//     {
+//         $admin = $this->islogin();
+//         $searchname          = urldecode(htmlspecialchars($this->spArgs('searchname')));
         
-        $m_cust   = spClass('m_custmang');
-        $m_record = spClass('m_cust_record');
+//         $m_cust   = spClass('m_custmang');
+//         $m_record = spClass('m_cust_record');
         
-        //where和分页where
-        $con    = 'del = 0 and cid = ' . $admin['cid']. ' and flowid<3';
-        if (!empty($searchname)) {
-            $con .= ' and concat(cust_name,custdname,custcname,source,phone,address,info) like "%' . $searchname . '%"';
-            $page_con['searchname'] = $searchname;
-        }
+//         //where和分页where
+//         $con    = 'del = 0 and cid = ' . $admin['cid']. ' and flowid<3';
+//         if (!empty($searchname)) {
+//             $con .= ' and concat(cust_name,custdname,custcname,source,phone,address,info) like "%' . $searchname . '%"';
+//             $page_con['searchname'] = $searchname;
+//         }
         
-        $results = $m_cust->spPager($this->spArgs('page', 1), PAGE_NUM)->findAll($con,'applydt desc,id desc');
-        $pager   = $m_cust->spPager()->getPager();
-        $result['pager'] = $pager;
+//         $results = $m_cust->spPager($this->spArgs('page', 1), PAGE_NUM)->findAll($con,'applydt desc,id desc');
+//         $pager   = $m_cust->spPager()->getPager();
+//         $result['pager'] = $pager;
         
-        foreach ($results as $_k => $_v){
-            $record = $m_record->findSql('select addtime,status from '.DB_NAME.'_cust_record where fid='.$_v['id'].' order by id desc limit 1');
-            if ($record){
-                $results[$_k]['record_addtime'] = $record[0]['addtime'];
-                $results[$_k]['record_status']  = $record[0]['status'];
-            }else {
-                $results[$_k]['record_addtime'] = '';
-                $results[$_k]['record_status']  = '';
-            }
-        }
+//         foreach ($results as $_k => $_v){
+//             $record = $m_record->findSql('select addtime,status from '.DB_NAME.'_cust_record where fid='.$_v['id'].' order by id desc limit 1');
+//             if ($record){
+//                 $results[$_k]['record_addtime'] = $record[0]['addtime'];
+//                 $results[$_k]['record_status']  = $record[0]['status'];
+//             }else {
+//                 $results[$_k]['record_addtime'] = '';
+//                 $results[$_k]['record_status']  = '';
+//             }
+//         }
         
-        foreach($results as $k=>$v){
-            $result['results'][$k] = array(
-                'id'             => $v['id'],
-                'custcname'      => $v['custcname'],
-                'cust_name'      => $v['cust_name'],
-                'record_status'  => $v['record_status'],    //跟进情况
-                'record_addtime' => $v['record_addtime'],    //最新跟进时间
-                'phone'          => $v['phone'],
-                'address'        => $v['address'],
-            );
-        }
+//         foreach($results as $k=>$v){
+//             $result['results'][$k] = array(
+//                 'id'             => $v['id'],
+//                 'custcname'      => $v['custcname'],
+//                 'cust_name'      => $v['cust_name'],
+//                 'record_status'  => $v['record_status'],    //跟进情况
+//                 'record_addtime' => $v['record_addtime'],    //最新跟进时间
+//                 'phone'          => $v['phone'],
+//                 'address'        => $v['address'],
+//             );
+//         }
         
-        $this->returnSuccess('成功', $result);
-    }
+//         $this->returnSuccess('成功', $result);
+//     }
     
     /**
      * 客户跟进管理详情
@@ -300,9 +273,10 @@ class custmang extends AppController
      */
     function flowcust()
     {
-        $admin    = $this->islogin();
-        $m_record = spClass('m_cust_record');
-        $m_mang   = spClass('m_custmang');
+        $admin         = $this->islogin();
+        $m_record      = spClass('m_cust_record');
+        $m_mang        = spClass('m_custmang');
+        $m_contract    = spClass('m_contract');
         
         $f_id    = htmlspecialchars($this->spArgs('id'));
         //check params
@@ -311,6 +285,8 @@ class custmang extends AppController
         $c_result = $m_record->findAll('fid='.$f_id.' and cid='.$admin['cid'], 'id desc', 'addtime,`explain`');
         if (empty($f_result)) $this->returnError('id非法');
         
+        $t_result = $m_contract->findAll('custid='.$f_id);
+        $results['t_result'] = $t_result;
         $results['f_result'] = $f_result;
         $results['c_result'] = $c_result;
         $this->returnSuccess('成功', $results);
@@ -352,75 +328,23 @@ class custmang extends AppController
         $this->returnError('失败');
     }
     
-    /**
-     * 签约客户列表
-     */
-    function finishCust()
-    {
-        $admin      = $this->islogin();
-        $searchname  = urldecode(htmlspecialchars($this->spArgs('searchname')));
-        $m_contract = spClass('m_custmang');
-        
-        //where和分页where
-        $con    = 'del = 0 and cid = ' . $admin['cid'] . ' and flowid=3';
-        if (!empty($searchname)) {
-            $con .= ' and concat(cust_name,custdname,custcname,source,phone,address,info) like "%' . $searchname . '%"';
-            $page_con['searchname'] = $searchname;
-        }
-        
-        $results = $m_contract->spPager($this->spArgs('page', 1), PAGE_NUM)->findAll($con,'applydt desc,id desc');
-        $pager   = $m_contract->spPager()->getPager();
-        $result['pager'] = $pager;
-        
-        foreach($results as $k=>$v){
-            $result['results'][$k] = $v;
-        }
-        
-        $this->returnSuccess('成功', $result);
-    }
-    
-    /**
-     * 客户跟进管理
-     */
-//     function custUnflow()
-//     {
-//         $admin      = $this->islogin();
-//         $searchname  = urldecode(htmlspecialchars($this->spArgs('searchname')));
-//         $m_contract = spClass('m_custmang');
-        
-//         //where和分页where
-//         $con    = 'del = 0 and cid = ' . $admin['cid'] . ' and flowid<3';
-//         if (!empty($searchname)) {
-//             $con .= ' and concat(cust_name,custdname,custcname,source,phone,address,info) like "%' . $searchname . '%"';
-//             $page_con['searchname'] = $searchname;
-//         }
-        
-//         $results = $m_contract->spPager($this->spArgs('page', 1), PAGE_NUM)->findAll($con,'applydt desc,id desc');
-//         $pager   = $m_contract->spPager()->getPager();
-//         $result['pager'] = $pager;
-        
-//         foreach($results as $k=>$v){
-//             $result['results'][$k] = $v;
-//         }
-//         $this->returnSuccess('成功', $result);
-//     }
     
     /*
      * 签约客户详情
      */
-    function finishCustInfo()
-    {
-        $admin      = $this->islogin();
-        $m_contract = spClass('m_custmang');
-        $id         = htmlspecialchars($this->spArgs('id'));
-        //check params
-        if (empty($id)) $this->returnError('id不存在');
-        $results    = $m_contract->find('id='.$id.' and cid='.$admin['cid'].' and flowid=3');
-        if (empty($results)) $this->returnError('id非法');
-        $result['results'] = $results;
+//     function finishCustInfo()
+//     {
+//         $admin      = $this->islogin();
+//         $m_contract = spClass('m_custmang');
+//         $id         = htmlspecialchars($this->spArgs('id'));
+//         //check params
+//         if (empty($id)) $this->returnError('id不存在');
+//         $results    = $m_contract->find('id='.$id.' and cid='.$admin['cid'].' and flowid=3');
+//         if (empty($results)) $this->returnError('id非法');
+//         $result['results'] = $results;
         
-        $this->returnSuccess('成功', $result);
-    }
+//         $this->returnSuccess('成功', $result);
+//     }
     
     /*
      * 审核通过的我的合同申请
@@ -526,6 +450,9 @@ class custmang extends AppController
             $page_con['searchname'] = $searchname;
         }
         
+        //TODO 统计总金额数据
+        
+        
         $results = $m_contract->spPager($this->spArgs('page', 1), PAGE_NUM)->findAll($con,'adddt desc,id desc');
         $pager   = $m_contract->spPager()->getPager();
         $result['pager'] = $pager;
@@ -534,9 +461,6 @@ class custmang extends AppController
             $result['results'][$k] = $v;
         }
         
-        $result['sales']   = spClass('m_admin')->findAll('', 'id desc', 'id,username');   //销售人员渲染
-        $result['sales']   = array_values($result['sales']);
-        $result['status']  = array(1,2,3);  //合同状态
         $this->returnSuccess('成功', $result);
     }
     
@@ -587,7 +511,7 @@ class custmang extends AppController
             'contractname'    => '申请合同名称',
             'contractdesc'    => '合同对方简介',
             'contractcontent' => '合同内容',
-            'applydname'      => '申请部门',
+//             'applydname'      => '申请部门',
             'suggest'         => '审核意见',
             'applyid'         => '申请人',
             'applydt'         => '申请日期',
@@ -598,7 +522,7 @@ class custmang extends AppController
         $data['status']     = 1;
         $data['cid']        = $admin['cid'];
         $data['optid']      = $admin['id'];
-        $data['applydname'] = $admin['dname'];
+//         $data['applydname'] = $admin['dname'];
         $data['optname']    = $admin['name'];
         $data['optdt']      = date('Y-m-d H:i:s');
         if($id){
@@ -706,31 +630,14 @@ class custmang extends AppController
         $this->returnError('失败');
     }
     
-    /**
-     * 弹窗显示
-     * 当前签约客户及其合同列表
-     */
-    function custContractLst()
-    {
-        $admin         = $this->islogin();
-        $custid        = urldecode(htmlspecialchars($this->spArgs('id')));
-        $m_contract    = spClass('m_contract');
-        
-        $results = $m_contract->findAll('custid='.$custid);
-        
-        foreach($results as $k=>$v){
-            $result['results'][$k] = $v;
-        }
-        
-        $result['custmang']   = spClass('m_custmang')->find('id='.$custid);
-        $this->returnSuccess('成功', $result);
-    }
+    
     
     
     
     /**
-     * 财务管理模块
+     * -----------------------------------财务管理模块---------------------------------
      */
+    
     /*
      * 项目对账单+收款记录信息
      * 搜索参数和前端对接

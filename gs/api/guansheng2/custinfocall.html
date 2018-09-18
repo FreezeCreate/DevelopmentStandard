@@ -1,0 +1,145 @@
+
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title></title>
+        <link rel="stylesheet" type="text/css" href="../../source/api/public.css"/>
+        <style>
+            td { border: 1px solid #ccc;}
+            .BgGray.textCenter { text-align: left !important; background: #fff !important; font-size: 18px; line-height: 40px; font-weight: 700;}
+        </style>
+    </head>
+    <body>
+        <div style="width: 900px;margin: 50px auto;">
+            <table class="table border">
+                <thead>
+                    <tr>
+                        <td colspan="5" class="textCenter BgGreen">客户提醒信息列表</td>
+                    </tr>
+                </thead>
+                <tbody class="hover">
+                    <tr>
+                        <td colspan="5" class="BgGray textCenter">请求格式</td>
+                    </tr>
+                    <tr>
+                        <td>URL</td><td colspan="4">/app.php/custinfocall/index?token=用户token</td>
+                    </tr>
+                    <tr>
+                        <td>HTTP请求方式</td><td colspan="4">GET</td>
+                    </tr>
+                    <tr>
+                        <td>是否登录验证</td><td colspan="4">是</td>
+                    </tr>
+                    <tr>
+                        <td colspan="5" class="BgGray textCenter">参数说明</td>
+                    </tr>
+                    <tr class="BgGray">
+                        <td>字段名</td>
+                        <td >参数名</td>
+                        <td>必填</td>
+                        <td >参数类型</td>
+                        <td >说明</td>
+                    </tr>
+                    <tr>
+                        <td>token</td>
+                        <td>token</td>
+                        <td>是</td>
+                        <td>string</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>搜索</td><td>searchname</td><td>否</td><td>string</td><td></td>
+                    </tr>
+                    <tr>
+                        <td colspan="5" class="BgGray textCenter">正常返回结果</td>
+                    </tr>
+                    <tr class="BgGray">
+                        <td>字段名</td>
+                        <td >变量名</td>
+                        <td>必填</td>
+                        <td>类型</td>
+                        <td >说明</td>
+                    </tr>
+                    <tr>
+                        <td>返回信息</td>
+                        <td >msg</td>
+                        <td>是</td>
+                        <td>string</td>
+                        <td >成功</td>
+                    </tr>
+                    <tr>
+                        <td>返回状态码</td>
+                        <td >code</td>
+                        <td>是</td>
+                        <td>int</td>
+                        <td >0</td>
+                    </tr>
+                    <tr>
+                        <td>客户和状态信息</td>
+                        <td >results</td>
+                        <td>是</td>
+                        <td>object</td>
+                        <td >
+                        {
+            "id": "id",
+            "type": "提醒类型",
+            "cust_name": "客户名称",
+            "custdname": "客户部门",
+            "custcname": "客户公司",
+            "source": "客户来源",
+            "phone": "手机",
+            "telephone": "电话",
+            "address": "地址",
+            "retime": "回访时间",
+            "noticetime": "提醒时间",
+            "birth": "生日",
+            "applyname": "操作人",
+            "applydt": "操作时间",
+            "applyid": "操作人id",
+            "pid": "0",
+            "pname": "",
+            "charact": "性格",
+            "comment": "评价",
+            "forecast": "预测",
+            "goal": "目标",
+            "edu": "学历",
+            "info": "备注",
+            "del": "删除与否",
+            "cid": "公司id",
+            "status": "状态",
+            "email": "邮箱",
+            "saleid": "销售id",
+            "flowid": "跟进状态"
+        }
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="5" class="BgGray textCenter">错误返回结果</td>
+                    </tr>
+                    <tr class="BgGray">
+                        <td>字段名</td>
+                        <td >变量名</td>
+                        <td>必填</td>
+                        <td>类型</td>
+                        <td >说明</td>
+                    </tr>
+                    <tr>
+                        <td>返回信息</td>
+                        <td >msg</td>
+                        <td>是</td>
+                        <td>string</td>
+                        <td >失败</td>
+                    </tr>
+                    <tr>
+                        <td>返回状态码</td>
+                        <td >code</td>
+                        <td>是</td>
+                        <td>int</td>
+                        <td >1</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </body>
+</html>

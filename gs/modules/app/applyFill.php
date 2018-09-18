@@ -1860,7 +1860,7 @@ class applyFill extends AppController {
             'contractname'    => '申请合同名称',
             'contractdesc'    => '合同对方简介',
             'contractcontent' => '合同内容',
-            'applydname'      => '申请部门',
+//             'applydname'      => '申请部门',
             'suggest'         => '审核意见',
             'applyid'         => '申请人',
             'applydt'         => '申请日期',
@@ -1871,7 +1871,7 @@ class applyFill extends AppController {
         $data['status']     = 1;
         $data['cid']        = $admin['cid'];
         $data['optid']      = $admin['id'];
-        $data['applydname'] = $admin['dname'];
+//         $data['applydname'] = $admin['dname'];
         $data['optname']    = $admin['name'];
         $data['optdt']      = date('Y-m-d H:i:s');
         if($id){

@@ -76,7 +76,149 @@ class invoice extends AppController
             $this->returnSuccess('成功', $result);
         }
         $this->returnError('失败');
-
+    }
+    
+    /*
+     * 采购汇总，按商品
+     */
+    function orderLst()
+    {
+        $admin        = $this->islogin();
+        $con          = 'del = 0 and cid = ' . $admin['cid'];
+        $order_name   = urldecode(htmlspecialchars($this->spArgs('order_name'))); //按照计划标题查询
+        $year         = urldecode(htmlspecialchars($this->spArgs('year')));
+        $month        = urldecode(htmlspecialchars($this->spArgs('month')));
+        $day          = urldecode(htmlspecialchars($this->spArgs('day')));
+        
+        $model        = spClass('m_goods_order');
+        $m_invoice    = spClass('m_invoice');
+        if (!empty($order_name)) {
+            $con .= ' and (order_name = "' . $order_name . '")';
+            $page_con['order_name'] = $order_name;
+        }
+        if (empty($year)){
+            $con .= '';
+        }elseif (!empty($year) && empty($month)){
+            $con .= ' and (optdt like "%'.$year.'%")';
+            $page_con['year'] = $year;
+        }elseif (!empty($year) && !empty($month) && empty($day)){
+            $con .= ' and (optdt like "%'.$year.'-'.$month.'%")';
+            $page_con['year'] = $year.'-'.$month;
+        }else {
+            $con .= ' and (optdt like "%'.$year.'-'.$month.'-'.$day.'%")';
+            $page_con['year'] = $year.'-'.$month.'-'.$day;
+        }
+        
+        $results = $model->spPager($this->spArgs('page', 1), PAGE_NUM)->findAll($con,'optdt desc,id desc');
+        $pager   = $model->spPager()->getPager();
+        $result['pager'] = $pager;
+        
+        $sum = $mon = 0;
+        foreach($results as $k=>$v){
+            $in_order = $m_invoice->findAll('invoice_id='.$v['id']);
+            foreach ($in_order as $_v){
+                $sum = $sum + $_v['totalnum'];
+                $mon = $_v['totalmoney'] - $_v['discount'] + $mon;
+            }
+            $result['results'][$k] = $v;
+            $result['results'][$k]['order_sum'] = $sum; //该商品采购总数量
+            $result['results'][$k]['all_money'] = $mon; //该商品采购实际总金额
+            
+            $mon = 0;
+            $sum = 0;
+        }
+        $this->returnSuccess('成功', $result);
+    }
+    
+    /**
+     * 按商品详情
+     */
+    function orderInfo()
+    {
+        $admin      = $this->islogin();
+        $model      = spClass('m_goods_order');
+        $id         = htmlspecialchars($this->spArgs('id'));
+        //check params
+        if (empty($id)) $this->returnError('id不存在');
+        $results    = $model->find('id='.$id.' and cid='.$admin['cid']);
+        if (empty($results)) $this->returnError('id非法');
+        $od_result  = spClass('m_invoice')->findAll('invoice_id='.$id);
+        $result['od_result'] = $od_result;
+        $result['results'] = $results;
+        
+        $this->returnSuccess('成功', $result);
+    }
+    
+    /**
+     * 采购汇总，按供应商
+     */
+    function supLst()
+    {
+        $admin        = $this->islogin();
+        $con          = 'del = 0 and cid = ' . $admin['cid'];
+        $company      = urldecode(htmlspecialchars($this->spArgs('company'))); //按照计划标题查询
+        $year         = urldecode(htmlspecialchars($this->spArgs('year')));
+        $month        = urldecode(htmlspecialchars($this->spArgs('month')));
+        $day          = urldecode(htmlspecialchars($this->spArgs('day')));
+        
+        $model        = spClass('m_supplier');
+        $m_invoice    = spClass('m_invoice');
+        if (!empty($company)) {
+            $con .= ' and (company = "' . $company . '")';
+            $page_con['company'] = $company;
+        }
+        if (empty($year)){
+            $con .= '';
+        }elseif (!empty($year) && empty($month)){
+            $con .= ' and (optdt like "%'.$year.'%")';
+            $page_con['year'] = $year;
+        }elseif (!empty($year) && !empty($month) && empty($day)){
+            $con .= ' and (optdt like "%'.$year.'-'.$month.'%")';
+            $page_con['year'] = $year.'-'.$month;
+        }else {
+            $con .= ' and (optdt like "%'.$year.'-'.$month.'-'.$day.'%")';
+            $page_con['year'] = $year.'-'.$month.'-'.$day;
+        }
+        
+        $results = $model->spPager($this->spArgs('page', 1), PAGE_NUM)->findAll($con,'optdt desc,id desc');
+        $pager   = $model->spPager()->getPager();
+        $result['pager'] = $pager;
+        
+        $sum = $mon = 0;
+        foreach($results as $k=>$v){
+            $in_order = $m_invoice->findAll('buldid='.$v['id']);
+            foreach ($in_order as $_v){
+                $sum = $sum + $_v['totalnum'];
+                $mon = $_v['totalmoney'] - $_v['discount'] + $mon;
+                $one_proce = $_v['oneprice'];
+            }
+            $result['results'][$k] = $v;
+            $result['results'][$k]['order_sum'] = $sum; //该商品采购总数量
+            $result['results'][$k]['all_money'] = $mon; //该商品采购实际总金额
+            $result['results'][$k]['one_price'] = $one_proce; //单价
+            $one_proce = '';
+            $mon = 0;
+            $sum = 0;
+        }
+        $this->returnSuccess('成功', $result);
+    }
+    /**
+     * 按供应商详情
+     */
+    function supInfo()
+    {
+        $admin      = $this->islogin();
+        $model      = spClass('m_supplier');
+        $id         = htmlspecialchars($this->spArgs('id'));
+        //check params
+        if (empty($id)) $this->returnError('id不存在');
+        $results    = $model->find('id='.$id.' and cid='.$admin['cid']);
+        if (empty($results)) $this->returnError('id非法');
+        $od_result  = spClass('m_invoice')->findAll('buldid='.$id);
+        $result['od_result'] = $od_result;
+        $result['results'] = $results;
+        
+        $this->returnSuccess('成功', $result);
     }
     
     

@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title></title>
+        <link rel="stylesheet" type="text/css" href="../../source/api/public.css"/>
+        <style>
+            td { border: 1px solid #ccc;}
+            .BgGray.textCenter { text-align: left !important; background: #fff !important; font-size: 18px; line-height: 40px; font-weight: 700;}
+        </style>
+    </head>
+    <body>
+        <div style="width: 900px;margin: 50px auto;">
+            <table class="table border">
+                <thead>
+                    <tr>
+                        <td colspan="5" class="textCenter BgGreen">供应商详情</td>
+                    </tr>
+                </thead>
+                <tbody class="hover">
+                    <tr>
+                        <td colspan="5" class="BgGray textCenter">请求格式</td>
+                    </tr>
+                    <tr>
+                        <td>URL</td><td colspan="4">/app.php/supplier/supplierInfo/id?id值&token=用户token</td>
+                    </tr>
+                    <tr>
+                        <td>HTTP请求方式</td><td colspan="4">GET</td>
+                    </tr>
+                    <tr>
+                        <td>是否登录验证</td><td colspan="4">是</td>
+                    </tr>
+                    <tr>
+                        <td colspan="5" class="BgGray textCenter">参数说明</td>
+                    </tr>
+                    <tr class="BgGray">
+                        <td>字段名</td>
+                        <td>参数名</td>
+                        <td>必填</td>
+                        <td>参数类型</td>
+                        <td>说明</td>
+                    </tr>
+                    <tr>
+                        <td>信息id</td>
+                        <td>id</td>
+                        <td>是</td>
+                        <td>int</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>token</td>
+                        <td>token</td>
+                        <td>是</td>
+                        <td>string</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td colspan="5" class="BgGray textCenter">正常返回结果</td>
+                    </tr>
+                    <tr class="BgGray">
+                        <td>字段名</td>
+                        <td >变量名</td>
+                        <td>必填</td>
+                        <td>类型</td>
+                        <td >说明</td>
+                    </tr>
+                    <tr>
+                        <td>返回信息</td>
+                        <td >msg</td>
+                        <td>是</td>
+                        <td>string</td>
+                        <td >成功</td>
+                    </tr>
+                    <tr>
+                        <td>返回状态码</td>
+                        <td >code</td>
+                        <td>是</td>
+                        <td>int</td>
+                        <td >0</td>
+                    </tr>
+                    
+                    <tr>
+                        <td>供应商详情</td>
+                        <td >results</td>
+                        <td>是</td>
+                        <td>results</td>
+                        <td >
+                        {
+            "id": "id",
+            "company": "供应商名称",
+            "address": "地区",
+            "goodstype": "供货商品类型",
+            "name": "联系人",
+            "phone": "联系方式",
+            "explain": "内容",
+            "optid": "操作人id",
+            "optname": "操作人",
+            "optdt": "操作时间",
+            "hfzm": "是否有工商营业制造和其他合法证明   1有   0没有",
+            "zlqk": "质量情况  1强   2一般   3弱",
+            "jgfw": "产品价格和服务  1好   2一般  3差",
+            "xgzz": "产品相关资质   1 有    2,没有",
+            "shxy": "社会信誉是否良好    1好    2一般    3差",
+            "cgst": "采购部评定   1同意   2不同意",
+            "cgname": "采购部评定人签名",
+            "zjst": "质检部评定   1同意   2不同意",
+            "zjname": "质检部评定人签名",
+            "scst": "生产技术部评定    1同意   2不同意",
+            "scname": "生产技术部评定人签名",
+            "offer_status": "是否同意作为本公司合格供方    1同意    2不同意",
+            "stdt": "批准日期",
+            "del": "是否删除   1删除   0正常",
+            "cid": "公司id"
+        }
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="5" class="BgGray textCenter">错误返回结果</td>
+                    </tr>
+                    <tr class="BgGray">
+                        <td>字段名</td>
+                        <td >变量名</td>
+                        <td>必填</td>
+                        <td>类型</td>
+                        <td >说明</td>
+                    </tr>
+                    <tr>
+                        <td>返回信息</td>
+                        <td >msg</td>
+                        <td>是</td>
+                        <td>string</td>
+                        <td >失败</td>
+                    </tr>
+                    <tr>
+                        <td>返回状态码</td>
+                        <td >code</td>
+                        <td>是</td>
+                        <td>int</td>
+                        <td >1</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </body>
+</html>
