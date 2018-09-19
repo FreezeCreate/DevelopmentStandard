@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html>
     <head>
@@ -15,7 +14,7 @@
             <table class="table border">
                 <thead>
                     <tr>
-                        <td colspan="5" class="textCenter BgGreen">合同列表</td>
+                        <td colspan="5" class="textCenter BgGreen">出库详情</td>
                     </tr>
                 </thead>
                 <tbody class="hover">
@@ -23,7 +22,7 @@
                         <td colspan="5" class="BgGray textCenter">请求格式</td>
                     </tr>
                     <tr>
-                        <td>URL</td><td colspan="4">/app.php/custmang/contractLst?token=用户token</td>
+                        <td>URL</td><td colspan="4">/app.php/warehouse/chukuInfo/id?id值&token=用户token</td>
                     </tr>
                     <tr>
                         <td>HTTP请求方式</td><td colspan="4">GET</td>
@@ -36,10 +35,17 @@
                     </tr>
                     <tr class="BgGray">
                         <td>字段名</td>
-                        <td >参数名</td>
+                        <td>参数名</td>
                         <td>必填</td>
-                        <td >参数类型</td>
-                        <td >说明</td>
+                        <td>参数类型</td>
+                        <td>说明</td>
+                    </tr>
+                    <tr>
+                        <td>信息id</td>
+                        <td>id</td>
+                        <td>是</td>
+                        <td>int</td>
+                        <td></td>
                     </tr>
                     <tr>
                         <td>token</td>
@@ -47,27 +53,6 @@
                         <td>是</td>
                         <td>string</td>
                         <td></td>
-                    </tr>
-                                        <tr>
-                        <td>分页</td>
-                        <td>page</td>
-                        <td>是</td>
-                        <td>int</td>
-                        <td></td>
-                    </tr>
-                                        <tr>
-                        <td>搜索</td>
-                        <td>searchname</td>
-                        <td>否</td>
-                        <td>string</td>
-                        <td></td>
-                    </tr>
-                    <tr>
-                        <td>合同生效状态</td>
-                        <td>distance</td>
-                        <td>否</td>
-                        <td>int</td>
-                        <td>1、未生效2、生效中3、已过期</td>
                     </tr>
                     <tr>
                         <td colspan="5" class="BgGray textCenter">正常返回结果</td>
@@ -93,59 +78,28 @@
                         <td>int</td>
                         <td >0</td>
                     </tr>
+                    
                     <tr>
-                        <td>合同列表信息</td>
-                        <td >results</td>
+                        <td>详情</td>
+                        <td >log</td>
                         <td>是</td>
-                        <td>object</td>
+                        <td>results</td>
                         <td >
                         {
-        "id": "id",
-        "optid": "操作人id",
-        "number": "合同编号",
-        "name": "合同名称",
-        "optdt": "操作时间",
-        "optname": "操作人",
-        "adddt": "添加时间",
-        "explain": "说明",
-        "status": "状态1、提交2、驳回3、确认审核",
-        "oid": "auth导航栏",
-        "cname": "公司名称",
-        "money": "签约金额",
-        "startdt": "合同开始日期",
-        "enddt": "合同终止日期",
-        "content": 合同内容,
-        "signdt": "合同签约日期",
-        "phone": "客户电话",
-        "files": "电子合同档案",
-        "del": "删除：0、是1、否",
-        "cid": "公司id",
-        "saleid": "销售人员id",
-        "salename": "销售人员名称",
-        "custid": "客户名称"
-    }
+            "id": "id",
+            "dt": "出库时间",
+            "optid": "操作人id",
+            "optname": "操作人",
+            "optdt": "操作时间",
+            "status": "",
+            "del": "删除否1、删除0、未删除",
+            "oid": "",
+            "cid": "公司id",
+            "goods_id": "商品id",
+            "goods_name": "商品名称",
+            "chu_num": "出库数量"
+        }
                         </td>
-                    </tr>
-                    <tr>
-                        <td>合同总金额</td>
-                        <td >sum_all</td>
-                        <td>是</td>
-                        <td>int</td>
-                        <td ></td>
-                    </tr>
-                    <tr>
-                        <td>合同总付款金额</td>
-                        <td >sum_pay</td>
-                        <td>是</td>
-                        <td>int</td>
-                        <td ></td>
-                    </tr>
-                    <tr>
-                        <td>合同未付金额</td>
-                        <td >sum_not</td>
-                        <td>是</td>
-                        <td>int</td>
-                        <td ></td>
                     </tr>
                     <tr>
                         <td colspan="5" class="BgGray textCenter">错误返回结果</td>

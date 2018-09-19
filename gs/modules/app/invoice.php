@@ -68,7 +68,7 @@ class invoice extends AppController
             $data    = spClass('m_invoice')->find('id='.$id.' and cid='.$admin['cid']);
             $sql     = 'select * from '.DB_NAME.'_invoice where UNIX_TIMESTAMP(buydate)<'.strtotime($data['buydate']).' and status=3 and cid='.$admin['cid'].' limit 1';
             $results = spClass('m_invoice')->findSql($sql);
-            
+//             dump(spClass('m_invoice')->dumpSql());die;
             //库房数量
             $room    = spClass('m_goods_order')->find('id='.$data['invoice_id']);
             $result['room']    = $room;

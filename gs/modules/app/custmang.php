@@ -441,19 +441,43 @@ class custmang extends AppController
     {
         $admin      = $this->islogin();
         $searchname = urldecode(htmlspecialchars($this->spArgs('searchname')));
+        $distance   = urldecode(htmlspecialchars($this->spArgs('distance')));
         $m_contract = spClass('m_contract');
         
+//         $con = 'select * from '.DB_NAME.'_contract where ';
         //where和分页where
-        $con    = 'del = 0 and cid = ' . $admin['cid'];
+        $con    .= 'del = 0 and cid = ' . $admin['cid'];
         if (!empty($searchname)) {
             $con .= ' and concat(number,name,adddt,cname,money,startdt,enddt,signdt,salename) like "%' . $searchname . '%"';
             $page_con['searchname'] = $searchname;
         }
+        if (!empty($distance)) {
+            if ($distance == 1){    //未生效 签约时间未到
+                $con .= ' and UNIX_TIMESTAMP(startdt)>'.time().'';
+                $page_con['distance'] = $distance;
+            }elseif ($distance == 2){   //已生效
+                $con .= ' and UNIX_TIMESTAMP(startdt)<'.time().' and UNIX_TIMESTAMP(enddt)>'.time().'';
+                $page_con['distance'] = $distance;
+            }elseif ($distance == 3){   //已过期
+                $con .= ' and UNIX_TIMESTAMP(enddt)<'.time().'';
+                $page_con['distance'] = $distance;
+            }
+        }
         
-        //TODO 统计总金额数据
-        
-        
+        //统计总金额数据
+        $re_all = $m_contract->findAll('del=0 and cid='.$admin['cid'], 'id desc', 'money'); //总金额
+        $pay_all = spClass('m_custpay')->findAll('del=0 and cid='.$admin['cid'], 'id desc', 'getmoney');    //已收款
+        $sum_all = $sum_pay = 0;
+        foreach ($re_all as $re_v){
+            $sum_all = $sum_all + $re_v['money'];
+        }
+        foreach ($pay_all as $pay_v){
+            $sum_pay = $sum_pay + $pay_v['getmoney'];
+        }
+//         $a = $m_contract->findSql('select * from '.DB_NAME.'_contract where UNIX_TIMESTAMP(enddt)>'.time().'','adddt desc,id desc');
+//         dump($a);die;
         $results = $m_contract->spPager($this->spArgs('page', 1), PAGE_NUM)->findAll($con,'adddt desc,id desc');
+//         dump($m_contract->dumpSql());die;
         $pager   = $m_contract->spPager()->getPager();
         $result['pager'] = $pager;
         
@@ -461,6 +485,10 @@ class custmang extends AppController
             $result['results'][$k] = $v;
         }
         
+        //未收款
+        $result['sum_all'] = $sum_all;
+        $result['sum_pay'] = $sum_pay;
+        $result['sum_not'] = $sum_all - $sum_pay;
         $this->returnSuccess('成功', $result);
     }
     
@@ -490,6 +518,7 @@ class custmang extends AppController
         $id    = htmlspecialchars($this->spArgs('id'));
         $res   = spClass('m_contract')->update(array('id' => $id, 'cid' => $admin['cid']), array('del' => 1));
         if ($res){
+            spClass('m_flow_bill')->update(array('tid'=>$id, 'table' => 'contract'),array('del' => 1));
             $this->returnSuccess('成功');
         }else {
             $this->returnError('失败');
