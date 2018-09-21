@@ -13,6 +13,21 @@ class main extends AppController {
         $admin = $result['admin'];
         $this->admin = $admin;
     }
+    
+    
+    /**
+     * 付款方式接口
+     */
+    function payType()
+    {
+        $admin   = $this->islogin();
+        $results = spClass('m_account')->findAll('', 'number desc');
+        foreach ($results as $k => $v){
+            $result['results'][$k] = $v;
+        }
+        $this->returnSuccess('成功', $result);
+    }
+    
     /**
      * 收付款账户信息列表
      */
@@ -266,10 +281,11 @@ class main extends AppController {
      * 获取员工列表
      * **************** */
 
-    function getUsers() {
+    function getUsers() 
+    {
         $user = $this->islogin();
         $m_department = spClass('m_department');
-        $m_user = spClass('m_user');
+        $m_user = spClass('m_admin');
         $results = $m_department->findAll(array('pid' => $user['cid']), '', 'id,name,pid');
         foreach ($results as $k1 => $v1) {
             $results[$k1]['name'] = $v1['name'];

@@ -228,6 +228,9 @@ class warehouse extends AppController
         }
         
         if($up){
+            //对商品表的最后出库时间更新
+            $goods_arr = $model->find('id='.$up, '', 'goods_id');
+            spClass('m_goods_order')->update(array('id' => $goods_arr['goods_id']), array('nextchuku' => $data['dt']));
             $this->sendUpcoming($admin, 17, $up, '出库【'.$data['goods_name'].'】 数量'.$data['chu_num']);
             $this->returnSuccess('成功');
         }

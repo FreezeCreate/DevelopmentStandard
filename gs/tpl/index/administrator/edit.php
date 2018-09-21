@@ -1,0 +1,1 @@
+<?php require_once TPL_DIR . '/administrator/add.php'; ?>

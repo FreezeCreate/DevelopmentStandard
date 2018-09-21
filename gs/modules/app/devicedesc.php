@@ -75,16 +75,21 @@ class devicedesc extends AppController
         $data['optid']     = $admin['id'];
         $data['optname']   = $admin['name'];
         $data['optdt']     = date('Y-m-d H:i:s');
+        $data['status']    = 1;
         
         if($id){
             $re = $model->find(array('id'=>$id,'del'=>0,'cid'=>$admin['cid']));
             if(empty($re)) $this->returnError('固资设备报告不存在');
             $up = $model->update(array('id'=>$id),$data);
+            if ($up) $up = $re['id'];
         }else{
             $up = $model->create($data);
         }
         
-        if($up) $this->returnSuccess('成功');
+        if($up){
+            $this->sendUpcoming($admin, 49, $up, '【'.$data['descname'].'】固资设备报告');
+            $this->returnSuccess('成功');
+        }
         $this->returnError('失败');
     }
     

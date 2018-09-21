@@ -88,6 +88,8 @@ class allcust extends AppController
                 'cust_name'  => $v['cust_name'],
                 'custdname'  => $v['custdname'],
                 'phone'      => $v['phone'],
+                'sex'        => $v['sex'],
+                'age'        => $v['age'],
                 'address'    => $v['address'],
                 'noticetime' => $v['noticetime'],
                 'flowid'     => $v['flowid'],

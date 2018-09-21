@@ -14,19 +14,37 @@ class custmang extends AppController
      * 财务管理模块：
      *  收付款管理：
      * 
-     * TODO 供应商审核
      * 
      * 我的客户，潜在客户 TO DO 按照公司网站的来做 已完成
      * 
-     * 企业办公管理 TODO
+     * 企业办公管理
+     * //奖罚表 ：yld_manageuser 财务管理->奖罚管理
+     * //员工关系和重要日子 ：yld_relation
+     * 沟通和分析员工记录表：yld_talkrecord
+     * 薪酬设定表：yld_salarystand
+     * 标※：公司培训计划的增删改查和审核：(yld_trainplan未建表) 培训材料和总结也在该表中 需要培训流程（审核多流程）
+     * 行政管理表(公司活动)：(yld_activity建表) + 活动类型(Sealapl表，印章表)+印章类型
+     * 考勤管理：(yld_attendance未建表) TODO not (参照lejubang考勤管理)
+     * 会议管理：yld_meeting TODO not
+     * 预警设置：(yld_warnoa未建表)
+     * 通知类型
+     * OA参数设置
+     * 通知公告 TODO not info
      * 
      * 
-     * TODO
-     * 提醒的客户显示在最上面-合并提醒
-     * 无需回款列表-合并在合同管理中
-     * 合同列表渲染数据太少
-     * 合同列表统计的实收金额等需要渲染
      * 
+     * 
+     * 
+     * 
+     * 
+     * 工作台 TODO(Tips:所有功能完成后，按需渲染工作台数据)
+     * 
+     * TO DO 已完成
+     * 合同详情里需要显示回款列表信息
+     * TO DO 已完成
+     * 固资设备报告需要审核
+     * TO DO 已完成 
+     * 供应商审核
      * 
      * 
      */
@@ -71,14 +89,14 @@ class custmang extends AppController
     {
         if (empty($con)) $this->returnError('非法输入');
 //         $admin              = $this->get_ajax_menu();   //admin data
-        $admin['cust_mang'] = spClass('m_custmang')->findAll();
-        $searchname          = urldecode(htmlspecialchars($this->spArgs('searchname')));
-
-        $m_cust = spClass('m_custmang');
+//         $admin['cust_mang'] = spClass('m_custmang')->findAll();  //TODO 先不删除该数据
+        $searchname = urldecode(htmlspecialchars($this->spArgs('searchname')));
+        $m_admin    = spClass('m_admin');
+        $m_cust     = spClass('m_custmang');
+        $m_record   = spClass('m_cust_record');
         
         if (!empty($searchname)) {
             $con .= ' and concat(cust_name,custdname,custcname,source,phone,address,info) like "%' . $searchname . '%"';
-//             $con .= ' and (cust_name like "%' . $cust_name . '%")';
             $page_con['searchname'] = $searchname;
         }
         
@@ -88,41 +106,57 @@ class custmang extends AppController
 //         $this->pager    = $m_cust->spPager()->getPager();
 //         $this->page_con = $page_con;
         $sale    = spClass('m_admin')->findAll('', 'id desc', 'id,username');
-        
-        $results = $m_cust->spPager($this->spArgs('page', 1), PAGE_NUM)->findAll($con,'applydt desc,id desc');
+        $results = $m_cust->spPager($this->spArgs('page', 1), PAGE_NUM)->findAll($con,'noticetime desc,birth desc');
         $pager   = $m_cust->spPager()->getPager();
 //         $page    = $pager['current_page'] == $pager['last_page'] ? '0' : $pager['next_page'];
         $result['pager'] = $pager;
         
         foreach ($results as $_k => $_v){
-            $record = spClass('m_cust_record')->findSql('select addtime,status,`explain` from '.DB_NAME.'_cust_record where fid='.$_v['id'].' order by id desc limit 1');
+            $record = $m_record->findSql('select addtime,status,`explain` from '.DB_NAME.'_cust_record where fid='.$_v['id'].' order by id desc limit 1');
             if ($record){
                 $results[$_k]['record_addtime'] = $record[0]['addtime'];
                 $results[$_k]['record_status']  = $record[0]['status'];
-                $results[$_k]['record_explain']  = $record[0]['explain'];
+                $results[$_k]['record_explain'] = $record[0]['explain'];
             }else {
                 $results[$_k]['record_addtime'] = '';
                 $results[$_k]['record_status']  = '';
-                $results[$_k]['record_explain']  = '';
+                $results[$_k]['record_explain'] = '';
             }
         }
         
         foreach($results as $k=>$v){
-//             $result['results'][$k] = $v;
-            $salename = spClass('m_admin')->find('id='.$v['saleid'], '', 'id,username');
+            $notic = '';
+            $salename = $m_admin->find('id='.$v['saleid'], '', 'id,username');
+            if (strtotime($v['noticetime']) - time() < 86400 && strtotime($v['noticetime']) - time() > 0){  //提前一天
+                $notic = $v['noticecontent'];
+            }
+            if (strtotime($v['birth']) - time() < 86400 && strtotime($v['birth']) - time() > 0){  //提前一天
+                $notic = $v['noticecontent'];
+            }
+            
+            if (strtotime($v['noticetime']) - time() > -86400 && strtotime($v['noticetime']) - time() < 0){  //延后一天
+                $notic = $v['noticecontent'];
+            }
+            if (strtotime($v['birth']) - time() > -86400 && strtotime($v['birth']) - time() < 0){  //延后一天
+                $notic = $v['noticecontent'];
+            }
+            
             $result['results'][$k] = array(
                 'id'         => $v['id'],
                 'type'       => $v['type'],
                 'cust_name'  => $v['cust_name'],
                 'custdname'  => $v['custdname'],
                 'phone'      => $v['phone'],
+                'sex'        => $v['sex'],
+                'age'        => $v['age'],
                 'address'    => $v['address'],
                 'noticetime' => $v['noticetime'],
+                'noticecontent' => $notic,
                 'flowid'     => $v['flowid'],
                 'salename'   => $salename['username'],
-                'record_status'  => $v['record_status'],    //跟进情况
-                'record_addtime' => $v['record_addtime'],    //最新跟进时间
-                'record_explain' => $v['record_explain'],    //最新跟进时间
+                'record_status'  => $v['record_status'],  //跟进状态
+                'record_addtime' => $v['record_addtime'], //跟进时间
+                'record_explain' => $v['record_explain'], //跟进内容
             );
         }
         
@@ -170,6 +204,8 @@ class custmang extends AppController
         $arg = array(
             'id'         => '',
             'type'       => '客户从业类型',
+            'sex'        => '性别',
+            'age'        => '年龄',
             'cust_name'  => '客户名称',
             'custdname'  => '',
             'custcname'  => '客户公司',
@@ -378,7 +414,6 @@ class custmang extends AppController
             'money'   => '合同金额',
             'signdt'  => '',
             'phone'   => '',
-            'files'   => '',
             'adddt'   => '',
             'explain' => '',
             'startdt' => '',
@@ -395,7 +430,9 @@ class custmang extends AppController
         $data['salename'] = $apply_data['applyname'];
         $data['saleid'] = $apply_data['applyid'];
         $data['custid'] = $apply_data['custid'];    //客户id
-        
+        $data['files'] = $apply_data['files'];  //文件资料
+//         $files = $this->spArgs('files');
+//         if ($files) $data['files'] = implode(',', $files);
         
         $files = $this->spArgs('files');
         if($files) $data['files'] = implode(',', $files);
@@ -443,6 +480,7 @@ class custmang extends AppController
         $searchname = urldecode(htmlspecialchars($this->spArgs('searchname')));
         $distance   = urldecode(htmlspecialchars($this->spArgs('distance')));
         $m_contract = spClass('m_contract');
+        $m_custpay  = spClass('m_custpay');
         
 //         $con = 'select * from '.DB_NAME.'_contract where ';
         //where和分页where
@@ -465,9 +503,9 @@ class custmang extends AppController
         }
         
         //统计总金额数据
-        $re_all = $m_contract->findAll('del=0 and cid='.$admin['cid'], 'id desc', 'money'); //总金额
-        $pay_all = spClass('m_custpay')->findAll('del=0 and cid='.$admin['cid'], 'id desc', 'getmoney');    //已收款
-        $sum_all = $sum_pay = 0;
+        $re_all  = $m_contract->findAll('del=0 and cid='.$admin['cid'], 'id desc', 'money'); //总金额
+        $pay_all = $m_custpay->findAll('del=0 and cid='.$admin['cid'], 'id desc', 'getmoney');    //总已收款
+        $sum_all = $sum_pay = $con_pay = 0;
         foreach ($re_all as $re_v){
             $sum_all = $sum_all + $re_v['money'];
         }
@@ -483,12 +521,22 @@ class custmang extends AppController
         
         foreach($results as $k=>$v){
             $result['results'][$k] = $v;
+            $cust_res = $m_custpay->findAll('contractid='.$v['id'].' and del=0 and cid='.$admin['cid'].'');
+            if (!empty($cust_res)){
+                foreach ($cust_res as $cust_v){
+                    $con_pay = $con_pay + $cust_v['getmoney'];
+                }
+            }else {
+                $con_pay = 0;
+            }
+            $result['results'][$k]['con_pay']  = $con_pay;
+            $result['results'][$k]['con_will'] = $v['money'] - $con_pay;
+            $con_pay = 0;
         }
         
-        //未收款
-        $result['sum_all'] = $sum_all;
-        $result['sum_pay'] = $sum_pay;
-        $result['sum_not'] = $sum_all - $sum_pay;
+        $result['sum_all'] = $sum_all;//合同总金额
+        $result['sum_pay'] = $sum_pay;//总已收款
+        $result['sum_not'] = $sum_all - $sum_pay;//总未收款
         $this->returnSuccess('成功', $result);
     }
     
@@ -505,6 +553,7 @@ class custmang extends AppController
         $results    = $m_contract->find('id='.$id.' and cid='.$admin['cid']);
         if (empty($results)) $this->returnError('id非法');
         $result['results'] = $results;
+        $result['custpay'] = spClass('m_custpay')->findAll('contractid='.$id.' and del=0 and cid='.$admin['cid'].'');
         
         $this->returnSuccess('成功', $result);
     }
@@ -533,7 +582,6 @@ class custmang extends AppController
         $admin           = $this->islogin();
         $model           = spClass('m_contract_apply');
         $id              = (int)htmlentities($this->spArgs('id'));
-        
         $arg = array(
             'custid'          => '客户id',
             'applyname'       => '申请人(销售人员)',
@@ -596,7 +644,7 @@ class custmang extends AppController
         //where和分页where
         $con    = 'del = 0 and cid = ' . $admin['cid'].' and applyid='.$admin['id'];
         if (!empty($searchname)) {
-            $con .= ' and concat(applyname,contractname,contractdesc,applydname,applydt) like "%' . $searchname . '%"';
+            $con .= ' and concat(applyname,contractname,contractdesc,applydt) like "%' . $searchname . '%"';
             $page_con['searchname'] = $searchname;
         }
         

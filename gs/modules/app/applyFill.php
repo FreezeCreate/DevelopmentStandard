@@ -1866,7 +1866,6 @@ class applyFill extends AppController {
             'applydt'         => '申请日期',
         );
         $data = $this->receiveData($arg);
-        
         $data['adddt']      = date('Y-m-d H:i:s');
         $data['status']     = 1;
         $data['cid']        = $admin['cid'];
@@ -1874,6 +1873,9 @@ class applyFill extends AppController {
 //         $data['applydname'] = $admin['dname'];
         $data['optname']    = $admin['name'];
         $data['optdt']      = date('Y-m-d H:i:s');
+        
+        $files = $this->spArgs('files');
+        if ($files) $data['files'] = implode(',', $files);
         if($id){
             $re = $model->find(array('id'=>$id,'del'=>0));
             if(empty($re)) $this->returnError('信息不存在');

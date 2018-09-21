@@ -202,12 +202,33 @@ class salegoal extends AppController
     {
         $admin      = $this->islogin();
         $model      = spClass('m_sale_goal');
+        $m_contract = spClass('m_contract');
         $id         = htmlspecialchars($this->spArgs('id'));
         //check params
         if (empty($id)) $this->returnError('id不存在');
         $results    = $model->find('id='.$id.' and cid='.$admin['cid']);
         if (empty($results)) $this->returnError('id非法');
-        $result['results'] = $results;
+        
+        $contract   = $m_contract->findAll('saleid='.$results['saleid'].' and del=0 and cid='.$admin['cid'].'', '', '');
+        $sum = 0;
+        foreach ($contract as $_k => $_v){
+            if (substr($results['goaldt'], 0, 7) != substr($_v['signdt'], 0, 7)){
+                unset($contract[$_k]);
+                continue;
+            }
+            $sum = $sum + $_v['money'];
+            $contract[$_k]['month'] = substr($_v['signdt'], 5, 2);
+            
+            //对历史销售完成情况的统计 TODO not todo渲染合同数据即可，无需其他
+        }
+        
+        
+        $result['results']  = $results;
+        $result['contract'] = array_values($contract);
+        $result['sum']      = $sum; //实际销售金额
+        $result['goal_mon'] = $results['salemoney'];    //目标金额
+        $result['well_mon'] = $results['salemoney'] - $sum; //未达到金额
+        $result['per']      = $sum/$result['goal_mon']; //达到率
         
         $this->returnSuccess('成功', $result);
     }

@@ -82,29 +82,77 @@ class supplier extends AppController
      */
     function addSupplier()
     {
-        $admin = $this->islogin();
-        $model = spClass('m_supplier');
-        $data = $this->spArgs();
-        unset($data['id']);
-        if(empty($data['company'])){
-            $this->msg_json(0, '请输入供应商名称');
+//         $admin = $this->islogin();
+//         $model = spClass('m_supplier');
+//         $data  = $this->spArgs();
+//         unset($data['id']);
+//         if(empty($data['company'])){
+//             $this->msg_json(0, '请输入供应商名称');
+//         }
+//         if(empty($data['name'])){
+//             $this->msg_json(0, '请输入联系人');
+//         }
+//         if(empty($data['phone'])){
+//             $this->msg_json(0, '请输入联系电话');
+//         }
+//         if(empty($data['goodstype'])){
+//             $this->msg_json(0, '请输入供货类别');
+//         }
+//         $re = $model->find(array('company'=>$data['company'],'cid'=>$admin['cid']));
+//         if($re){
+//             $this->msg_json(0, '该供应商已添加');
+//         }
+//         $data['cid'] = $admin['cid'];
+//         $ad = $model->create($data);
+//         if($ad) $this->returnSuccess('成功');
+//         $this->returnError('失败');
+        
+        
+        $admin           = $this->islogin();
+        $model           = spClass('m_supplier');
+        $id              = (int)htmlentities($this->spArgs('id'));
+        
+        $arg = array(
+            'company'      => '供应商名称',
+            'address'      => '地区',
+            'goodstype'    => '',   //供货商品类型
+            'name'         => '联系人',
+            'phone'        => '联系方式',
+            'explain'      => '详细',
+            'hfzm'         => '',
+            'zlqk'         => '',
+            'jgfw'         => '',
+            'xgzz'         => '',
+            'shxy'         => '',
+            'cgst'         => '',
+            'cgname'       => '',
+            'zjst'         => '',
+            'zjname'       => '',
+            'scst'         => '',
+            'scname'       => '',
+            'offer_status' => '',
+            'stdt'         => '',
+        );
+        $data = $this->receiveData($arg);
+        $data['cid']       = $admin['cid'];
+        $data['optid']     = $admin['id'];
+        $data['optname']   = $admin['name'];
+        $data['optdt']     = date('Y-m-d H:i:s');
+        $data['status']    = 1;
+        
+        if($id){
+            $re = $model->find(array('id'=>$id,'del'=>0,'cid'=>$admin['cid']));
+            if(empty($re)) $this->returnError('供应商不存在');
+            $up = $model->update(array('id'=>$id),$data);
+            if ($up) $up = $re['id'];
+        }else{
+            $up = $model->create($data);
         }
-        if(empty($data['name'])){
-            $this->msg_json(0, '请输入联系人');
+        
+        if($up){
+            $this->sendUpcoming($admin, 15, $up, '【'.$data['company'].'】供应商');
+            $this->returnSuccess('成功');
         }
-        if(empty($data['phone'])){
-            $this->msg_json(0, '请输入联系电话');
-        }
-        if(empty($data['goodstype'])){
-            $this->msg_json(0, '请输入供货类别');
-        }
-        $re = $model->find(array('company'=>$data['company'],'cid'=>$admin['cid']));
-        if($re){
-            $this->msg_json(0, '该供应商已添加');
-        }
-        $data['cid'] = $admin['cid'];
-        $ad = $model->create($data);
-        if($ad) $this->returnSuccess('成功');
         $this->returnError('失败');
     }
     

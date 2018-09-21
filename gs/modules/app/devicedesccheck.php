@@ -30,7 +30,7 @@ class devicedesccheck extends AppController
     /**
      * 删除验收报告报告
      */
-    function delDeviceDesc()
+    function delDeviceDescCheck()
     {
         $id = htmlspecialchars($this->spArgs('id'));
         $this->delCommon('m_devicedesc_check', $id);

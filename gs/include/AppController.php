@@ -20,7 +20,6 @@ class AppController extends spController {
         $this->a = $__action;
         import('Common.php');
         //$this->referrCheck();
-        
 //         if (!$_SESSION['admin'] && $this->a != 'login') {
 //             header('Location:' . spUrl('main', 'login'));
 //         }
@@ -29,15 +28,15 @@ class AppController extends spController {
 //         }
         $this->page_con = array(); //默认的分页+条件 为空
     }
-    
+
     /**
      * 是否从地址栏直接填写token
      */
-    function referrCheck()
-    {
-        if (!strpos($_SERVER['HTTP_REFERER'], 'token')) $this->returnError('非法调用');
+    function referrCheck() {
+        if (!strpos($_SERVER['HTTP_REFERER'], 'token'))
+            $this->returnError('非法调用');
     }
-    
+
     /**
      * 返回json字符串
      * @param unknown_type $status 1成功0失败
@@ -184,13 +183,13 @@ class AppController extends spController {
         } else if ($type == 'admin') {    //指定人员
             $checkusers = $m_admin->find(array('id' => $id));
             if ($checkusers) {
-                $data['nowcheckid'] = ','.$checkusers['id'].',';
+                $data['nowcheckid'] = ',' . $checkusers['id'] . ',';
                 $data['nowcheckname'] = $checkusers['name'];
             }
         } else if ($type == 'assign') {    //上级分配
             $checkusers = $m_admin->find(array('id' => $id));
             if ($checkusers) {
-                $data['nowcheckid'] = ','.$checkusers['id'].',';
+                $data['nowcheckid'] = ',' . $checkusers['id'] . ',';
                 $data['nowcheckname'] = $checkusers['name'];
             }
         } else if ($type == 'pub') {    //申请人
@@ -220,7 +219,6 @@ class AppController extends spController {
 //             $status[$sta[1]]['text'] = $sta[0];
 //             $status[$sta[1]]['color'] = $sta[2];
 //         }
-        
 //         $model = spClass('m_' . $flow['table']);
 //         $re = $model->find(array('id' => $tid));
 //         $admin = $m_admin->find(array('id' => $_SESSION['admin']['id']));
@@ -232,11 +230,9 @@ class AppController extends spController {
 //         $data['uname'] = $admin['name'];
 //         $data['udeptname'] = $admin['departmentname'];
 //         $data['modelid'] = $mid;
-        
 //         //改变TODO
 //         $data['optid'] = $admin['id'];
 //         $data['optname'] = $admin['name'];
-        
 //         $data['modelname'] = $flow['name'];
 //         $data['status'] = $re['status'];
 //         $data['summary'] = $summary;
@@ -248,7 +244,6 @@ class AppController extends spController {
 //             $data['cname'] = $course['name'];
 //             $chuser = $this->findcheckUser($course['checktype'], $course['checktypeid'], $admin, $auto);
 //             $chuserid = trim($chuser['nowcheckid'], ',');
-           
 //             if (empty($chuserid)) {
 //                 $data['status'] = -1;
 //                 $data['statustext'] = '未找到审核人';
@@ -260,7 +255,6 @@ class AppController extends spController {
 //         } else {
 //             $data['statustext'] = '完成';
 //         }
-        
 //         if ($bill) {
 //             if(!empty($erci)){
 //                 $data['status'] = 1;
@@ -316,7 +310,7 @@ class AppController extends spController {
             $data['cname'] = $course['name'];
             $chuser = $this->findcheckUser($course['checktype'], $course['checktypeid'], $user, $auto);
             $chuserid = trim($chuser['nowcheckid'], ',');
-            
+
             if (empty($chuserid)) {
                 $data['status'] = -1;
                 $data['statustext'] = '未找到审核人';
@@ -343,7 +337,7 @@ class AppController extends spController {
             spClass('m_flow_log')->create($data_log);
         }
     }
-    
+
     function findCheck($id, $mid) {
         $user = $this->islogin();
         $m_file = spClass('m_file');
@@ -355,7 +349,7 @@ class AppController extends spController {
         if (empty($set)) {
             $this->returnError('数据有误');
         }
-        $log = $m_flow_log->findAll(array('table' => $set['table'], 'tid' => $id),'','id,statusname,checkname,optdt,`explain`');
+        $log = $m_flow_log->findAll(array('table' => $set['table'], 'tid' => $id), '', 'id,statusname,checkname,optdt,`explain`');
         foreach ($log as $k => $v) {
             if (!empty($v['files'])) {
                 $files = $m_file->findAll('id in (' . $v['files'] . ')', '', 'id,filename');
@@ -380,11 +374,13 @@ class AppController extends spController {
             $result['images'] = explode(',', $result['images']);
         }
         $bill = $m_flow_bill->find(array('modelid' => $mid, 'tid' => $id));
+        
+        $result['bill'] = $bill;
         if ($bill) {
             $result['st'] = $bill['statustext'];
             $result['billid'] = $bill['id'];
             $result['billcid'] = $bill['cid'];
-            $course = $m_flow_course->find(array('id' => $bill['cid']),'','id,name,checktypename,courseact');
+            $course = $m_flow_course->find(array('id' => $bill['cid']), '', 'id,name,checktypename,courseact');
             $bill['nowcheckid'] = trim($bill['nowcheckid'], ',');
             $bill['nowcheckid'] = explode(',', $bill['nowcheckid']);
             if (in_array($user['id'], $bill['nowcheckid'])) {
@@ -395,6 +391,13 @@ class AppController extends spController {
                 $result['course'] = $course;
             }
         }
+        
+        //TODO 做nowcheckid的审核权限
+        if (!in_array($user['id'], $bill['nowcheckid'])){
+            $result['course'] = '';
+            $result['bill'] = '';
+        }
+        
         $this->returnSuccess('成功', $result);
     }
 
@@ -452,7 +455,7 @@ class AppController extends spController {
             $m_flow_bill->update(array('table' => $table, 'tid' => $id), array('nowcheckid' => 0, 'nowcheckname' => '', 'del' => 1));
             $data_log = array('table' => $table, 'tid' => $id, 'status' => 0, 'statusname' => '删除', 'name' => '已删除', 'courseid' => 0, 'optdt' => date('Y-m-d H:i:s'), 'explain' => '已删除', 'ip' => Common::getIp(), 'checkname' => $admin['name'], 'checkid' => $admin['id']);
             $m_flow_log->create($data_log);
-            $this->msg_json(1, '操作成功',$id);
+            $this->msg_json(1, '操作成功', $id);
         } else {
             $this->msg_json(0, '操作失败');
         }
@@ -474,10 +477,10 @@ class AppController extends spController {
      * 	@param $dt 分析日期
      */
     function getkqsj($uid, $dt) {
-        $admin = spClass('m_admin')->find(array('id'=>$uid),'','departmentid');
+        $admin = spClass('m_admin')->find(array('id' => $uid), '', 'departmentid');
         $m_kqsjgz = spClass('m_kqsjgz');
-        $rows = $m_kqsjgz->findAll('pid = 0 and did = '.$admin['departmentid'], 'sort asc');
-        if(empty($rows)){
+        $rows = $m_kqsjgz->findAll('pid = 0 and did = ' . $admin['departmentid'], 'sort asc');
+        if (empty($rows)) {
             $rows = $m_kqsjgz->findAll('pid = 0 and did = 0', 'sort asc');
         }
         foreach ($rows as $k => $v) {
@@ -495,7 +498,7 @@ class AppController extends spController {
         $st1 = strtotime($dts . ' ' . $ztarr['stime']);
         $et1 = strtotime($dts . ' ' . $ztarr['etime']);
         $s = '';
-        $rows = $m_kqinfo->findAll("`uid`='$uid' and `status`>=3 and `start`<='$dts 23:59:59' and `end`>='$dts 00:00:00'",'','`start`,`end`,`type`');
+        $rows = $m_kqinfo->findAll("`uid`='$uid' and `status`>=3 and `start`<='$dts 23:59:59' and `end`>='$dts 00:00:00'", '', '`start`,`end`,`type`');
         foreach ($rows as $k => $rs) {
             $qst = strtotime($rs['start']);
             $qet = strtotime($rs['end']);
@@ -521,7 +524,7 @@ class AppController extends spController {
         $st1 = strtotime($dts . ' ' . $ztarr['stime']);
         $et1 = strtotime($dts . ' ' . $ztarr['etime']);
         $s = '';
-        $rows = $m_kqgoout->findAll("`uid`='$uid' and `status`>=3 and `start`<='$dts 23:59:59' and `end`>='$dts 00:00:00'",'','`start`,`end`,`type`');
+        $rows = $m_kqgoout->findAll("`uid`='$uid' and `status`>=3 and `start`<='$dts 23:59:59' and `end`>='$dts 00:00:00'", '', '`start`,`end`,`type`');
         foreach ($rows as $k => $rs) {
             $qst = strtotime($rs['start']);
             $qet = strtotime($rs['end']);
@@ -599,7 +602,7 @@ class AppController extends spController {
         $dttime = strtotime($dt);
         $w = date('w', $dttime);
         $today = $m_kqxxsj->find(array('dt' => $dt, 'cid' => $cid));
-            $ids = '0';
+        $ids = '0';
         if ($today['type'] == 1 || (empty($today) && $w >= 1 && $w <= 5)) {
             //print_r($sjarr);die;
             foreach ($sjarr as $k => $v) {
@@ -617,8 +620,8 @@ class AppController extends spController {
                     if ($zcarr) {
                         $states = $this->getstates($zcarr, $dt, $uid);
                     }
-                    if(empty($states)){
-                        $states = $this->gooutstates($zcarr,$dt,$uid);
+                    if (empty($states)) {
+                        $states = $this->gooutstates($zcarr, $dt, $uid);
                     }
                 }
                 $emiao = $arrs['emiao'];
@@ -635,59 +638,52 @@ class AppController extends spController {
                     'optdt' => date('Y-m-d H:i:s'),
                     'emiao' => $emiao
                 );
-                if($time){
+                if ($time) {
                     $arr['time'] = $time;
                 }
-                $where 	= "`uid`='$uid' and `dt`='$dt' and `ztname`='$ztname'";
-                $re = $m_kqanay->find($where,'','id');
-                if($re){
-                    $m_kqanay->update(array('id'=>$re['id']),$arr);
-                    $ids .= ','.$re['id'];
-                }else{
+                $where = "`uid`='$uid' and `dt`='$dt' and `ztname`='$ztname'";
+                $re = $m_kqanay->find($where, '', 'id');
+                if ($re) {
+                    $m_kqanay->update(array('id' => $re['id']), $arr);
+                    $ids .= ',' . $re['id'];
+                } else {
                     $id = $m_kqanay->create($arr);
-                    $ids .= ','.$id;
+                    $ids .= ',' . $id;
                 }
             }
         }
         $m_kqanay->delete("id not in ($ids) and `uid`='$uid' and `dt`='$dt'");
     }
-    
-    function get_post(){
+
+    function get_post() {
         $data = array();
         foreach ($_POST as $key => $value) {
-            if(is_array($value)){
+            if (is_array($value)) {
                 $data[$key] = $value;
-            }else{
+            } else {
                 $data[$key] = htmlspecialchars($value);
             }
         }
         return $data;
     }
-    
-    
-    
+
     /**
      * 以下为接口增加方法
      */
-    
-    
-    public static function returnSuccess($msg, $data = array(), $code = 0) 
-    {
+    public static function returnSuccess($msg, $data = array(), $code = 0) {
         $ajaxData = $data;
         $ajaxData['msg'] = $msg ? $msg : '成功';
         $ajaxData['code'] = $code ? $code : 0;
         Common::ajaxReturn($ajaxData, 'json');
     }
-    
-    public static function returnError($msg, $code = 1) 
-    {
+
+    public static function returnError($msg, $code = 1) {
         $ajaxData['msg'] = $msg;
         $ajaxData['code'] = $code ? $code : 1;
         Common::ajaxReturn($ajaxData, 'json');
     }
-    
-    function receiveData($data) 
-    {
+
+    function receiveData($data) {
         $tmp = file_get_contents("php://input");
         $tmp = json_decode($tmp, true);
         foreach ($data as $k => $v) {
@@ -698,29 +694,27 @@ class AppController extends spController {
         }
         return $result;
     }
-    
-    function login()
-    {
+
+    function login() {
         
     }
-    
-    function islogin() 
-    {
+
+    function islogin() {
         //省略index.php $control = $this->spArgs('c');
-        if (empty($control)) $control = $this->c;
-        if (empty($way)) $way = $this->a;
-        
-        $m_admin         = spClass("m_admin");
-        $m_auth          = spClass('m_auth');
-        $m_role          = spClass('m_role');
+        if (empty($control))
+            $control = $this->c;
+        if (empty($way))
+            $way = $this->a;
+
+        $m_admin = spClass("m_admin");
+        $m_auth = spClass('m_auth');
+        $m_role = spClass('m_role');
         $data['control'] = $control;
-        $data['way']     = $way;
-        $thisauth        = $m_auth->find($data);   //auth鉴权
+        $data['way'] = $way;
+        $thisauth = $m_auth->find($data);   //auth鉴权
         //token验证，然后thisauth鉴权
-        
         //1、全部使用token权限验证；2、token判断referr不是从URL直接输入,而是从login页面跳转
         //不做过期时间，当用户注册或者登陆直接判断是否存在token，存在则鉴权，不存在则生成
-        
 //         $token = '5523cbad2881cc1ea54a6b55083547c6a932eef2';
         $token = htmlentities($this->spArgs('token'));
 //         if (empty($token)){   //未登录
@@ -733,9 +727,10 @@ class AppController extends spController {
 //             if ($user['status'] != 1) $this->returnError('抱歉，您的账号已被限制登录，如有疑问请联系管理员', 3);
 //             if ($user['password'] != md5(md5($password))) return $this->returnError('用户名或密码错误');
 //         }else {
-            //已登陆
-        $user     = $m_admin->find('login = "'.$token.'"');
-        if (empty($user)) $this->returnError('用户不存在');
+        //已登陆
+        $user = $m_admin->find('login = "' . $token . '"');
+        if (empty($user))
+            $this->returnError('用户不存在');
 //         }
         //如果苦衷不存在token，则update新增token值
 //         if (empty($user['login'])) $this->setToken($user['username'], $user['password']);
@@ -748,11 +743,11 @@ class AppController extends spController {
                 foreach ($role as $k => $v) {
                     $re_role = $m_role->find("id = " . $v, '', 'promission');
                     //当前权限判断
-                    if ($re_role){
+                    if ($re_role) {
                         $pro = json_decode($re_role['promission']);
-                        if (in_array($thisauth['id'], $pro)){
+                        if (in_array($thisauth['id'], $pro)) {
                             return $user;
-                        }else {
+                        } else {
                             $this->returnError('您没有该权限');
                         }
                     }
@@ -760,66 +755,70 @@ class AppController extends spController {
             }
         }
         //简化流程
-        if (!$user) $this->returnError('错误');
+        if (!$user)
+            $this->returnError('错误');
 //         if ($user['status'] == 4) $this->returnError('已在其他设备登录，请重新登录', 4);
 //         if ($user['status'] == 1) return $user;
 //         $this->returnError('该账号已被限制登录，如有疑问请联系管理员', 3);
     }
-    
+
     /**
      * 公共删除方法
      * @param unknown $model
      */
-    function delCommon($model, $id)
-    {
+    function delCommon($model, $id) {
         $admin = $this->islogin();
-        $res   = spClass($model)->update(array('id' => $id, 'cid' => $admin['cid']), array('del' => 1));
-        if ($res) $this->returnSuccess('成功');;
+        $res = spClass($model)->update(array('id' => $id, 'cid' => $admin['cid']), array('del' => 1));
+        if ($res)
+            $this->returnSuccess('成功');;
         $this->returnError('失败');
     }
-    
+
     /**
      * 删除字符串前后的逗号
      * @param unknown $str
      * @return string
      */
-    function delSpe($str)
-    {
+    function delSpe($str) {
         return ltrim(rtrim($str, ','), ',');
     }
-    
+
     //生成不会重复的永久token
-    function setToken($username, $password)
-    {
-        if (empty($username) || empty($password)) $this->returnError('用户名或密码不存在');
-        $result = spClass('m_admin')->find('username = "'.$username.'" or phone = "'.$username.'"');
-        if (empty($result)) $this->returnError('用户不存在', 2);
-        if ($result['status'] != 1) $this->returnError('抱歉，您的账号已被限制登录，如有疑问请联系管理员', 3);
-        if ($result['password'] != md5(md5($password))) return $this->returnError('用户名或密码错误');
-        $str = md5(uniqid(md5(microtime(true).$username.$password),true));
-        spClass('m_admin')->update('id='.$result, array('login' => sha1($str)));
+    function setToken($username, $password) {
+        if (empty($username) || empty($password))
+            $this->returnError('用户名或密码不存在');
+        $result = spClass('m_admin')->find('username = "' . $username . '" or phone = "' . $username . '"');
+        if (empty($result))
+            $this->returnError('用户不存在', 2);
+        if ($result['status'] != 1)
+            $this->returnError('抱歉，您的账号已被限制登录，如有疑问请联系管理员', 3);
+        if ($result['password'] != md5(md5($password)))
+            return $this->returnError('用户名或密码错误');
+        $str = md5(uniqid(md5(microtime(true) . $username . $password), true));
+        spClass('m_admin')->update('id=' . $result, array('login' => sha1($str)));
 //         return sha1($str);
     }
-    
-    
+
     /**
      * 生成永久token + 验证referr
      */
-    function passAuth()
-    {
-        dump($this->setToken());die;
-        $arg      = array('username' => '用户名','password' => '密码',);
-        $data     = $this->receiveData($arg);
+    function passAuth() {
+        dump($this->setToken());
+        die;
+        $arg = array('username' => '用户名', 'password' => '密码',);
+        $data = $this->receiveData($arg);
         $username = $data['username'];
         $password = $data['password'];
-        $ip       = Common::getIp();
-        $model    = spClass('m_admin');
-        $result   = $model->find('username = "'.$username.'" or phone = "'.$username.'"');
-        if (empty($result)) $this->returnError('用户不存在', 2);
-        if ($result['status'] != 1) $this->returnError('抱歉，您的账号已被限制登录，如有疑问请联系管理员', 3);
-        
+        $ip = Common::getIp();
+        $model = spClass('m_admin');
+        $result = $model->find('username = "' . $username . '" or phone = "' . $username . '"');
+        if (empty($result))
+            $this->returnError('用户不存在', 2);
+        if ($result['status'] != 1)
+            $this->returnError('抱歉，您的账号已被限制登录，如有疑问请联系管理员', 3);
+
         if ($result['password'] == md5(md5($password))) {
-            $login = md5(time().$result['password'] . $result['id']);
+            $login = md5(time() . $result['password'] . $result['id']);
             $model->update(array('id' => $result['id']), array('login' => $login, 'lastonline' => date('Y-m-d H:i:s'), 'lastIP' => $ip));
             $data['name'] = $result['name'];
             $data['remark'] = '登录成功';
@@ -829,7 +828,7 @@ class AppController extends spController {
             $data['password'] = substr($password, 0, 3) . '******';
             $data['status'] = 1;
             spClass('m_login')->create($data);
-            $apply = spClass('m_reg_company')->find('is_read = 0 and del = 0 and uid = '.$result['id'],'applydt desc','cname,dname,pname,applydt,status,`explain`,checkdt');
+            $apply = spClass('m_reg_company')->find('is_read = 0 and del = 0 and uid = ' . $result['id'], 'applydt desc', 'cname,dname,pname,applydt,status,`explain`,checkdt');
             $apply['token'] = $login;
             $apply['cid'] = $result['cid'];
             $this->returnSuccess('登录成功', $apply);
@@ -845,7 +844,7 @@ class AppController extends spController {
             $this->returnError('密码错误', 3);
         }
     }
-    
+
     function logResult($word = '', $filename = '') {
         $filename = empty($filename) ? 'log.txt' : $filename;
         $fp = fopen($filename, "a");

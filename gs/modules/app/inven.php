@@ -35,11 +35,12 @@ class inven extends AppController
     function delInven()
     {
         $id = htmlspecialchars($this->spArgs('id'));
+        spClass('m_flow_bill')->update(array('tid'=>$id, 'table' => 'inven'),array('del' => 1));
         $this->delCommon('m_inven', $id);
     }
     
     /**
-     * 盘点详情
+     * 盘点详情 审核详情TODO
      */
     function invenInfo()
     {
@@ -99,7 +100,8 @@ class inven extends AppController
     }
     
     /**
-     * 盘点积压列表
+     * 积压-即最后一次出库时间+积压时间<现在的时间
+     * 积压时间
      */
     function waitLst()
     {
@@ -107,21 +109,27 @@ class inven extends AppController
         $con        = 'del = 0 and cid = ' . $admin['cid'];
         $order_name = urldecode(htmlspecialchars($this->spArgs('order_name')));   //商品名查找
         $model      = spClass('m_goods_order');
-        
+        $m_inven    = spClass('m_inven');
+        $con       .= ' and '.time().'-UNIX_TIMESTAMP(nextchuku)>updatetime*60*60*24';
+//         $real_sql = 'select a.updatetime,b.*,MAX(b.inven_date) from '.DB_NAME.'_goods_order as a,'.DB_NAME.'_inven as b where a.cid='.$admin['cid'].' and a.del=0 and b.cid='.$admin['cid'].' and b.del=0 and a.id=b.inven_num and '.time().'-UNIX_TIMESTAMP(b.inven_date)>a.updatetime*60*60*24 group by b.inven_num order by b.inven_date desc';
+//         $sql    = 'select * from '.DB_NAME.'_goods_order where '.time().'-UNIX_TIMESTAMP(nextchuku)>updatetime*60*60*24';
+//         $a = $model->findSql($sql);
+//         dump($a);die;
         //找出超出积压时间的商品
-        $sql        = 'select inven_num from '.DB_NAME.'_inven where cid='.$admin['cid'].' and del=0 group by inven_num';
-        $res_id     = spClass('m_inven')->findSql($sql);
+        $sql        = 'select inven_num,inven_date from '.DB_NAME.'_inven where cid='.$admin['cid'].' and del=0 group by inven_num';
+        $res_id     = $m_inven->findSql($sql);
         
-        $last_data = [];
+        $last_data  = [];
         foreach ($res_id as $_v){
-            $last_data[] = spClass('m_inven')->find('inven_num='.$_v['inven_num'], 'inven_date desc', 'inven_num,inven_date');
+            $w8_sto      = time() - strtotime($_v['inven_date']);
+            $w8_time     = round($w8_sto/60/60/24);   //计算真实积压天数
+            $last_data[] = $model->find('cid='.$admin['cid'].' and del=0 and id='.$_v['inven_num'].' and updatetime<'.$w8_time.'');
         }
         if (!empty($order_name)) {
             $con .= ' and (order_name = "' . $order_name . '")';
             $page_con['order_name'] = $order_name;
         }
-//         $sql2 = 'select *from '.DB_NAME.'_goods_order where id in (1,2)';
-//         $asd = $model->findSql($sql2);
+        
         $results = $model->spPager($this->spArgs('page', 1), PAGE_NUM)->findAll($con,'optdt desc,id desc');
         $pager   = $model->spPager()->getPager();
         $result['pager'] = $pager;
