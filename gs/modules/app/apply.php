@@ -110,59 +110,60 @@ class apply extends AppController {
         }
     }
     
-    function findCheck($id, $mid) {
-        $user = $this->islogin();
-        $m_file = spClass('m_file');
-        $m_flow_set = spClass('m_flow_set');
-        $m_flow_bill = spClass('m_flow_bill');
-        $m_flow_log = spClass('m_flow_log');
-        $m_flow_course = spClass('m_flow_course');
-        $set = $m_flow_set->find(array('id' => $mid));
-        if (empty($set)) {
-            $this->returnError('数据有误');
-        }
-        $log = $m_flow_log->findAll(array('table' => $set['table'], 'tid' => $id),'','id,statusname,checkname,optdt,`explain`');
-        foreach ($log as $k => $v) {
-            if (!empty($v['files'])) {
-                $files = $m_file->findAll('id in (' . $v['files'] . ')', '', 'id,filename');
-                $log[$k]['files'] = $files;
-            } else {
-                $log[$k]['files'] = array();
-            }
-        }
-        $model = spClass('m_' . $set['table']);
-        $result = $model->find(array('id' => $id, 'cid' => $user['cid']));
-        if (empty($result)) {
-            $this->returnError('数据不存在或已删除');
-        }
-        $result['log'] = $log;
-        if (!empty($result['files'])) {
-            $files = $m_file->findAll('id in (' . $result['files'] . ')', '', 'id,filename');
-            $result['files'] = $files;
-        } else {
-            $result['files'] = array();
-        }
-        if (!empty($result['images'])) {
-            $result['images'] = explode(',', $result['images']);
-        }
-        $bill = $m_flow_bill->find(array('modelid' => $mid, 'tid' => $id));
-        if ($bill) {
-            $result['st'] = $bill['statustext'];
-            $result['billid'] = $bill['id'];
-            $result['billcid'] = $bill['cid'];
-            $course = $m_flow_course->find(array('id' => $bill['cid']),'','id,name,checktypename,courseact');
-            $bill['nowcheckid'] = trim($bill['nowcheckid'], ',');
-            $bill['nowcheckid'] = explode(',', $bill['nowcheckid']);
-            if (in_array($user['id'], $bill['nowcheckid'])) {
-                $course['courseact'] = empty($course['courseact']) ? array('通过|3|green', '驳回|2|red') : explode(',', $course['courseact']);
-                foreach ($course['courseact'] as $k => $v) {
-                    $course['courseact'][$k] = explode('|', $v);
-                }
-                $result['course'] = $course;
-            }
-        }
-        $this->returnSuccess('成功', $result);
-    }
+//     function findCheck($id, $mid) {
+//         $user = $this->islogin();
+//         $m_file = spClass('m_file');
+//         $m_flow_set = spClass('m_flow_set');
+//         $m_flow_bill = spClass('m_flow_bill');
+//         $m_flow_log = spClass('m_flow_log');
+//         $m_flow_course = spClass('m_flow_course');
+//         $set = $m_flow_set->find(array('id' => $mid));
+//         if (empty($set)) {
+//             $this->returnError('数据有误');
+//         }
+//         $log = $m_flow_log->findAll(array('table' => $set['table'], 'tid' => $id),'','id,statusname,checkname,optdt,`explain`');
+//         foreach ($log as $k => $v) {
+//             if (!empty($v['files'])) {
+//                 $files = $m_file->findAll('id in (' . $v['files'] . ')', '', 'id,filename');
+//                 $log[$k]['files'] = $files;
+//             } else {
+//                 $log[$k]['files'] = array();
+//             }
+//         }
+//         $model = spClass('m_' . $set['table']);
+//         $result = $model->find(array('id' => $id, 'cid' => $user['cid']));
+//         if (empty($result)) {
+//             $this->returnError('数据不存在或已删除');
+//         }
+//         $result['log'] = $log;
+//         if (!empty($result['files'])) {
+//             $files = $m_file->findAll('id in (' . $result['files'] . ')', '', 'id,filename');
+//             $result['files'] = $files;
+//         } else {
+//             $result['files'] = array();
+//         }
+//         if (!empty($result['images'])) {
+//             $result['images'] = explode(',', $result['images']);
+//         }
+//         $bill = $m_flow_bill->find(array('modelid' => $mid, 'tid' => $id));
+// //         dump($bill);die;
+//         if ($bill) {
+//             $result['st'] = $bill['statustext'];
+//             $result['billid'] = $bill['id'];
+//             $result['billcid'] = $bill['cid'];
+//             $course = $m_flow_course->find(array('id' => $bill['cid']),'','id,name,checktypename,courseact');
+//             $bill['nowcheckid'] = trim($bill['nowcheckid'], ',');
+//             $bill['nowcheckid'] = explode(',', $bill['nowcheckid']);
+//             if (in_array($user['id'], $bill['nowcheckid'])) {
+//                 $course['courseact'] = empty($course['courseact']) ? array('通过|3|green', '驳回|2|red') : explode(',', $course['courseact']);
+//                 foreach ($course['courseact'] as $k => $v) {
+//                     $course['courseact'][$k] = explode('|', $v);
+//                 }
+//                 $result['course'] = $course;
+//             }
+//         }
+//         $this->returnSuccess('成功', $result);
+//     }
     
     function findRemind($id, $mid) {
         $re = $this->get_menu();

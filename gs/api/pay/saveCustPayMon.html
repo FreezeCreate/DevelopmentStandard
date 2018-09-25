@@ -15,7 +15,7 @@
             <table class="table border">
                 <thead>
                     <tr>
-                        <td colspan="5" class="textCenter BgGreen">采购单新增</td>
+                        <td colspan="5" class="textCenter BgGreen">付款申请新增</td>
                     </tr>
                 </thead>
                 <tbody class="hover">
@@ -23,7 +23,7 @@
                         <td colspan="5" class="BgGray textCenter">请求格式</td>
                     </tr>
                     <tr>
-                        <td>URL</td><td colspan="4">/app.php/applyFill/saveInvoice</td>
+                        <td>URL</td><td colspan="4">/app.php/custpaymon/saveCustPayMon</td>
                     </tr>
                     <tr>
                         <td>HTTP请求方式</td><td colspan="4">JSON</td>
@@ -49,122 +49,115 @@
                         <td>5523cbad2881cc1ea54a6b55083547c6a932eef2</td>
                     </tr>
                     <tr>
-                        <td>商品id</td>
-                        <td >invoice_id</td>
+                        <td>客户id</td>
+                        <td >custumid</td>
                         <td>是</td>
                         <td>int</td>
                         <td ></td>
                     </tr>
                     <tr>
-                        <td>商品名称</td>
-                        <td >invoice_name</td>
-                        <td>是</td>
+                        <td>合同id</td>
+                        <td >contractid</td>
+                        <td>否</td>
+                        <td>int</td>
+                        <td ></td>
+                    </tr>
+                    <tr>
+                        <td>合同名称</td>
+                        <td >contractname</td>
+                        <td>否</td>
                         <td>string</td>
                         <td ></td>
                     </tr>
                     <tr>
-                        <td>供应商公司id</td>
-                        <td >buldid</td>
-                        <td>是</td>
-                        <td>int</td>
-                        <td ></td>
-                    </tr>
-                    <tr>
-                        <td>供应商公司</td>
-                        <td >buldcom</td>
-                        <td>是</td>
-                        <td>string</td>
-                        <td ></td>
-                    </tr>
-                    <tr>
-                        <td>制单人id</td>
-                        <td >addid</td>
-                        <td>是</td>
-                        <td>int</td>
-                        <td ></td>
-                    </tr>
-                    <tr>
-                        <td>制单人</td>
-                        <td >addname</td>
-                        <td>是</td>
-                        <td>string</td>
-                        <td ></td>
-                    </tr>
-                    <tr>
-                        <td>购货总金额</td>
-                        <td >totalmoney</td>
-                        <td>是</td>
-                        <td>int</td>
-                        <td ></td>
-                    </tr>
-                    <tr>
-                        <td>本次付款</td>
+                        <td>付款</td>
                         <td >paymoney</td>
                         <td>是</td>
                         <td>int</td>
                         <td ></td>
                     </tr>
                     <tr>
-                        <td>备注</td>
-                        <td >info</td>
-                        <td>否</td>
-                        <td>string</td>
-                        <td ></td>
-                    </tr>
-                    <tr>
-                        <td>折扣金额</td>
-                        <td >discount</td>
-                        <td>否</td>
-                        <td>int</td>
-                        <td ></td>
-                    </tr>
-                    <tr>
-                        <td>总数量</td>
-                        <td >totalnum</td>
-                        <td>是</td>
-                        <td>int</td>
-                        <td ></td>
-                    </tr>
-                    <tr>
-                        <td>单价</td>
-                        <td >oneprice</td>
-                        <td>是</td>
-                        <td>int</td>
-                        <td ></td>
-                    </tr>
-                    <tr>
-                        <td>采购时间</td>
-                        <td >buydate</td>
+                        <td>添加时间</td>
+                        <td >adddt</td>
                         <td>是</td>
                         <td>date</td>
                         <td ></td>
                     </tr>
                     <tr>
-                        <td>是否付款</td>
-                        <td >statecode</td>
-                        <td>是</td>
-                        <td>int</td>
-                        <td >0未付款 1部分付款 2全部付款</td>
-                    </tr>
-                    <tr>
-                        <td>销售人员id</td>
-                        <td >salesid</td>
-                        <td>是</td>
-                        <td>int</td>
-                        <td ></td>
-                    </tr>
-                    <tr>
-                        <td>地址</td>
-                        <td >address</td>
+                        <td>记录</td>
+                        <td >record</td>
                         <td>否</td>
                         <td>string</td>
                         <td ></td>
                     </tr>
                     <tr>
-                        <td>手机</td>
-                        <td >phone</td>
-                        <td>否</td>
+                        <td>支付方式id</td>
+                        <td >paytypeid</td>
+                        <td>是</td>
                         <td>int</td>
+                        <td ></td>
+                    </tr>
+                    <tr>
+                        <td>支付方式</td>
+                        <td >paytypeid</td>
+                        <td>是</td>
+                        <td>string</td>
+                        <td ></td>
+                    </tr>
+                    <tr>
+                        <td>销售id</td>
+                        <td >saleid</td>
+                        <td>是</td>
+                        <td>int</td>
+                        <td ></td>
+                    </tr>
+                    <tr>
+                        <td>销售名称</td>
+                        <td >salename</td>
+                        <td>是</td>
+                        <td>string</td>
+                        <td ></td>
+                    </tr>
+                    <tr>
+                        <td>审核状态</td>
+                        <td >status</td>
+                        <td>是</td>
+                        <td>int</td>
+                        <td >1、提交2、驳回3、审核成功</td>
+                    </tr>
+                    <tr>
+                        <td>内容</td>
+                        <td >content</td>
+                        <td>否</td>
+                        <td>string</td>
+                        <td ></td>
+                    </tr>
+                    <tr>
+                        <td>客户名称</td>
+                        <td >custname</td>
+                        <td>是</td>
+                        <td>string</td>
+                        <td ></td>
+                    </tr>
+                    <tr>
+                        <td>其他付款状态</td>
+                        <td >otherstatus</td>
+                        <td>是</td>
+                        <td>int</td>
+                        <td >1、付款2、其他支出</td>
+                    </tr>
+                    <tr>
+                        <td>客户类型id</td>
+                        <td >cateid</td>
+                        <td>是</td>
+                        <td>int</td>
+                        <td ></td>
+                    </tr>
+                    <tr>
+                        <td>客户分类</td>
+                        <td >catename</td>
+                        <td>否</td>
+                        <td>string</td>
                         <td ></td>
                     </tr>
                     <tr>

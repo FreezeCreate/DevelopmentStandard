@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html>
     <head>
@@ -15,7 +14,7 @@
             <table class="table border">
                 <thead>
                     <tr>
-                        <td colspan="5" class="textCenter BgGreen">退货单列表</td>
+                        <td colspan="5" class="textCenter BgGreen">客户添加</td>
                     </tr>
                 </thead>
                 <tbody class="hover">
@@ -23,10 +22,10 @@
                         <td colspan="5" class="BgGray textCenter">请求格式</td>
                     </tr>
                     <tr>
-                        <td>URL</td><td colspan="4">/app.php/regoods/index?token=5523cbad2881cc1ea54a6b55083547c6a932eef2</td>
+                        <td>URL</td><td colspan="4"><a href="">/app.php/keep/saveCust?token=token</a></td>
                     </tr>
                     <tr>
-                        <td>HTTP请求方式</td><td colspan="4">GET</td>
+                        <td>HTTP请求方式</td><td colspan="4">POST</td>
                     </tr>
                     <tr>
                         <td>是否登录验证</td><td colspan="4">是</td>
@@ -42,23 +41,58 @@
                         <td >说明</td>
                     </tr>
                     <tr>
-                        <td>分页</td>
-                        <td>page</td>
-                        <td>是</td>
+                        <td>客户id</td>
+                        <td>id</td>
+                        <td>否</td>
                         <td>int</td>
-                        <td></td>
+                        <td style="color:red">修改客户信息时必传，添加客户传空或不传</td>
                     </tr>
                     <tr>
-                        <td>token</td>
-                        <td>token</td>
+                        <td>性别</td>
+                        <td>sex</td>
+                        <td>是</td>
+                        <td>string</td>
+                        <td>{'男','女'}</td>
+                    </tr>
+                    <tr>
+                        <td>年龄</td>
+                        <td>age</td>
                         <td>是</td>
                         <td>string</td>
                         <td></td>
                     </tr>
                     <tr>
-                        <td>搜索</td>
-                        <td>searchname</td>
-                        <td>否</td>
+                        <td>姓名</td>
+                        <td>cust_name</td>
+                        <td>是</td>
+                        <td>string</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>公司</td>
+                        <td>custcname</td>
+                        <td>是</td>
+                        <td>string</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>手机号</td>
+                        <td>phone</td>
+                        <td>是</td>
+                        <td>string</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>地址</td>
+                        <td>address</td>
+                        <td>是</td>
+                        <td>string</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>备注说明</td>
+                        <td>info</td>
+                        <td>是</td>
                         <td>string</td>
                         <td></td>
                     </tr>
@@ -77,43 +111,14 @@
                         <td >msg</td>
                         <td>是</td>
                         <td>string</td>
-                        <td >成功</td>
+                        <td ></td>
                     </tr>
                     <tr>
                         <td>返回状态码</td>
                         <td >code</td>
                         <td>是</td>
                         <td>int</td>
-                        <td >0</td>
-                    </tr>
-                    <tr>
-                        <td>客户和状态信息</td>
-                        <td >results</td>
-                        <td>是</td>
-                        <td>object</td>
-                        <td >
-                          {
-            "id": "id",
-            "renum": "退货单编号",
-            "invoice_id": "进货单ID",
-            "invoice_num": "进货单编号",
-            "renumber": "退货数量",
-            "reunit": "退货单价",
-            "remoney": "退货金额",
-            "reinfo": "退货详情",
-            "recomid": "退货公司id",
-            "recompany": "退货公司",
-            "optid": "操作人id",
-            "optdt": "操作时间",
-            "optname": "操作人名称",
-            "cid": "公司id",
-            "del": "删除否1、删除0、未删除",
-            "status": "审核状态1、提交2、驳回3、审核通过",
-            "addid": "制单人id",
-            "addname": "制单人姓名",
-            "goods_name": "退货商品名称",
-        }
-                        </td>
+                        <td ></td>
                     </tr>
                     <tr>
                         <td colspan="5" class="BgGray textCenter">错误返回结果</td>
@@ -130,14 +135,14 @@
                         <td >msg</td>
                         <td>是</td>
                         <td>string</td>
-                        <td >失败</td>
+                        <td ></td>
                     </tr>
                     <tr>
                         <td>返回状态码</td>
                         <td >code</td>
                         <td>是</td>
                         <td>int</td>
-                        <td >1</td>
+                        <td ></td>
                     </tr>
                 </tbody>
             </table>

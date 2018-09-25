@@ -21,7 +21,7 @@ class main extends AppController {
     function payType()
     {
         $admin   = $this->islogin();
-        $results = spClass('m_account')->findAll('', 'number desc');
+        $results = spClass('m_account')->findAll('', 'id asc');
         foreach ($results as $k => $v){
             $result['results'][$k] = $v;
         }
@@ -87,7 +87,7 @@ class main extends AppController {
         $this->returnSuccess('成功', $result);
     }
     /*
-     * 客户行业类型
+     * 客户行业类型-已废弃
      */
     function custJob()
     {

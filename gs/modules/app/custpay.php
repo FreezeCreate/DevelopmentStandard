@@ -18,15 +18,15 @@ class custpay extends AppController
             'contractname' => '合同名称',
             'getmoney'     => '',
             'adddt'        => '收款单申请日期',
-            'record'       => '款项情况',
+            'record'       => '',
             'files'        => '',
             'paytypeid'    => '收款方式',
             'paytype'      => '收款方式',
             'saleid'       => '销售人员',
             'salename'     => '销售人员',
-            'monstatus'    => '状态',   //1为结清；2为未结清
+            'monstatus'    => '结款状态',   //1为结清；2为未结清
             'content'      => '',   //备注
-            'otherstatus'  => '',   //1、收款2、其他收款
+            'otherstatus'  => '',   //1、收款2、其他收款    付款表存在此数据，该表字段冗余
         );
         $data = $this->receiveData($arg);
         

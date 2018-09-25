@@ -24,13 +24,14 @@ class custmang extends AppController
      * 薪酬设定表：yld_salarystand
      * 标※：公司培训计划的增删改查和审核：(yld_trainplan未建表) 培训材料和总结也在该表中 需要培训流程（审核多流程）
      * 行政管理表(公司活动)：(yld_activity建表) + 活动类型(Sealapl表，印章表)+印章类型
-     * 考勤管理：(yld_attendance未建表) TODO not (参照lejubang考勤管理)
-     * 会议管理：yld_meeting TODO not
+     * 考勤管理：(yld_attendance未建表) (参照lejubang考勤管理)
+     * 会议管理：yld_meeting
      * 预警设置：(yld_warnoa未建表)
-     * 通知类型
+     * 通知类型 TODO
      * OA参数设置
-     * 通知公告 TODO not info
+     * 通知公告
      * 
+     * TODO 所有需审核的详情页面检查
      * 
      * 
      * 
@@ -96,7 +97,7 @@ class custmang extends AppController
         $m_record   = spClass('m_cust_record');
         
         if (!empty($searchname)) {
-            $con .= ' and concat(cust_name,custdname,custcname,source,phone,address,info) like "%' . $searchname . '%"';
+            $con .= ' and concat(cust_name,type,custdname,custcname,source,phone,address,info) like "%' . $searchname . '%"';
             $page_con['searchname'] = $searchname;
         }
         
@@ -462,7 +463,8 @@ class custmang extends AppController
             $ad = $model->create($data);
         }
         if ($ad) {
-            $this->sendUpcoming($admin, 3, $ad, '【'.$data['name'].'】合同');
+            //合同已经经过了申请合同的审核，不在需要审核 TODO
+//             $this->sendUpcoming($admin, 3, $ad, '【'.$data['name'].'】合同');
 //             $this->sendUpcoming(7, $ad, $data['uname'] . '申请领用[' . $data['gname'] . ']');
             $this->returnSuccess('成功');
         } else {

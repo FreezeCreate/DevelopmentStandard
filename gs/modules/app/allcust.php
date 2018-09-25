@@ -49,7 +49,7 @@ class allcust extends AppController
         $m_cust = spClass('m_custmang');
         
         if (!empty($searchname)) {
-            $con .= ' and concat(cust_name,custdname,custcname,source,phone,address,info) like "%' . $searchname . '%"';
+            $con .= ' and concat(cust_name,type,custdname,custcname,source,phone,address,info) like "%' . $searchname . '%"';
 //             $con .= ' and (cust_name like "%' . $cust_name . '%")';
             $page_con['searchname'] = $searchname;
         }

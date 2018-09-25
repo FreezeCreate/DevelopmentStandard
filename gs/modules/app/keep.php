@@ -195,8 +195,7 @@ class keep extends AppController {
             'custcname' => '客户公司',
             'phone' => '客户手机', //客户手机，不能为空
             'address' => '',
-            'comment' => '',
-            'flowid' => '', //跟进状态
+            'info' => '',
         );
         $data = $this->receiveData($arg);
         $id = (int) $data['id'];
@@ -271,6 +270,7 @@ class keep extends AppController {
         $admin = $this->islogin();
         $model = spClass('m_equipment');
         $m_equipment_service = spClass('m_equipment_service');
+        
     }
 
 }

@@ -29,7 +29,7 @@ class custpaymon extends AppController
             'salename'     => '销售人员',
             'monstatus'    => '',   //1为结清；2为未结清
             'content'      => '',   //备注
-            'checkstatus'  => '',   //1合同收款2其他收款
+//             'checkstatus'  => '',   //1合同收款2其他收款    收入表存在此字段，该表冗余
             'otherstatus'  => '',
             'cateid'       => '支出分类',
             'did'          => '部门',
@@ -248,7 +248,7 @@ class custpaymon extends AppController
     {
         $admin = $this->islogin();
         $id = htmlspecialchars($this->spArgs('id'));
-        $res = spClass('m_custpay_mon')->update(array('id' => $id, 'cid' => $admin['cid'], 'monstatus' => 2), array('del' => 1)); //otherstatus=2
+        $res = spClass('m_custpay_mon')->update(array('id' => $id, 'cid' => $admin['cid'], 'monstatus' => 2), array('del' => 1));
         if ($res) $this->returnSuccess('成功');
         $this->returnError('失败');
     }

@@ -10,8 +10,9 @@ class regoods extends AppController
     {
         $admin        = $this->islogin();
         $con          = 'del = 0 and cid = ' . $admin['cid'];
-        $searchname        = urldecode(htmlspecialchars($this->spArgs('searchname')));
+        $searchname   = urldecode(htmlspecialchars($this->spArgs('searchname')));
         $model        = spClass('m_regoods');
+        $m_goods      = spClass('m_goods_order');
         if (!empty($searchname)) {
             $con .= ' and concat(renum,invoice_num,renumber,remoney,recompany,addname) like "%' . $searchname . '%"';
             $page_con['searchname'] = $searchname;
@@ -22,7 +23,10 @@ class regoods extends AppController
         $result['pager'] = $pager;
         
         foreach($results as $k=>$v){
+            $goods = $m_goods->find('id='.$v['invoice_id']);
+//             dump($goods);die;
             $result['results'][$k] = $v;
+            $result['results'][$k]['goods_name'] = $goods['order_name'];
         }
         $this->returnSuccess('成功', $result);
     }
