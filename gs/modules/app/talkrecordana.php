@@ -33,6 +33,7 @@ class talkrecordana extends AppController
             'tkid'      => '心态分析',
             'userid'    => '员工',
             'anarecord' => '沟通记录',
+            'retime'    => '',
         );
         $data = $this->receiveData($arg);
         $data['cid']       = $admin['cid'];

@@ -27,6 +27,7 @@ class custpay extends AppController
             'monstatus'    => '结款状态',   //1为结清；2为未结清
             'content'      => '',   //备注
             'otherstatus'  => '',   //1、收款2、其他收款    付款表存在此数据，该表字段冗余
+            'checkstatus'  => '',   //1、合同收款2、其他收款
         );
         $data = $this->receiveData($arg);
         
@@ -70,7 +71,7 @@ class custpay extends AppController
         $m_cust_pay = spClass('m_custpay');
         
         //where和分页where
-        $con    = 'del = 0 and cid = ' . $admin['cid'].' and otherstatus=1';
+        $con    = 'del = 0 and cid = ' . $admin['cid'].' and checkstatus=1';
         if (!empty($searchname)) {
             $con .= ' and concat(paynumber,custname,contractname,getmoney,adddt) like "%' . $searchname . '%"';
             $page_con['searchname'] = $searchname;
@@ -198,7 +199,7 @@ class custpay extends AppController
         $searchname = urldecode(htmlspecialchars($this->spArgs('searchname')));    //客户名称
         $m_cust_pay = spClass('m_custpay');
         //where和分页where
-        $con    = 'del = 0 and cid = ' . $admin['cid'].' and otherstatus=2';    //otherstatus=2未其他收入
+        $con    = 'del = 0 and cid = ' . $admin['cid'].' and checkstatus=2';    //otherstatus=2未其他收入
         if (!empty($searchname)) {
             $con .= ' and concat(paynumber,custname,contractname,getmoney,adddt) like "%' . $searchname . '%"';
             $page_con['searchname'] = $searchname;
@@ -224,7 +225,7 @@ class custpay extends AppController
         $id         = htmlspecialchars($this->spArgs('id'));
         //check params
         if (empty($id)) $this->returnError('id不存在');
-        $results    = $model->find('id='.$id.' and cid='.$admin['cid'].' and otherstatus=2 and del=0');   //otherstatus类型判断
+        $results    = $model->find('id='.$id.' and cid='.$admin['cid'].' and checkstatus=2 and del=0');   //otherstatus类型判断
         if (empty($results)) $this->returnError('id非法');
         //合同详情
         if (!empty($results['contractid'])){
@@ -240,7 +241,7 @@ class custpay extends AppController
     {
         $admin = $this->islogin();
         $id = htmlspecialchars($this->spArgs('id'));
-        $res = spClass('m_custpay')->update(array('id' => $id, 'cid' => $admin['cid'], 'otherstatus' => 2), array('del' => 1)); //otherstatus=2
+        $res = spClass('m_custpay')->update(array('id' => $id, 'cid' => $admin['cid'], 'checkstatus' => 2), array('del' => 1)); //otherstatus=2
         if ($res){
             $this->returnSuccess('成功');
         }else {

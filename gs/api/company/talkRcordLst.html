@@ -15,7 +15,7 @@
             <table class="table border">
                 <thead>
                     <tr>
-                        <td colspan="5" class="textCenter BgGreen">付款申请详情</td>
+                        <td colspan="5" class="textCenter BgGreen">心态分析列表</td>
                     </tr>
                 </thead>
                 <tbody class="hover">
@@ -23,7 +23,7 @@
                         <td colspan="5" class="BgGray textCenter">请求格式</td>
                     </tr>
                     <tr>
-                        <td>URL</td><td colspan="4">/app.php/custpaymon/custPayMonInfo?id=id&token=5523cbad2881cc1ea54a6b55083547c6a932eef2</td>
+                        <td>URL</td><td colspan="4">/app.php/talkrecord/talkRcordLst?token=5523cbad2881cc1ea54a6b55083547c6a932eef2</td>
                     </tr>
                     <tr>
                         <td>HTTP请求方式</td><td colspan="4">GET</td>
@@ -44,13 +44,6 @@
                     <tr>
                         <td>分页</td>
                         <td>page</td>
-                        <td>是</td>
-                        <td>int</td>
-                        <td></td>
-                    </tr>
-                    <tr>
-                        <td>id</td>
-                        <td>id</td>
                         <td>是</td>
                         <td>int</td>
                         <td></td>
@@ -101,32 +94,14 @@
                         <td >
                          {
             "id": "id",
-            "paynumber": "付款单号",
-            "custumid": "客户id",
-            "custname": "客户名称",
-            "contractid": "合同id",
-            "contractname": "合同名称",
-            "payall": "总付款",
-            "paymoney": "本次付款",
-            "record": "记录信息",
+            "userid": "用户id",
+            "username": "用户名称",
+            "analysis": "心态分析",
             "optid": "操作人id",
-            "optdt": "操作人",
-            "optname": "操作人姓名",
-            "adddt": "添加时间",
-            "content": "内容",
-            "monstatus": "结款状态1、结清2、未结清",
-            "del": "是否删除1、删除0、未删除",
+            "optname": "操作人",
+            "optdt": "操作时间",
             "cid": "公司id",
-            "files": "文件",
-            "saleid": "销售id",
-            "salename": "销售名称",
-            "paytypeid": "付款类型id",
-            "paytype": "付款类型名称",
-            "checkstatus": "1、供应商采购付款2、其他支出",
-            "status": "1",
-            "cateid": "客户类型",
-            "did": "部门id",
-            "dname": "部门名称"
+            "del": "是否删除1、删除0、未删除"
         }
                         </td>
                     </tr>

@@ -15,7 +15,7 @@
             <table class="table border">
                 <thead>
                     <tr>
-                        <td colspan="5" class="textCenter BgGreen">付款申请详情</td>
+                        <td colspan="5" class="textCenter BgGreen">供应商对账单</td>
                     </tr>
                 </thead>
                 <tbody class="hover">
@@ -23,7 +23,7 @@
                         <td colspan="5" class="BgGray textCenter">请求格式</td>
                     </tr>
                     <tr>
-                        <td>URL</td><td colspan="4">/app.php/custpaymon/custPayMonInfo?id=id&token=5523cbad2881cc1ea54a6b55083547c6a932eef2</td>
+                        <td>URL</td><td colspan="4">/app.php/supplier/supAllInfo?id=id&token=5523cbad2881cc1ea54a6b55083547c6a932eef2</td>
                     </tr>
                     <tr>
                         <td>HTTP请求方式</td><td colspan="4">GET</td>
@@ -99,35 +99,19 @@
                         <td>是</td>
                         <td>object</td>
                         <td >
-                         {
-            "id": "id",
-            "paynumber": "付款单号",
-            "custumid": "客户id",
-            "custname": "客户名称",
-            "contractid": "合同id",
-            "contractname": "合同名称",
-            "payall": "总付款",
-            "paymoney": "本次付款",
-            "record": "记录信息",
-            "optid": "操作人id",
-            "optdt": "操作人",
-            "optname": "操作人姓名",
-            "adddt": "添加时间",
-            "content": "内容",
-            "monstatus": "结款状态1、结清2、未结清",
-            "del": "是否删除1、删除0、未删除",
-            "cid": "公司id",
-            "files": "文件",
-            "saleid": "销售id",
-            "salename": "销售名称",
-            "paytypeid": "付款类型id",
-            "paytype": "付款类型名称",
-            "checkstatus": "1、供应商采购付款2、其他支出",
-            "status": "1",
-            "cateid": "客户类型",
-            "did": "部门id",
-            "dname": "部门名称"
-        }
+                         { "id": "id", "company": "供应商名称", "address": "地区", "goodstype": "供货商品类型", "name": "联系人", "phone": "联系方式", "explain": "内容", "optid": "操作人id", "optname": "操作人", "optdt": "操作时间", "hfzm": "是否有工商营业制造和其他合法证明 1有 0没有", "zlqk": "质量情况 1强 2一般 3弱", "jgfw": "产品价格和服务 1好 2一般 3差", "xgzz": "产品相关资质 1 有 2,没有", "shxy": "社会信誉是否良好 1好 2一般 3差", "cgst": "采购部评定 1同意 2不同意", "cgname": "采购部评定人签名", "zjst": "质检部评定 1同意 2不同意", "zjname": "质检部评定人签名", "scst": "生产技术部评定 1同意 2不同意", "scname": "生产技术部评定人签名", "offer_status": "是否同意作为本公司合格供方 1同意 2不同意", "stdt": "批准日期", "del": "是否删除 1删除 0正常", "cid": "公司id" }
+
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>详细信息</td>
+                        <td >results</td>
+                        <td>是</td>
+                        <td>object</td>
+                        <td >
+                        { "id": "id", "renum": "退货单编号", "invoice_id": "进货单ID", "invoice_num": "进货单编号", "renumber": "退货数量", "reunit": "退货单价", "remoney": "退货金额", "reinfo": "退货详情", "recomid": "退货公司id", "recompany": "退货公司", "optid": "操作人id", "optdt": "操作时间", "optname": "操作人名称", "cid": "公司id", "del": "删除否1、删除0、未删除", "status": "审核状态1、提交2、驳回3、审核通过", "addid": "制单人id", "addname": "制单人姓名"}
+                        
+
                         </td>
                     </tr>
                     <tr>

@@ -15,7 +15,7 @@
             <table class="table border">
                 <thead>
                     <tr>
-                        <td colspan="5" class="textCenter BgGreen">付款申请详情</td>
+                        <td colspan="5" class="textCenter BgGreen">预算分类详情</td>
                     </tr>
                 </thead>
                 <tbody class="hover">
@@ -23,7 +23,7 @@
                         <td colspan="5" class="BgGray textCenter">请求格式</td>
                     </tr>
                     <tr>
-                        <td>URL</td><td colspan="4">/app.php/custpaymon/custPayMonInfo?id=id&token=5523cbad2881cc1ea54a6b55083547c6a932eef2</td>
+                        <td>URL</td><td colspan="4">/app.php/budge/budgeInfo?id=id&token=5523cbad2881cc1ea54a6b55083547c6a932eef2</td>
                     </tr>
                     <tr>
                         <td>HTTP请求方式</td><td colspan="4">GET</td>
@@ -101,32 +101,21 @@
                         <td >
                          {
             "id": "id",
-            "paynumber": "付款单号",
-            "custumid": "客户id",
-            "custname": "客户名称",
-            "contractid": "合同id",
-            "contractname": "合同名称",
-            "payall": "总付款",
-            "paymoney": "本次付款",
-            "record": "记录信息",
+            "budge_name": "预算名称",
+            "budge_status": "预算状态1、支出2、收入",
+            "budge_money": "金额",
+            "budge_prev": "事前控制：百分比数据",
+            "budge_beyond": "超额控制：百分比数据",
+            "budge_check": "审核控制：百分比数据",
+            "budge_desc": "预算描述",
             "optid": "操作人id",
-            "optdt": "操作人",
-            "optname": "操作人姓名",
-            "adddt": "添加时间",
-            "content": "内容",
-            "monstatus": "结款状态1、结清2、未结清",
+            "optname": "操作人",
+            "optdt": "操作日期",
             "del": "是否删除1、删除0、未删除",
             "cid": "公司id",
-            "files": "文件",
-            "saleid": "销售id",
-            "salename": "销售名称",
-            "paytypeid": "付款类型id",
-            "paytype": "付款类型名称",
-            "checkstatus": "1、供应商采购付款2、其他支出",
-            "status": "1",
-            "cateid": "客户类型",
             "did": "部门id",
-            "dname": "部门名称"
+            "dname": "部门名称",
+            "budge_time": "预算时间"
         }
                         </td>
                     </tr>

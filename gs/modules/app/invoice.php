@@ -4,12 +4,34 @@ class invoice extends AppController
 {
     
     /**
-     * 采购单列表
+     * 采购单列表-申请
+     */
+    function invoiceApply()
+    {
+        $admin        = $this->islogin();
+        $con          = 'del=0 and cid = ' . $admin['cid'];
+        $con         .= ' and status=1';
+        $this->in_common($con);
+    }
+    
+    /**
+     * 采购单列表-statu=3
      */
     function index()
     {
         $admin        = $this->islogin();
-        $con          = 'del = 0 and cid = ' . $admin['cid'];
+        $con          = 'del=0 and cid = ' . $admin['cid'];
+        $con         .= ' and status<>1';
+        $this->in_common($con);
+    }
+    
+    /**
+     * 采购列表公共方法
+     * @param unknown $con
+     */
+    function in_common($con)
+    {
+        if (empty($con)) $this->returnError('非法操作');
         $invoice_name = urldecode(htmlspecialchars($this->spArgs('invoice_name'))); //按照计划标题查询
         $year         = urldecode(htmlspecialchars($this->spArgs('year')));
         $month        = urldecode(htmlspecialchars($this->spArgs('month')));
@@ -32,7 +54,7 @@ class invoice extends AppController
             $con .= ' and (optdt like "%'.$year.'-'.$month.'-'.$day.'%")';
             $page_con['year'] = $year.'-'.$month.'-'.$day;
         }
-
+        
         $results = $model->spPager($this->spArgs('page', 1), PAGE_NUM)->findAll($con,'optdt desc,id desc');
         $pager   = $model->spPager()->getPager();
         $result['pager'] = $pager;
@@ -42,6 +64,9 @@ class invoice extends AppController
         }
         $this->returnSuccess('成功', $result);
     }
+    
+    
+    
     
     /**
      * 删除采购单
@@ -54,6 +79,7 @@ class invoice extends AppController
     
     /**
      * 最近一次采购价格(即采购成功status=3)
+     * 和商品详细
      * 且只有审核人能看
      */
     function lastBuy()
@@ -66,7 +92,7 @@ class invoice extends AppController
         $arr_bill = explode(',', $check_id);
         if (in_array($admin['id'], $arr_bill)){
             $data    = spClass('m_invoice')->find('id='.$id.' and cid='.$admin['cid']);
-            $sql     = 'select * from '.DB_NAME.'_invoice where UNIX_TIMESTAMP(buydate)<'.strtotime($data['buydate']).' and status=3 and cid='.$admin['cid'].' limit 1';
+            $sql     = 'select * from '.DB_NAME.'_invoice where UNIX_TIMESTAMP(buydate)<='.strtotime($data['buydate']).' and status=3 and cid='.$admin['cid'].' limit 1';
             $results = spClass('m_invoice')->findSql($sql);
 //             dump(spClass('m_invoice')->dumpSql());die;
             //库房数量
@@ -75,6 +101,7 @@ class invoice extends AppController
             $result['results'] = $results[0];
             $this->returnSuccess('成功', $result);
         }
+        if (empty($result['results'])) $result['results'] = '';
         $this->returnError('失败');
     }
     

@@ -10,10 +10,12 @@ class relation extends AppController
     {
         $admin      = $this->islogin();
         $con        = 'del = 0 and cid = ' . $admin['cid'];
+        $con       .= ' and `table` like "%admin%"';
         $searchname = urldecode(htmlspecialchars($this->spArgs('searchname')));
         $model      = spClass('m_relation');
+        
         if (!empty($searchname)) {
-            $con .= ' and concat(dealname,dealcontent) like "%' . $searchname . '%"';
+            $con .= ' and concat(title,redesc) like "%' . $searchname . '%"';
             $page_con['searchname'] = $searchname;
         }
         
@@ -23,6 +25,9 @@ class relation extends AppController
         
         foreach($results as $k=>$v){
             $result['results'][$k] = $v;
+            $user = spClass('m_'.$v['table'])->find('id='.$v['tid']);
+            $result['results'][$k]['userid'] = $user['id'];
+            $result['results'][$k]['username'] = $user['name'];
         }
         $this->returnSuccess('成功', $result);
     }
@@ -48,7 +53,12 @@ class relation extends AppController
         if (empty($id)) $this->returnError('id不存在');
         $results    = $model->find('id='.$id.' and cid='.$admin['cid']);
         if (empty($results)) $this->returnError('id非法');
+        
+        $user = spClass('m_admin')->find('id='.$results['tid'], '', 'id,name');
         $result['results'] = $results;
+        
+        $result['results']['userid']    = $user['id'];
+        $result['results']['username']  = $user['name'];
         
         $this->returnSuccess('成功', $result);
     }
@@ -63,8 +73,7 @@ class relation extends AppController
         $id              = (int)htmlentities($this->spArgs('id'));
         
         $arg = array(
-            'userid'     => '员工',
-            'username'   => '员工',
+            'tid'        => '员工',
             'title'      => '标题',
             'redesc'     => '',   //内容
             'noticetime' => '重要日子提醒时间',
@@ -74,6 +83,7 @@ class relation extends AppController
         $data['optid']     = $admin['id'];
         $data['optname']   = $admin['name'];
         $data['optdt']     = date('Y-m-d H:i:s');
+        $data['table']     = 'admin';
         
         if($id){
             $re = $model->find(array('id'=>$id,'del'=>0,'cid'=>$admin['cid']));

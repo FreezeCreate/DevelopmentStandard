@@ -48,7 +48,11 @@ class talkrecord extends AppController
         if (empty($id)) $this->returnError('id不存在');
         $results    = $model->find('id='.$id.' and cid='.$admin['cid']);
         if (empty($results)) $this->returnError('id非法');
+        
+        $record = spClass('m_talkrecord_ana')->findAll('tkid='.$id.' and del=0 and cid='.$admin['cid'].'');
         $result['results'] = $results;
+        $result['record']  = $record;
+        
         $this->returnSuccess('成功', $result);
     }
 

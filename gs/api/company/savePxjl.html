@@ -15,7 +15,7 @@
             <table class="table border">
                 <thead>
                     <tr>
-                        <td colspan="5" class="textCenter BgGreen">付款申请详情</td>
+                        <td colspan="5" class="textCenter BgGreen">培训管理新增</td>
                     </tr>
                 </thead>
                 <tbody class="hover">
@@ -23,13 +23,13 @@
                         <td colspan="5" class="BgGray textCenter">请求格式</td>
                     </tr>
                     <tr>
-                        <td>URL</td><td colspan="4">/app.php/custpaymon/custPayMonInfo?id=id&token=5523cbad2881cc1ea54a6b55083547c6a932eef2</td>
+                        <td>URL</td><td colspan="4">/app.php/pxjl/savePxjl</td>
                     </tr>
                     <tr>
-                        <td>HTTP请求方式</td><td colspan="4">GET</td>
+                        <td>HTTP请求方式</td><td colspan="4">JSON</td>
                     </tr>
                     <tr>
-                        <td>是否登录验证</td><td colspan="4">是</td>
+                        <td>是否登录验证</td><td colspan="4">POST</td>
                     </tr>
                     <tr>
                         <td colspan="5" class="BgGray textCenter">参数说明</td>
@@ -42,29 +42,78 @@
                         <td >说明</td>
                     </tr>
                     <tr>
-                        <td>分页</td>
-                        <td>page</td>
-                        <td>是</td>
-                        <td>int</td>
-                        <td></td>
-                    </tr>
-                    <tr>
-                        <td>id</td>
-                        <td>id</td>
-                        <td>是</td>
-                        <td>int</td>
-                        <td></td>
-                    </tr>
-                    <tr>
                         <td>token</td>
                         <td>token</td>
+                        <td>是</td>
+                        <td>string</td>
+                        <td>5523cbad2881cc1ea54a6b55083547c6a932eef2</td>
+                    </tr>
+                    <tr>
+                        <td>标题</td>
+                        <td>title</td>
                         <td>是</td>
                         <td>string</td>
                         <td></td>
                     </tr>
                     <tr>
-                        <td>搜索</td>
-                        <td>searchname</td>
+                        <td>部门id</td>
+                        <td>depid</td>
+                        <td>否</td>
+                        <td>int</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>部门</td>
+                        <td>depname</td>
+                        <td>否</td>
+                        <td>string</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>会议纪要人id</td>
+                        <td>userid</td>
+                        <td>是</td>
+                        <td>int</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>会议纪要人</td>
+                        <td>username</td>
+                        <td>是</td>
+                        <td>string</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>培训开始日期</td>
+                        <td>date</td>
+                        <td>是</td>
+                        <td>date</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>培训结束日期</td>
+                        <td>enddate</td>
+                        <td>是</td>
+                        <td>date</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>讲师</td>
+                        <td>lector</td>
+                        <td>否</td>
+                        <td>string</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>主题</td>
+                        <td>theme</td>
+                        <td>是</td>
+                        <td>string</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>总结</td>
+                        <td>zongjie</td>
                         <td>否</td>
                         <td>string</td>
                         <td></td>
@@ -93,43 +142,7 @@
                         <td>int</td>
                         <td >0</td>
                     </tr>
-                    <tr>
-                        <td>详细信息</td>
-                        <td >results</td>
-                        <td>是</td>
-                        <td>object</td>
-                        <td >
-                         {
-            "id": "id",
-            "paynumber": "付款单号",
-            "custumid": "客户id",
-            "custname": "客户名称",
-            "contractid": "合同id",
-            "contractname": "合同名称",
-            "payall": "总付款",
-            "paymoney": "本次付款",
-            "record": "记录信息",
-            "optid": "操作人id",
-            "optdt": "操作人",
-            "optname": "操作人姓名",
-            "adddt": "添加时间",
-            "content": "内容",
-            "monstatus": "结款状态1、结清2、未结清",
-            "del": "是否删除1、删除0、未删除",
-            "cid": "公司id",
-            "files": "文件",
-            "saleid": "销售id",
-            "salename": "销售名称",
-            "paytypeid": "付款类型id",
-            "paytype": "付款类型名称",
-            "checkstatus": "1、供应商采购付款2、其他支出",
-            "status": "1",
-            "cateid": "客户类型",
-            "did": "部门id",
-            "dname": "部门名称"
-        }
-                        </td>
-                    </tr>
+                    
                     <tr>
                         <td colspan="5" class="BgGray textCenter">错误返回结果</td>
                     </tr>

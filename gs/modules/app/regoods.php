@@ -24,7 +24,6 @@ class regoods extends AppController
         
         foreach($results as $k=>$v){
             $goods = $m_goods->find('id='.$v['invoice_id']);
-//             dump($goods);die;
             $result['results'][$k] = $v;
             $result['results'][$k]['goods_name'] = $goods['order_name'];
         }

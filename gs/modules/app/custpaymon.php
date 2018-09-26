@@ -30,7 +30,7 @@ class custpaymon extends AppController
             'monstatus'    => '',   //1为结清；2为未结清
             'content'      => '',   //备注
 //             'checkstatus'  => '',   //1合同收款2其他收款    收入表存在此字段，该表冗余
-            'otherstatus'  => '',
+            'checkstatus'  => '',
             'cateid'       => '支出分类',
             'did'          => '部门',
             'dname'        => '部门',
@@ -80,7 +80,7 @@ class custpaymon extends AppController
         $m_cust_pay = spClass('m_custpay_mon');
         
         //where和分页where
-        $con    = 'del = 0 and cid = ' . $admin['cid'].' and otherstatus=1';
+        $con    = 'del = 0 and cid = ' . $admin['cid'].' and checkstatus=1';
         if (!empty($searchname)) {
             $con .= ' and concat(paynumber,custname,contractname,getmoney,adddt) like "%' . $searchname . '%"';
             $page_con['searchname'] = $searchname;
@@ -142,7 +142,7 @@ class custpaymon extends AppController
         $m_cust_pay = spClass('m_custpay_mon');
         
         //where和分页where
-        $con    = 'del = 0 and cid = ' . $admin['cid'].' and otherstatus=2';    //其他支出check
+        $con    = 'del = 0 and cid = ' . $admin['cid'].' and checkstatus=2';    //其他支出check
         if (!empty($searchname)) {
             $con .= ' and concat(paynumber,custname,contractname,getmoney,adddt) like "%' . $searchname . '%"';
             $page_con['searchname'] = $searchname;
@@ -168,7 +168,7 @@ class custpaymon extends AppController
         $id         = htmlspecialchars($this->spArgs('id'));
         //check params
         if (empty($id)) $this->returnError('id不存在');
-        $results    = $model->find('id='.$id.' and cid='.$admin['cid'].' and otherstatus=2 and del=0');   //其他类型check
+        $results    = $model->find('id='.$id.' and cid='.$admin['cid'].' and checkstatus=2 and del=0');   //其他类型check
         if (empty($results)) $this->returnError('id非法');
         //合同详情
         if (!empty($results['contractid'])){
@@ -185,7 +185,7 @@ class custpaymon extends AppController
     {
         $admin = $this->islogin();
         $id = htmlspecialchars($this->spArgs('id'));
-        $res = spClass('m_custpay_mon')->update(array('id' => $id, 'cid' => $admin['cid'], 'otherstatus' => 2), array('del' => 1)); //otherstatus=2
+        $res = spClass('m_custpay_mon')->update(array('id' => $id, 'cid' => $admin['cid'], 'checkstatus' => 2), array('del' => 1)); //otherstatus=2
         if ($res) $this->returnSuccess('成功');
         $this->returnError('失败');
     }
