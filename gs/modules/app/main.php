@@ -14,6 +14,43 @@ class main extends AppController {
         $this->admin = $admin;
     }
     
+    /**
+     * 超全局变量参数
+     */
+    function data() 
+    {
+        $type = htmlentities($this->spArgs('type'));
+        $result = $GLOBALS[$type];
+        foreach ($result as $k => $v) {
+            if (is_array($v)) {
+                $ch = array();
+                foreach($v['children'] as $k1=>$v1){
+                    if(is_array($v1)){
+                        $ch[] = array(
+                            'id' => $k1,
+                            'name' => $v1['name'],
+                        );
+                    }else{
+                        $ch[] = array(
+                            'id' => $k1,
+                            'name' => $v1,
+                        );
+                    }
+                }
+                $results[] = array(
+                    'id' => $k,
+                    'name' => $v['name'],
+                    'children' => $ch,
+                );
+            } else {
+                $results[] = array(
+                    'id' => $k,
+                    'name' => $v,
+                );
+            }
+        }
+        exit(json_encode(array('data' => $results)));
+    }
     
     /**
      * 付款方式接口
@@ -186,18 +223,19 @@ class main extends AppController {
     }
     
     /**
-     * 导航列表
+     * 导航列表home1_12 home1-12
      * @param unknown $oid
      */
     function menuLst($oid)
     {
         //TODO 导航栏的权限判断
         $oid = htmlspecialchars($this->spArgs('oid'));
-        if (empty($oid)) $oid = 1;
+        if (empty($oid)) $oid = 0;
         $result['results'] = spClass('m_auth')->findAll('oid='.$oid.' and hide = 0 and pid = 0','sort');
         foreach($result['results'] as $k=>$v){
             $result['results'][$k]['children'] = spClass('m_auth')->findAll('oid='.$oid.' and hide = 0 and pid = '.$v['id'],'sort');
         }
+        
         $this->returnSuccess(1, $result);
     }
     

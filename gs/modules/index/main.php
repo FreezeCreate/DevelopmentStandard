@@ -14,6 +14,7 @@ class main extends IndexController {
         $this->admin = $admin;
     }
     
+    
     function myinfo() {
         $admin = $this->get_ajax_menu();
         $admin['dirname'] = $GLOBALS['USER_DIR'][$admin['dir']];

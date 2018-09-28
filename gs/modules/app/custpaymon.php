@@ -4,8 +4,8 @@ class custpaymon extends AppController
 {
 
     /**
-     * 新增付款表信息 (Tips:选择客户数据是调用custmang/addmang接口)
-     * TODO API文档的编写和auth表的编写
+     * TODO当monstatus为3时是app报销
+     * TODO客户售后已完成，应编写设备检修的打卡模块
      * 
      */
     function saveCustPayMon()
@@ -15,8 +15,8 @@ class custpaymon extends AppController
         $id              = (int)htmlentities($this->spArgs('id'));
         
         $arg = array(
-            'custumid'     => '客户id',
-            'custname'     => '客户名称',
+            'custumid'     => '',   //供应商id
+            'custname'     => '',   //供应商名称
             'contractid'   => '',   //合同id，当不为合同时不填写
             'contractname' => '',   //合同名称
             'paymoney'     => '',
@@ -25,15 +25,12 @@ class custpaymon extends AppController
             'files'        => '',
             'paytypeid'    => '付款方式',
             'paytype'      => '付款方式',
-            'saleid'       => '销售人员',
-            'salename'     => '销售人员',
-            'monstatus'    => '',   //1为结清；2为未结清
+            'saleid'       => '付款人员',
+            'salename'     => '付款人员',
+            'monstatus'    => '结清状态',   //1为结清；2为未结清
             'content'      => '',   //备注
-//             'checkstatus'  => '',   //1合同收款2其他收款    收入表存在此字段，该表冗余
-            'checkstatus'  => '',
-            'cateid'       => '支出分类',
-            'did'          => '部门',
-            'dname'        => '部门',
+            'checkstatus'  => '',   //1付款给供应商2其他报销
+            'cateid'       => '用款分类',   //费用科目
         );
         $data = $this->receiveData($arg);
         
@@ -42,6 +39,9 @@ class custpaymon extends AppController
         $sum   = $model->findCount('paynumber like "%M'.date('Ymd').'%"');
         $sum   = $sum<9?'0'.($sum+1):($sum+1);
         
+        $user  = spClass('m_admin')->find('id='.$data['saleid']);
+        $data['did']     = $user['did'];
+        $data['dname']   = $user['dname'];
         $data['paynumber']  = 'M'.date('Ymd').$sum;    //p=>pay
         $data['adddt']   = date('Y-m-d H:i:s');
         $data['cid']     = $admin['cid'];
@@ -51,14 +51,11 @@ class custpaymon extends AppController
         $data['status']  = 1;
         
         if($id){
-            $data['status']  = $this->spArgs('status');   //1为结清；2为未结清
             $re = $model->find(array('id'=>$id,'del'=>0,'cid'=>$admin['cid']));
             if(empty($re)) $this->returnError('信息不存在');
-//             if($re['monstatus'] == 1) $this->returnError('该款项已结清，不需要再操作');
             if(!empty($re['paynumber'])) unset($data['paynumber']);
             $up = $model->update(array('id'=>$id),$data);
         }else{
-//             $data['monstatus']  = 2;   //1为结清；2为未结清
             $up = $model->create($data);
         }
         
@@ -68,6 +65,55 @@ class custpaymon extends AppController
         } 
         $this->returnError('失败');
     }
+    
+    /**
+     * app付款单新增
+     */
+    function saveCustPayMonApp()
+    {
+        $admin           = $this->islogin();
+        $model           = spClass('m_custpay_mon');
+        $id              = (int)htmlentities($this->spArgs('id'));
+        
+        $arg = array(
+            'paymoney'     => '金额',
+            'cateid'       => '用款类别',
+            'adddt'        => '付款单申请日期',
+            'content'      => '',   //说明
+        );
+        $data               = $this->receiveData($arg);
+        $sum                = $model->findCount('paynumber like "%M'.date('Ymd').'%"');
+        $sum                = $sum<9?'0'.($sum+1):($sum+1);
+        
+        $data['did']        = $admin['did'];
+        $data['dname']      = $admin['dname'];
+        $data['paynumber']  = 'M'.date('Ymd').$sum;
+        $data['optdt']      = date('Y-m-d H:i:s');
+        $data['cid']        = $admin['cid'];
+        $data['optid']      = $admin['id'];
+        $data['optname']    = $admin['name'];
+        $data['optdt']      = date('Y-m-d H:i:s');
+        $data['status']     = 1;
+        $data['custumid']   = $admin['id'];
+        $data['monstatus']  = 3;    //当为3时是app报销
+        
+        if($id){
+            $re = $model->find(array('id'=>$id,'del'=>0,'cid'=>$admin['cid']));
+            if(empty($re)) $this->returnError('信息不存在');
+            if(!empty($re['paynumber'])) unset($data['paynumber']);
+            $up = $model->update(array('id'=>$id),$data);
+        }else{
+            $up = $model->create($data);
+        }
+        
+        if($up){
+            $this->sendUpcoming($admin, 48, $up, '【'.$data['paynumber'].'】付款单');
+            $this->returnSuccess('成功');
+        }
+        $this->returnError('失败');
+    }
+    
+    
     
     /**
      * 付款记录列表
@@ -80,7 +126,7 @@ class custpaymon extends AppController
         $m_cust_pay = spClass('m_custpay_mon');
         
         //where和分页where
-        $con    = 'del = 0 and cid = ' . $admin['cid'].' and checkstatus=1';
+        $con    = 'del = 0 and cid = ' . $admin['cid'].' and checkstatus=1 and monstatus<>3';
         if (!empty($searchname)) {
             $con .= ' and concat(paynumber,custname,contractname,getmoney,adddt) like "%' . $searchname . '%"';
             $page_con['searchname'] = $searchname;

@@ -13,6 +13,7 @@ class apply extends AppController {
      */
     function Invoice()
     {
+        $admin        = $this->islogin();
         $mid = (int) htmlentities($this->spArgs('mid'));
         $id  = (int) htmlentities($this->spArgs('id'));
         $this->findCheck($id, 44);
@@ -23,6 +24,7 @@ class apply extends AppController {
      */
     function Regoods()
     {
+        $admin        = $this->islogin();
         $mid = (int) htmlentities($this->spArgs('mid'));
         $id  = (int) htmlentities($this->spArgs('id'));
         $this->findCheck($id, 45);

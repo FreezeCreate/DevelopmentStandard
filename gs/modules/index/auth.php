@@ -472,13 +472,14 @@ class auth extends IndexController {
     /*     * *****
      * 菜单管理
      * ***** */
-
-    function menu() {
+    
+    function menu() 
+    {
 //        $result = $this->get_menu();
 //        $this->menu = $result['menu'];
 //        $admin = $result['admin'];
 //        $this->admin = $admin;
-        $oid = htmlentities($this->spArgs('oid',1));
+        $oid = htmlentities($this->spArgs('oid',0));
         $m_auth = spClass('m_auth');
         $page_con['oid'] = $oid;
         $results = $m_auth->getMenu('hide = 0 and del = 0 and oid = '.$oid, 'sort asc','id,title,control,way,pid,sort,branch,img');

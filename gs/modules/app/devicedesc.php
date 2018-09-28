@@ -65,17 +65,23 @@ class devicedesc extends AppController
             'type'           => '报告表种类',
             'deviceid'       => '固资设备id',
             'devicename'     => '固资设备名称',
-            'devicecateid'   => '设备分类id',
-            'devicecatename' => '设备分类名称',
+//             'devicecateid'   => '设备分类id',
+//             'devicecatename' => '设备分类名称',
             'descname'       => '标题',
             'content'        => '内容',
         );
+        
         $data = $this->receiveData($arg);
         $data['cid']       = $admin['cid'];
         $data['optid']     = $admin['id'];
         $data['optname']   = $admin['name'];
         $data['optdt']     = date('Y-m-d H:i:s');
         $data['status']    = 1;
+        
+        $device_data = spClass('m_device_desc')->find('id='.$data['deviceid']);
+        $data['devicecateid'] = $device_data['device_cateid'];
+        $data['devicename']   = $device_data['device_catename'];
+        
         
         if($id){
             $re = $model->find(array('id'=>$id,'del'=>0,'cid'=>$admin['cid']));

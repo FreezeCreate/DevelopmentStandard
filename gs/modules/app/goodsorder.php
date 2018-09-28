@@ -85,9 +85,9 @@ class goodsorder extends AppController
             'stock_id'      => '库房',
             'stock_name'    => '库房',
             'order_spec'    => '规格',
+            'order_unit'    => '单位',
             'order_num'     => '商品数量',
             'order_explain' => '备注',
-            
         );
         $data = $this->receiveData($arg);
         $data['cid']       = $admin['cid'];

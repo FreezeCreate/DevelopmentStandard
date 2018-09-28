@@ -5,6 +5,7 @@
             <div class="Tables">
                 <div class="TablesHead">
                     <ul class="TablesHeadNav">
+                        <li class="TablesHeadItem <?php echo $page_con['oid']==0?'active':''?>"><a href="<?php echo spUrl($c,$a,array('oid'=>0))?>">生产管理</a></li>
                         <li class="TablesHeadItem <?php echo $page_con['oid']==1?'active':''?>"><a href="<?php echo spUrl($c,$a,array('oid'=>1))?>">销售管理</a></li>
                         <li class="TablesHeadItem <?php echo $page_con['oid']==2?'active':''?>"><a href="<?php echo spUrl($c,$a,array('oid'=>2))?>">仓库管理</a></li>
                         <li class="TablesHeadItem <?php echo $page_con['oid']==3?'active':''?>"><a href="<?php echo spUrl($c,$a,array('oid'=>3))?>">财务管理</a></li>

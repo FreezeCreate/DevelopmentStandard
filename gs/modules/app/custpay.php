@@ -13,9 +13,9 @@ class custpay extends AppController
         $id              = (int)htmlentities($this->spArgs('id'));
         
         $arg = array(
-            'custumid'     => '客户id',
-            'contractid'   => '合同id',
-            'contractname' => '合同名称',
+//             'custumid'     => '',   //客户id
+            'contractid'   => '',   //合同id
+            'contractname' => '',   //合同名称
             'getmoney'     => '',
             'adddt'        => '收款单申请日期',
             'record'       => '',
@@ -30,6 +30,13 @@ class custpay extends AppController
             'checkstatus'  => '',   //1、合同收款2、其他收款
         );
         $data = $this->receiveData($arg);
+        //客户id和名称的新增
+        $contract_data = spClass('m_contract')->find('id='.$data['contractid'].' and del=0 and cid='.$admin['cid'].'');
+        if (empty($contract_data)) $this->returnError('合同数据有误!');
+        $data['custumid'] = $contract_data['custid'];
+        $cust_data = spClass('m_custmang')->find('id='.$contract_data['custid'].' and del=0 and cid='.$admin['cid'].'');
+        if (empty($cust_data)) $this->returnError('用户数据有误!');
+        $data['custname'] = $cust_data['cust_name'];
         
         $files = $this->spArgs('files');
         if($files) $data['files'] = implode(',', $files);

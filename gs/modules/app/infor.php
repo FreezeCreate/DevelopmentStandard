@@ -62,6 +62,7 @@ class infor extends AppController
         $data['title']    = htmlspecialchars($this->spArgs('title'));
         $data['receid']   = trim(htmlspecialchars($this->spArgs('receid')), ',');
         $data['recename'] = trim(htmlspecialchars($this->spArgs('recename')), ',');
+        $data['adddt']    = trim(htmlspecialchars($this->spArgs('adddt')), ',');
         $data['content']  = htmlspecialchars($this->spArgs('content'));
         $m_infor          = spClass('m_infor');
         
@@ -71,6 +72,9 @@ class infor extends AppController
         $data['date']      = date('Y-m-d H:i:s');
         
         $up = $m_infor->create($data,$admin);
+        
+        //TODO 发送给接收人
+        
         if ($up) $this->returnSuccess('成功');
         $this->returnError('失败');
     }

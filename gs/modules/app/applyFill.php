@@ -48,7 +48,7 @@ class applyFill extends AppController {
         }
         
         if($up){
-            $this->sendUpcoming($admin, 45, $up, '【'.$data['invoice_num'].'】退货单');
+//             $this->sendUpcoming($admin, 45, $up, '【'.$data['invoice_num'].'】退货单');
             $this->returnSuccess('成功');
         }
         $this->returnError('失败');

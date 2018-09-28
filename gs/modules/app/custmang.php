@@ -27,13 +27,15 @@ class custmang extends AppController
      * 考勤管理：(yld_attendance未建表) (参照lejubang考勤管理)
      * 会议管理：yld_meeting
      * 预警设置：(yld_warnoa未建表)
-     * 通知类型 TODO
+     * 通知类型 TO DO
      * OA参数设置
      * 通知公告
      * 
      * TODO 所有需审核的详情页面检查
+     * TODO 通知公告提醒
      * 
-     * 
+     * not TO DO goods_order表加上单位unit字段
+     * not TO DO 按供应商和商品的详细信息+上采购列表单
      * 
      * 
      * 
@@ -46,6 +48,17 @@ class custmang extends AppController
      * 固资设备报告需要审核
      * TO DO 已完成 
      * 供应商审核
+     * TO DO 已完成
+     * 完善AUTH侧边栏
+     * 
+     * TO DO 
+     * 第一模块移植过来
+     * 加入session和cookie(登陆不用做)
+     * TO DO
+     * 供应商三个部门的审核
+     * 
+     * TODO
+     * 记录表格的字段对比，然后新增或修改字段名称，规范化字段
      * 
      * 
      */
@@ -389,10 +402,12 @@ class custmang extends AppController
      */
     function applyCheckLst()
     {
-        $admin   = $this->islogin();
-        $results = spClass('m_contract_apply')->findAll('status=3 and del=0 and cid='.$admin['id'].' and applyid='.$admin['id'].'');
+        $admin      = $this->islogin();
+        $m_contract = spClass('m_contract');
+        $results    = spClass('m_contract_apply')->findAll('status=3 and del=0 and cid='.$admin['id'].' and applyid='.$admin['id'].'');
         foreach($results as $k=>$v){
-            
+            $exist_contract = $m_contract->find('conapplyid='.$v['id'].' and del=0 and cid='.$admin['cid'].'');
+            if (!empty($exist_contract)) continue;  //合同中存在申请的id时说明合同已经通过，无需遍历
             $result['results'][$k] = array(
                 'apply_id'             => $v['id'],
                 'apply_contractname'   => $v['contractname'],
@@ -424,14 +439,15 @@ class custmang extends AppController
         $data = $this->receiveData($arg);
         
         //从申请表过来的数据
-        $apply_data = spClass('m_contract_apply')->find('id='.$applyid);
+        $apply_data         = spClass('m_contract_apply')->find('id='.$applyid);
         if (!$apply_data) $this->returnError('合同申请不存在');
-        $data['name'] = $apply_data['contractname'];
-        $data['cname'] = $apply_data['applycname']; //客户名称
-        $data['salename'] = $apply_data['applyname'];
-        $data['saleid'] = $apply_data['applyid'];
-        $data['custid'] = $apply_data['custid'];    //客户id
-        $data['files'] = $apply_data['files'];  //文件资料
+        $data['name']       = $apply_data['contractname'];
+        $data['cname']      = $apply_data['applycname']; //客户名称
+        $data['salename']   = $apply_data['applyname'];
+        $data['saleid']     = $apply_data['applyid'];
+        $data['custid']     = $apply_data['custid'];    //客户id
+        $data['conapplyid'] = $apply_data['id'];    //合同申请id
+        $data['files']      = $apply_data['files'];  //文件资料
 //         $files = $this->spArgs('files');
 //         if ($files) $data['files'] = implode(',', $files);
         
@@ -733,7 +749,32 @@ class custmang extends AppController
         foreach ($result['paymon'] as $k => $v){
             $will = $will + $v['getmoney'];
         }
-        $result['balance'] = $result['results']['money'] - $will;
+        if (empty($result['paymon'])) $result['paymon'] = '';
+        
+        $result['balance'] = $result['results']['money'] - $will;   //未收款
+        $this->returnSuccess('成功', $result);
+    }
+    
+    function projectBillLst()
+    {
+        $admin     = $this->islogin();
+        $con       = 'a.del = 0 and a.cid = ' . $admin['cid'];
+        $searchname= urldecode(htmlspecialchars($this->spArgs('searchname')));
+        $model     = spClass('m_contract');
+        
+        if (!empty($searchname)) {
+            $con .= ' and concat(a.number,a.name,a.adddt,a.cname,a.money,a.startdt,a.enddt,a.signdt,a.salename) like "%' . $searchname . '%"';
+            $page_con['searchname'] = $searchname;
+        }
+        
+        $sql     = 'select a.* from '.DB_NAME.'_contract as a,'.DB_NAME.'_custpay as b where '.$con.' and b.del=0 and b.cid='.$admin['cid'].' and a.id=b.contractid group by a.id order by a.id desc';
+        $results = $model->spPager($this->spArgs('page', 1), PAGE_NUM)->findSql($sql);
+        $pager   = $model->spPager()->getPager();
+        $result['pager'] = $pager;
+        
+        foreach($results as $k=>$v){
+            $result['results'][$k] = $v;
+        }
         $this->returnSuccess('成功', $result);
     }
     
@@ -754,11 +795,10 @@ class custmang extends AppController
         }
         if (!empty($searchdt)){
             $con .= ' and adddt like "%' . $searchdt . '%"';
+            $result['pay'] = spClass('m_custpay_mon')->findAll($con);
+            $result['get'] = spClass('m_custpay')->findAll($con);
         }
-        
-        $result['pay'] = spClass('m_custpay_mon')->findAll($con);
-        $result['get'] = spClass('m_custpay')->findAll($con);
-        
+//         if (empty($result)) $result = '';
         $this->returnSuccess('成功', $result);
     }
     

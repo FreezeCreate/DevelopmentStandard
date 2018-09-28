@@ -66,7 +66,7 @@ class devicedesccheck extends AppController
             'content'   => '内容',
             'checkid'   => '汇报报告id',
             'checkname' => '汇报报告内容',
-            'status'    => '验收状态',
+            'status'    => '',
         );
         $data = $this->receiveData($arg);
         $data['cid']       = $admin['cid'];

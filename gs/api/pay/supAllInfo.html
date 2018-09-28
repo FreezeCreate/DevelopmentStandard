@@ -100,18 +100,50 @@
                         <td>object</td>
                         <td >
                          { "id": "id", "company": "供应商名称", "address": "地区", "goodstype": "供货商品类型", "name": "联系人", "phone": "联系方式", "explain": "内容", "optid": "操作人id", "optname": "操作人", "optdt": "操作时间", "hfzm": "是否有工商营业制造和其他合法证明 1有 0没有", "zlqk": "质量情况 1强 2一般 3弱", "jgfw": "产品价格和服务 1好 2一般 3差", "xgzz": "产品相关资质 1 有 2,没有", "shxy": "社会信誉是否良好 1好 2一般 3差", "cgst": "采购部评定 1同意 2不同意", "cgname": "采购部评定人签名", "zjst": "质检部评定 1同意 2不同意", "zjname": "质检部评定人签名", "scst": "生产技术部评定 1同意 2不同意", "scname": "生产技术部评定人签名", "offer_status": "是否同意作为本公司合格供方 1同意 2不同意", "stdt": "批准日期", "del": "是否删除 1删除 0正常", "cid": "公司id" }
-
                         </td>
                     </tr>
                     <tr>
-                        <td>详细信息</td>
-                        <td >results</td>
+                        <td>退货单列表信息</td>
+                        <td >regoods</td>
                         <td>是</td>
                         <td>object</td>
                         <td >
-                        { "id": "id", "renum": "退货单编号", "invoice_id": "进货单ID", "invoice_num": "进货单编号", "renumber": "退货数量", "reunit": "退货单价", "remoney": "退货金额", "reinfo": "退货详情", "recomid": "退货公司id", "recompany": "退货公司", "optid": "操作人id", "optdt": "操作时间", "optname": "操作人名称", "cid": "公司id", "del": "删除否1、删除0、未删除", "status": "审核状态1、提交2、驳回3、审核通过", "addid": "制单人id", "addname": "制单人姓名"}
-                        
-
+                        { "id": "id", "renum": "退货单编号", "invoice_id": "采购单ID", "invoice_num": "进货单编号", "renumber": "退货数量", "reunit": "退货单价", "remoney": "退货金额", "reinfo": "退货详情", "recomid": "退货公司id", "recompany": "退货公司", "optid": "操作人id", "optdt": "操作时间", "optname": "操作人名称", "cid": "公司id", "del": "删除否1、删除0、未删除", "status": "审核状态1、提交2、驳回3、审核通过", "addid": "制单人id", "addname": "制单人姓名"}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>采购单列表信息</td>
+                        <td >invoice</td>
+                        <td>是</td>
+                        <td>object</td>
+                        <td >
+                        {
+            "id": "id",
+            "invoice_id": "商品id",
+            "invoice_name": "商品名",
+            "buldid": "供应商id",
+            "buldcom": "供应商公司",
+            "billnum": "进货单id",
+            "addid": "添加人id",
+            "addname": "添加人名称",
+            "totalmoney": "总金额",
+            "paymoney": "此次付款",
+            "optid": "操作人id",
+            "optname": "操作人",
+            "optdt": "操作时间",
+            "info": "备注",
+            "discount": "折扣金额",
+            "totalnum": "总数量",
+            "oneprice": "单价",
+            "status": "订单状态",
+            "buydate": "采购时间",
+            "statecode": "付款状态0、未付款1、部分付款2、全部付款",
+            "salesid": "销售id",
+            "del": "是否删除1、删除0、未删除",
+            "address": "地址信息",
+            "phone": "电话",
+            "cid": "公司id"
+        }
                         </td>
                     </tr>
                     <tr>
