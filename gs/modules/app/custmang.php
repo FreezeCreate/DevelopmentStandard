@@ -3,6 +3,8 @@
 class custmang extends AppController
 {
     /**
+     * TODO 所有表的数据校验和查询的公共方法
+     * 
      * 仓库管理模块：
      * 采购单 invoice 退货 regoods
      * 盘点 inven 报亏损报溢出
@@ -108,6 +110,7 @@ class custmang extends AppController
         $m_admin    = spClass('m_admin');
         $m_cust     = spClass('m_custmang');
         $m_record   = spClass('m_cust_record');
+        $m_cate     = spClass('m_cust_cate');
         
         if (!empty($searchname)) {
             $con .= ' and concat(cust_name,type,custdname,custcname,source,phone,address,info) like "%' . $searchname . '%"';
@@ -155,9 +158,9 @@ class custmang extends AppController
                 $notic = $v['noticecontent'];
             }
             
+            $cust_cate = $m_cate->find('id='.$v['type'], '', 'catename');   //客户类型显示
             $result['results'][$k] = array(
                 'id'         => $v['id'],
-                'type'       => $v['type'],
                 'cust_name'  => $v['cust_name'],
                 'custdname'  => $v['custdname'],
                 'phone'      => $v['phone'],
@@ -171,6 +174,7 @@ class custmang extends AppController
                 'record_status'  => $v['record_status'],  //跟进状态
                 'record_addtime' => $v['record_addtime'], //跟进时间
                 'record_explain' => $v['record_explain'], //跟进内容
+                'cust_cate'  => $cust_cate['catename'], //列表显示客户类型
             );
         }
         
@@ -197,10 +201,14 @@ class custmang extends AppController
         $admin = $this->islogin();
         $id    = htmlspecialchars($this->spArgs('id'));
         if (empty($id)) $this->returnError('id不存在');
+        
         //select data
-        $data = 'id,type,cust_name,custdname,custcname,phone,address,retime,noticetime,birth,charact,comment,forecast,goal,edu,info';
+//         $data = 'id,type,cust_name,custdname,custcname,phone,address,retime,noticetime,birth,charact,comment,forecast,goal,edu,info';
 //         $result['results'] = spClass('m_custmang')->find('id='.$id, '', $data);
-        $result['results'] = spClass('m_custmang')->find('id='.$id.' and cid='.$admin['cid'], '', $data);
+        $result['results'] = spClass('m_custmang')->find('id='.$id.' and cid='.$admin['cid'], '', '');
+        //客户类型
+        $cust_name = spClass('m_cust_cate')->find('id='.$result['results']['type'].' and cid='.$admin['cid'].' and del=0', '', 'catename');
+        $result['results']['cust_cate'] = $cust_name['catename'];
         
         if (empty($result['results'])) $this->returnError('失败');
         $this->returnSuccess('成功', $result);
@@ -230,6 +238,7 @@ class custmang extends AppController
             'address'    => '',
             'retime'     => '',
             'noticetime' => '',
+            'noticecontent' => '',
             'birth'      => '',
             'charact'    => '',
             'comment'    => '',
@@ -255,7 +264,7 @@ class custmang extends AppController
             $up = $model->update(array('id' => $re['id']), $data);
         } else {
             $data['applyid']   = $admin['id'];
-            $data['applyname'] = $admin['username'];
+            $data['applyname'] = $admin['name'];
             $data['applydt']   = date('Y-m-d H:i:s');
             $data['cid']       = $admin['cid'];
             $data['flowid']    = 1;
@@ -331,11 +340,15 @@ class custmang extends AppController
         $f_id    = htmlspecialchars($this->spArgs('id'));
         //check params
         if (empty($f_id)) $this->returnError('id不存在');
-        $f_result = $m_mang->find('id='.$f_id.' and cid='.$admin['cid']);
-        $c_result = $m_record->findAll('fid='.$f_id.' and cid='.$admin['cid'], 'id desc', 'addtime,`explain`');
+        $f_result = $m_mang->find('id='.$f_id.' and cid='.$admin['cid']);   //客户
+        $c_result = $m_record->findAll('fid='.$f_id.' and cid='.$admin['cid'], 'id desc', 'addtime,`explain`'); //回访
         if (empty($f_result)) $this->returnError('id非法');
         
-        $t_result = $m_contract->findAll('custid='.$f_id);
+        //客户类型
+        $cust_name = spClass('m_cust_cate')->find('id='.$f_result['type'].' and cid='.$admin['cid'].' and del=0', '', 'catename');
+        $f_result['cust_cate'] = $cust_name['catename'];
+        
+        $t_result = $m_contract->findAll('custid='.$f_id.' and cid='.$admin['cid'].' and del=0');  //合同
         $results['t_result'] = $t_result;
         $results['f_result'] = $f_result;
         $results['c_result'] = $c_result;
@@ -354,7 +367,7 @@ class custmang extends AppController
         $f_id    = htmlspecialchars($this->spArgs('id'));
         //check params
         if (empty($f_id)) $this->returnError('id不存在');
-        $id_exist = spClass('m_custmang')->find('id='.$f_id.' and cid='.$admin['cid'], '', 'id');
+        $id_exist = spClass('m_custmang')->find('id='.$f_id.' and del=0 and cid='.$admin['cid'], '', 'id,flowid');
         if (empty($id_exist)) $this->returnError('id非法');
         
         $arg = array(
@@ -371,7 +384,9 @@ class custmang extends AppController
         $data['ip']        = $_SERVER['REMOTE_ADDR'];
         
         //当回访客户时，flowID为2
-        spClass('m_custmang')->update(array('id' => $f_id, 'del' => 0, 'cid' => $admin['id']), array('flowid' => 2));
+        if ($id_exist['flowid'] != 3){
+            spClass('m_custmang')->update(array('id' => $f_id, 'del' => 0, 'cid' => $admin['id']), array('flowid' => 2));
+        }
         
         $res = $model->create($data);
         if ($res) $this->returnSuccess('成功');
@@ -408,11 +423,12 @@ class custmang extends AppController
         foreach($results as $k=>$v){
             $exist_contract = $m_contract->find('conapplyid='.$v['id'].' and del=0 and cid='.$admin['cid'].'');
             if (!empty($exist_contract)) continue;  //合同中存在申请的id时说明合同已经通过，无需遍历
-            $result['results'][$k] = array(
+            $result['results'][] = array(
                 'apply_id'             => $v['id'],
                 'apply_contractname'   => $v['contractname'],
             );
         }
+        
         $this->returnSuccess('成功', $result);
     }
     
@@ -451,8 +467,8 @@ class custmang extends AppController
 //         $files = $this->spArgs('files');
 //         if ($files) $data['files'] = implode(',', $files);
         
-        $files = $this->spArgs('files');
-        if($files) $data['files'] = implode(',', $files);
+//         $files = $this->spArgs('files');
+//         if($files) $data['files'] = implode(',', $files);
         $sum   = $model->findCount('number like "%C'.date('Ymd').'%"');
         $sum   = $sum<9?'0'.($sum+1):($sum+1);
         
@@ -656,8 +672,9 @@ class custmang extends AppController
     function applyContractLst()
     {
         $admin         = $this->islogin();
-        $searchname  = urldecode(htmlspecialchars($this->spArgs('searchname')));
+        $searchname    = urldecode(htmlspecialchars($this->spArgs('searchname')));
         $m_contract    = spClass('m_contract_apply');
+        $m_custmang    = spClass('m_custmang');
         
         //where和分页where
         $con    = 'del = 0 and cid = ' . $admin['cid'].' and applyid='.$admin['id'];
@@ -671,7 +688,9 @@ class custmang extends AppController
         $result['pager'] = $pager;
         
         foreach($results as $k=>$v){
+            $cust = $m_custmang->find('id='.$v['custid'].' and del=0 and cid='.$admin['cid'].'');
             $result['results'][$k] = $v;
+            $result['results'][$k]['cust_name'] = $cust['cust_name'];
         }
         
         $result['sales']   = spClass('m_admin')->findAll('', 'id desc', 'id,username');   //销售人员渲染
@@ -686,8 +705,9 @@ class custmang extends AppController
     function applyContractAll()
     {
         $admin         = $this->islogin();
-        $searchname  = urldecode(htmlspecialchars($this->spArgs('searchname')));
+        $searchname    = urldecode(htmlspecialchars($this->spArgs('searchname')));
         $m_contract    = spClass('m_contract_apply');
+        $m_custmang    = spClass('m_custmang');
         
         //where和分页where
         $con    = 'del = 0 and cid = ' . $admin['cid'];
@@ -701,8 +721,9 @@ class custmang extends AppController
         $result['pager'] = $pager;
         
         foreach($results as $k=>$v){
+            $cust = $m_custmang->find('id='.$v['custid'].' and del=0 and cid='.$admin['cid'].'');
             $result['results'][$k] = $v;
-        }
+            $result['results'][$k]['cust_name'] = $cust['cust_name'];}
         
         $result['sales']   = spClass('m_admin')->findAll('', 'id desc', 'id,username');   //销售人员渲染
         $result['sales']   = array_values($result['sales']);

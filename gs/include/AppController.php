@@ -701,17 +701,15 @@ class AppController extends spController {
 
     function islogin() {
         //省略index.php $control = $this->spArgs('c');
-        if (empty($control))
-            $control = $this->c;
-        if (empty($way))
-            $way = $this->a;
+        if (empty($control)) $control = $this->c;
+        if (empty($way)) $way = $this->a;
 
         $m_admin = spClass("m_admin");
-        $m_auth = spClass('m_auth');
-        $m_role = spClass('m_role');
+        $m_auth  = spClass('m_auth');
+        $m_role  = spClass('m_role');
         $data['control'] = $control;
-        $data['way'] = $way;
-        $thisauth = $m_auth->find($data);   //auth鉴权
+        $data['way']     = $way;
+        $thisauth        = $m_auth->find($data);   //auth鉴权
         //token验证，然后thisauth鉴权
         //1、全部使用token权限验证；2、token判断referr不是从URL直接输入,而是从login页面跳转
         //不做过期时间，当用户注册或者登陆直接判断是否存在token，存在则鉴权，不存在则生成
@@ -729,6 +727,7 @@ class AppController extends spController {
 //         }else {
         //已登陆
         $user = $m_admin->find('login = "' . $token . '"');
+        
         if (empty($user))
             $this->returnError('用户不存在');
 //         }

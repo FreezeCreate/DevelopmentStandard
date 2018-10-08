@@ -168,12 +168,13 @@ class salegoal extends AppController
             'goalstatus'=> '',
             'salenum'   => '销售单目标',
             'salemoney' => '销售金额目标',
+            'goaldt'    => '',
         );
         $data = $this->receiveData($arg);
         
         if (empty($my_emp)){    //没有下级则是自己为自己添加目标
             $data['saleid']    = $admin['id'];
-            $data['salename']  = $admin['username'];
+            $data['salename']  = $admin['name'];
             $data['saledname'] = $admin['dname'];
         }
         
@@ -357,6 +358,38 @@ class salegoal extends AppController
         $salename  = urldecode(htmlspecialchars($this->spArgs('salename')));
         $model     = spClass('m_sale_goal');
         $optdt     = substr($optdt, 0, -3);
+        $m_get     = spClass('m_custpay');
+        $m_admin   = spClass('m_admin');
+        
+        //总统计
+        //用户数据
+        $sql       = 'select cid,saleid,salename from '.DB_NAME.'_sale_goal where del=0 and cid='.$admin['cid'].' group by saleid order by id desc';
+        $saleman   = $model->findSql($sql);
+        
+        $total_all = array();
+        $user_goal = $user_fact = 0;
+        foreach ($saleman as $sk => $sv){
+            $all_mon  = $m_get->findAll('saleid='.$sv['saleid'].' and del=0 and cid='.$sv['cid'].'', 'id desc', 'payall');
+            $all_goal = $model->findAll('saleid='.$sv['saleid'].' and del=0 and cid='.$sv['cid'].'', 'id desc', 'salemoney');
+            foreach ($all_mon as $alk => $alv){ //用户实际
+                $user_fact = $user_fact + $alv['payall'];
+            }
+            foreach ($all_goal as $gk => $gv){
+                $user_goal = $user_goal + $gv['salemoney'];
+            }
+            $total_all['user'][]      = $sv;
+            $total_all['user_fact'][] = (int)$user_fact;
+            $total_all['user_goal'][] = (int)$user_goal;
+            if ($user_goal - $user_fact < 0){
+                $total_all['user_will'][] = 0;
+            }else {
+                $total_all['user_will'][] = $user_goal - $user_fact;
+            }
+            
+            $user_fact = 0;
+            $user_goal = 0;
+        }
+        $result['total_all'] = $total_all;
         
         if (!empty($saledname)) {
             $con .= ' and (saledname="'.$saledname.'")';
@@ -375,16 +408,30 @@ class salegoal extends AppController
         $pager   = $model->spPager()->getPager();
         $result['pager'] = $pager;
         
+        $mon = array();
+        $sum = $will = 0;
         foreach($results as $k=>$v){
+            //当月、该用户、的销售额
+            $gey_mod = $m_get->findAll('saleid='.$v['saleid'].' and del=0 and cid='.$admin['cid'].' and adddt like "%'.substr($v['goaldt'], 0, -3).'%"');
+            foreach ($gey_mod as $_k => $_v){
+                $sum = $sum + $_v['payall'];    //实际完成统计
+            }
+            $will = $v['payall'] - $sum;
+            if ($will < 0) $will = 0;
             $result['results'][$k] = array(
                 'id'          => $v['id'],
                 'saleid'      => $v['saleid'],
                 'salename'    => $v['salename'],
                 'saledname'   => $v['saledname'],
+                'salemoney'   => (int)$v['salemoney'],
                 'optdt'       => $v['optdt'],
                 'goaltitle'   => $v['goaltitle'],
                 'goalstatus'  => $v['goalstatus'],
+                'factmon'     => (int)$sum,     //已完成
+                'willmon'     => (int)$will,    //未完成
             );
+            $sum  = 0;
+            $will = 0;
         }
         $this->returnSuccess('成功', $result);
     }

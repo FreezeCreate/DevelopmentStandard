@@ -94,7 +94,9 @@ class custpaymon extends AppController
         $data['optname']    = $admin['name'];
         $data['optdt']      = date('Y-m-d H:i:s');
         $data['status']     = 1;
-        $data['custumid']   = $admin['id'];
+        $data['saleid']     = $admin['id']; //报销人
+        $data['salename']   = $admin['name'];
+        
         $data['monstatus']  = 3;    //当为3时是app报销
         
         if($id){

@@ -49,9 +49,8 @@ class budge extends AppController
         $sum = $sum_c = $sum_d = $sum_p = $sum_dp = 0;
         foreach($results as $k => $v){
             $limit_time = substr($v['budge_time'], 0, 7);
-            $pay = $m_mon->findAll('del=0 and cid='.$admin['cid'].' and status=3 and adddt like "%'.$limit_time.'%"', '', 'paymoney');   //当月消费情况
-            $pay_check = $m_mon->findAll('del=0 and cid='.$admin['cid'].' and status=1 and adddt like "%'.$limit_time.'%"', '', 'paymoney');   //审核状态的消费
-            
+            $pay        = $m_mon->findAll('del=0 and cid='.$admin['cid'].' and status=3 and did='.$v['did'].' and adddt like "%'.$limit_time.'%"', '', 'paymoney');   //当月消费情况
+            $pay_check  = $m_mon->findAll('del=0 and cid='.$admin['cid'].' and status=1 and did='.$v['did'].' and adddt like "%'.$limit_time.'%"', '', 'paymoney');   //审核状态的消费
             
             foreach ($pay as $_k => $_v){
                 $sum = $sum + $_v['paymoney'];
@@ -74,6 +73,8 @@ class budge extends AppController
             }
             if ($sum_p < $sum_dp){
                 $result['results'][$k]['de_notice'] = '部门预警';
+            }else {
+                $result['results'][$k]['de_notice'] = '';
             }
             
             if ($sum/$result['results'][$k]['budge_money'] > $result['results'][$k]['budge_prev']){
@@ -86,10 +87,10 @@ class budge extends AppController
                 $result['results'][$k]['budge_check'] = '审核预警';
             }
             
-            $sum = 0;
-            $sum_c = 0;
-            $sum_d = 0;
-            $sum_p = 0;
+            $sum    = 0;
+            $sum_c  = 0;
+            $sum_d  = 0;
+            $sum_p  = 0;
             $sum_dp = 0;
         }
         $this->returnSuccess('成功', $result);
@@ -140,6 +141,7 @@ class budge extends AppController
             'budge_desc'   => '',  //预算描述
             'did'          => '预算部门',
             'dname'        => '预算部门',
+            'budge_time'   => '预算时间',
         );
         
         $data = $this->receiveData($arg);

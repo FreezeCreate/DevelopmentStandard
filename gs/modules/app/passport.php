@@ -50,7 +50,7 @@ class passport extends AppController {
             $data['password'] = substr($password, 0, 3) . '******';
             $data['status'] = 1;
             spClass('m_login')->create($data);
-            $this->returnSuccess('登录成功', array('token'=>$result['login']));
+            $this->returnSuccess('登录成功', $result);
         } else {
             $data['name'] = $result['name'];
             $data['remark'] = '密码错误';

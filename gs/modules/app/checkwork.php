@@ -253,7 +253,7 @@ class checkwork extends AppController {
         $id              = (int)htmlentities($this->spArgs('id'));
         
         $arg = array(
-            'uid'      => '打卡人',
+//             'uid'      => '打卡人',
             'dkdt'     => '打卡时间',
 //             'type'     => '打卡类型',    //默认为0
             'address'  => '打卡地址',
@@ -265,6 +265,8 @@ class checkwork extends AppController {
             'images'   => '',  //images
         );
         $data = $this->receiveData($arg);
+        
+        $data['uid']       = $admin['id'];
         $data['cid']       = $admin['cid'];
         $data['optid']     = $admin['id'];
         $data['optname']   = $admin['name'];

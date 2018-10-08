@@ -97,9 +97,9 @@ class main extends AppController {
     function userLst()
     {
         $admin   = $this->islogin();
-        $results = spClass('m_admin')->findAll('', 'id desc', 'id,username');
+        $results = spClass('m_admin')->findAll('', 'id asc', 'id,name');
         foreach ($results as $k => $v){
-            $result['results'][] = $v;
+            $result['results'][] = array('id' => $v['id'], 'username' => $v['name']);
         }
         $this->returnSuccess('成功', $result);
     }
