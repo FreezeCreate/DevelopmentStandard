@@ -60,47 +60,83 @@ class applyFill extends AppController {
      */
     function saveInven()
     {
+//         $admin           = $this->islogin();
+//         $model           = spClass('m_inven');
+//         $id              = (int)htmlentities($this->spArgs('id'));
+        
+//         $arg = array(
+//             'inven_house_id'   => '仓库',
+//             'inven_house_name' => '仓库',
+//             'inven_num'        => '商品',
+//             'inven_name'       => '商品',
+//             'inven_model'      => '型号',
+//             'inven_many'       => '单位',
+//             'inven_status'     => '盈亏状态',
+//             'inven_getlose'    => '盈亏记录',
+//             'saleid'           => '盘点人',
+//             'salename'         => '盘点人',
+//             'inven_date'       => '盘点时间',
+//         );
+//         $data = $this->receiveData($arg);
+//         $data['cid']       = $admin['cid'];
+//         $data['optid']     = $admin['id'];
+//         $data['optname']   = $admin['name'];
+//         $data['optdt']     = date('Y-m-d H:i:s');
+//         $data['status']    = 1;
+        
+//         if($id){
+//             $re = $model->find(array('id'=>$id,'del'=>0,'cid'=>$admin['cid']));
+//             if(empty($re)) $this->returnError('盘点不存在');
+//             $up = $model->update(array('id'=>$id),$data);
+//             if ($up) $up = $re['id'];
+//         }else{
+//             $up = $model->create($data);
+//         }
+//         if ($data['inven_status'] == 1){
+//             $in_deal = '报损单';
+//         }else {
+//             $in_deal = '报溢出单';
+//         }
+//         if($up){
+//             $this->sendUpcoming($admin, 46, $up, ''.$in_deal.'【'.$data['inven_name'].'】'.$data['inven_getlose'].'');
+//             $this->returnSuccess('成功');
+//         }
+//         $this->returnError('失败');
+    
         $admin           = $this->islogin();
         $model           = spClass('m_inven');
-        $id              = (int)htmlentities($this->spArgs('id'));
         
         $arg = array(
             'inven_house_id'   => '仓库',
             'inven_house_name' => '仓库',
             'inven_num'        => '商品',
             'inven_name'       => '商品',
-            'inven_model'      => '型号',
-            'inven_many'       => '单位',
-            'inven_status'     => '盈亏状态',
-            'inven_getlose'    => '盈亏记录',
+            'inven_model'      => '',   //型号
+            'inven_many'       => '',   //单位
+            'room_num'         => '盘点库存',   //盘点库存
+            'old_num'          => '系统库存',   //系统库存
             'saleid'           => '盘点人',
             'salename'         => '盘点人',
             'inven_date'       => '盘点时间',
         );
-        $data = $this->receiveData($arg);
+        $data              = $this->receiveData($arg);
+        //报损报溢出状态 盈亏状态
+        if ($data['room_num'] > $data['old_num']){
+            $data['inven_status'] = 2;
+        }else {
+            $data['inven_status'] = 1;
+        }
+        $data['inven_getlose'] = $data['room_num'] - $data['old_num'];  //盈亏记录
+        
         $data['cid']       = $admin['cid'];
         $data['optid']     = $admin['id'];
         $data['optname']   = $admin['name'];
         $data['optdt']     = date('Y-m-d H:i:s');
         $data['status']    = 1;
+        //         $data['order_num'] = $data['inven_num'];    //goods_order所需数据
         
-        if($id){
-            $re = $model->find(array('id'=>$id,'del'=>0,'cid'=>$admin['cid']));
-            if(empty($re)) $this->returnError('盘点不存在');
-            $up = $model->update(array('id'=>$id),$data);
-            if ($up) $up = $re['id'];
-        }else{
-            $up = $model->create($data);
-        }
-        if ($data['inven_status'] == 1){
-            $in_deal = '报损单';
-        }else {
-            $in_deal = '报溢出单';
-        }
-        if($up){
-            $this->sendUpcoming($admin, 46, $up, ''.$in_deal.'【'.$data['inven_name'].'】'.$data['inven_getlose'].'');
-            $this->returnSuccess('成功');
-        }
+        $up = $model->create($data);
+        if($up) $this->returnSuccess('成功');
         $this->returnError('失败');
     }
     
@@ -111,38 +147,88 @@ class applyFill extends AppController {
     {
         $admin   = $this->islogin();
         $model   = spClass('m_regoods');
+        $m_inout = spClass('m_goods_inout');
         $id      = (int)htmlentities($this->spArgs('id'));
+        $m_goods = spClass('m_goods');
+        $m_room  = spClass('m_stock_room');
+        $m_order = spClass('m_goods_order');
         
         $arg = array(
             'invoice_id'  => '采购单id',    //采购单表id
-            'invoice_num' => '采购单编号',
-            'renumber'    => '退货数量',
-            'reunit'      => '退货单价',
+//             'invoice_num' => '采购单编号',
+//             'renumber'    => '退货数量',
+//             'reunit'      => '退货单价',
             'remoney'     => '退货金额',
-            'reinfo'      => '退货详情',
-            'recomid'     => '退货公司',
-            'recompany'   => '退货公司',
-            'addid'       => '制单人',
-            'addname'     => '制单人',
+            'reinfo'      => '',    //退货详情
+//             'recomid'     => '退货公司',
+//             'recompany'   => '退货公司',
         );
         $data = $this->receiveData($arg);
+        //数据处理
+        $invoice_data = spClass('m_invoice')->find('id='.$data['invoice_id'].' and del=0 and cid='.$admin['cid'].'');
+        $this->emptyNotice($invoice_data, '采购单数据不存在或已被删除');
+        $data['recomid'] = $invoice_data['buldid'];
+        $data['recompany'] = $invoice_data['buldcom'];
+        $data['invoice_num'] = $invoice_data['billnum'];
         
         $sum   = $model->findCount('renum like "%R'.date('Ymd').'%"');
         $sum   = $sum<9?'0'.($sum+1):($sum+1);
-        $data['renum']     = 'R'.date('Ymd').$sum;
-        $data['optid']     = $admin['id'];
-        $data['optname']   = $admin['name'];
-        $data['optdt']     = date('Y-m-d H:i:s');
-        $data['cid']       = $admin['cid'];
-        $data['status']    = 1;
         
         if($id){
             $re = $model->find(array('id'=>$id,'del'=>0,'cid'=>$admin['cid']));
             if(empty($re)) $this->returnError('退货单不存在');
+            
+            $data = $this->checkUpdateArr($re, $data);  //更新方法
+            
             $up = $model->update(array('id'=>$id),$data);
             if ($up) $up = $re['id'];
         }else{
+            $data['renum']     = 'R'.date('Ymd').$sum;
+            $data['optid']     = $admin['id'];
+            $data['optname']   = $admin['name'];
+            $data['optdt']     = date('Y-m-d H:i:s');
+            $data['cid']       = $admin['cid'];
+            $data['status']    = 1;
+            
             $up = $model->create($data);
+            //副表数据新增
+            if ($up){
+                foreach ($_REQUEST['list'] as $k => $v){
+                    $goods_name = $m_goods->find('id='.$v['goods_id'].'', '', 'id,order_name,cateid,catename,order_spec,order_unit,order_explain');
+                    $v['goods_name'] = $goods_name['order_name'];
+                    $room       = $m_room->find('id='.$v['room_id'].'', '', 'id,room_name');
+                    $v['room_name'] = $room['room_name'];
+                    $v['optid']     = $admin['id'];
+                    $v['optname']   = $admin['name'];
+                    $v['optdt']     = date('Y-m-d H:i:s');
+                    $v['cid']       = $admin['cid'];
+                    $v['invoice_id']= $up;
+                    $v['status']    = 1;
+                    //附表新增数据
+                    $m_inout->create($v);
+                    //采购对库存表的影响
+                    $order_data = $m_order->find('goods_id='.$goods_name['id'].' and stock_id='.$room['id'].' and del=0 and cid='.$admin['cid'].'');
+                    if (empty($order_data)){
+                        //新增库存数据
+                        $o_data['cateid'] = $goods_name['cateid'];
+                        $o_data['goods_id'] = $goods_name['id'];
+                        $o_data['order_name'] = $goods_name['order_name'];
+                        $o_data['order_spec'] = $goods_name['order_spec'];
+                        $o_data['order_unit'] = $goods_name['order_unit'];
+                        $o_data['order_explain'] = $goods_name['order_explain'];
+                        $o_data['stock_id'] = $v['room_id'];
+                        $o_data['stock_name'] = $room['room_name'];
+                        $o_data['order_num'] = $v['goods_num'];
+                        
+                        $m_order->create($data);
+                    }else {
+                        //更新库存数据
+                        $o_data['order_num'] = $order_data['order_num'] - $v['goods_num'];
+                        $m_order->update(array('id' => $order_data), array('order_num' => $o_data['order_num']));
+                    }
+                    $o_data = array();  //置空数据
+                }
+            }
         }
         
         if($up){
@@ -159,22 +245,23 @@ class applyFill extends AppController {
     {
         $admin   = $this->islogin();
         $model   = spClass('m_invoice');
+        $m_inout = spClass('m_goods_inout');
+        $m_goods = spClass('m_goods');
+        $m_room  = spClass('m_stock_room');
+        $m_order = spClass('m_goods_order');
+        
         $id      = (int)htmlentities($this->spArgs('id'));
         
         $arg = array(
             'buldid'     => '供应商',    //supplier表id
             'buldcom'    => '供应商名称',
-            'invoice_id' => '采购商品',
-            'invoice_name' => '采购商品',
-            'addid'      => '制单人',
-            'addname'    => '制单人',
+//             'addid'      => '制单人',
+//             'addname'    => '制单人',
             'totalmoney' => '总金额',
             'paymoney'   => '付款金额',
             'info'       => '',
-            'discount'   => '折扣金额',
-            'totalnum'   => '总数量',
-            'oneprice'   => '单价',
-            'salesid'    => '联系人员',
+            'discount'   => '', //折扣金额
+//             'salesid'    => '联系人员',
             'address'    => '采购方地址',
             'phone'      => '联系方式',
             'buydate'    => '采购时间',
@@ -183,20 +270,61 @@ class applyFill extends AppController {
         
         $sum   = $model->findCount('billnum like "%I'.date('Ymd').'%"');
         $sum   = $sum<9?'0'.($sum+1):($sum+1);
-        $data['billnum']   = 'I'.date('Ymd').$sum;
-        $data['optid']     = $admin['id'];
-        $data['optname']   = $admin['name'];
-        $data['optdt']     = date('Y-m-d H:i:s');
-        $data['cid']       = $admin['cid'];
-        $data['status']    = 1;
         
         if($id){
             $re = $model->find(array('id'=>$id,'del'=>0,'cid'=>$admin['cid']));
             if(empty($re)) $this->returnError('订单不存在');
+            
+            $data = $this->checkUpdateArr($re, $data);  //更新方法
+            
             $up = $model->update(array('id'=>$id),$data);
             if ($up) $up = $re['id'];
         }else{
+            $data['billnum']   = 'I'.date('Ymd').$sum;
+            $data['optid']     = $admin['id'];
+            $data['optname']   = $admin['name'];
+            $data['optdt']     = date('Y-m-d H:i:s');
+            $data['cid']       = $admin['cid'];
+            $data['status']    = 1;
             $up = $model->create($data);
+            //副表数据新增
+            if ($up){
+                foreach ($_REQUEST['list'] as $k => $v){
+                    $goods_name = $m_goods->find('id='.$v['goods_id'].'', '', 'id,order_name,cateid,catename,order_spec,order_unit,order_explain');
+                    $v['goods_name'] = $goods_name['order_name'];
+                    $room       = $m_room->find('id='.$v['room_id'].'', '', 'id,room_name');
+                    $v['room_name'] = $room['room_name'];
+                    $v['optid']     = $admin['id'];
+                    $v['optname']   = $admin['name'];
+                    $v['optdt']     = date('Y-m-d H:i:s');
+                    $v['cid']       = $admin['cid'];
+                    $v['invoice_id']= $up;
+                    $v['status']    = 1;
+                    //附表新增数据
+                    $m_inout->create($v);
+                    //采购对库存表的影响
+                    $order_data = $m_order->find('goods_id='.$goods_name['id'].' and stock_id='.$room['id'].' and del=0 and cid='.$admin['cid'].'');
+                    if (empty($order_data)){
+                        //新增库存数据
+                        $o_data['cateid'] = $goods_name['cateid'];
+                        $o_data['goods_id'] = $goods_name['id'];
+                        $o_data['order_name'] = $goods_name['order_name'];
+                        $o_data['order_spec'] = $goods_name['order_spec'];
+                        $o_data['order_unit'] = $goods_name['order_unit'];
+                        $o_data['order_explain'] = $goods_name['order_explain'];
+                        $o_data['stock_id'] = $v['room_id'];
+                        $o_data['stock_name'] = $room['room_name'];
+                        $o_data['order_num'] = $v['goods_num'];
+                        
+                        $m_order->create($data);
+                    }else {
+                        //更新库存数据
+                        $o_data['order_num'] = $v['goods_num'] + $order_data['order_num'];
+                        $m_order->update(array('id' => $order_data), array('order_num' => $o_data['order_num']));
+                    }
+                    $o_data = array();  //置空数据
+                }
+            }
         }
         
         if($up){
@@ -205,6 +333,83 @@ class applyFill extends AppController {
         }
         $this->returnError('失败');
     }
+//     function saveInvoice()
+//     {
+//         $admin   = $this->islogin();
+//         $model   = spClass('m_invoice');
+//         $m_inout = spClass('m_goods_inout');
+//         $m_goods = spClass('m_goods_order');
+//         $id      = (int)htmlentities($this->spArgs('id'));
+//         dump($_POST);die;
+//         $arg = array(
+//             'buldid'     => '供应商',    //supplier表id
+//             'buldcom'    => '供应商名称',
+//             'addid'      => '制单人',
+//             'addname'    => '制单人',
+//             'totalmoney' => '总金额',
+//             'paymoney'   => '付款金额',
+//             'info'       => '',
+//             'discount'   => '折扣金额',
+//             'salesid'    => '联系人员',
+//             'address'    => '采购方地址',
+//             'phone'      => '联系方式',
+//             'buydate'    => '采购时间',
+//         );
+//         //status=1 采购单 status=2 退货单
+//         $arg1 = array(
+//             'invoice_id'    => '单号id',  //采购单或者进货单id,由status来判断是什么类型的单
+//             'goods_id'      => '商品',
+//             'goods_unit'    => '单位',
+//             'room_id'       => '库房',
+//             'goods_num'     => '数量',
+//             'goods_price'   => '单价',
+//             'discount'      => '',  //折扣率
+//             'discountprice' => '',  //折扣额
+//             'buyprice'      => '购货金额',
+//             'content'       => '',  //备注
+//             'status'        => '',
+//         );
+        
+//         $data  = $this->receiveData($arg);  //invoice表
+//         $data1 = $this->receiveData($arg1); //inout表
+        
+//         //invoice表
+//         $sum   = $model->findCount('billnum like "%I'.date('Ymd').'%"');
+//         $sum   = $sum<9?'0'.($sum+1):($sum+1);
+//         $data['billnum']   = 'I'.date('Ymd').$sum;
+//         $data['optid']     = $admin['id'];
+//         $data['optname']   = $admin['name'];
+//         $data['optdt']     = date('Y-m-d H:i:s');
+//         $data['cid']       = $admin['cid'];
+        
+//         //inout表
+//         $goods_name = $m_goods->find('id='.$data1['goods_id'].' and del=0 and cid='.$admin['cid'].'', '', 'order_name');    //goods_name新增
+//         $this->emptyNotice($goods_name, '该商品不存在');
+//         $data1['goods_name'] = $goods_name['order_name'];
+        
+        
+//         if($id){
+//             //invoice表
+//             $re   = $model->find(array('id'=>$id,'del'=>0,'cid'=>$admin['cid']));
+//             $this->emptyNotice($re, '订单不存在');
+//             $data = $this->checkUpdateArr($re, $data);
+//             $up   = $model->update(array('id'=>$id),$data);
+//             if ($up) $up = $re['id'];
+//             //inout表 TODO 另行做跟新操作
+//         }else{
+//             $data['status'] = 1;
+//             $up  = $model->create($data);   //invoice表
+//             $up1 = $m_inout->create($data1);//inout表
+//         }
+        
+//         if($up && $up1){
+//             $this->sendUpcoming($admin, 44, $up, '【'.$data['billnum'].'】采购单');
+//             $this->returnSuccess('成功');
+//         }else {
+//             $this->returnError('失败');
+//         }
+        
+//     }
     
     
     

@@ -39,18 +39,20 @@ class talkrecordana extends AppController
         $tk_record = spClass('m_talkrecord')->find('id='.$data['tkid'].' and del=0 and cid='.$admin['cid'].'');
         if (empty($tk_record)) $this->returnError('记录为空');
         
-        $data['userid']    = $tk_record['userid'];
-        $data['cid']       = $admin['cid'];
-        $data['optid']     = $admin['id'];
-        $data['optname']   = $admin['name'];
-        $data['optdt']     = date('Y-m-d H:i:s');
-        
         if($id){
             $re = $model->find(array('id'=>$id,'del'=>0,'cid'=>$admin['cid']));
             if(empty($re)) $this->returnError('沟通记录不存在');
+            
+            $data = $this->checkUpdateArr($re, $data);  //更新方法
+            
             $up = $model->update(array('id'=>$id),$data);
             if ($up) $up = $re['id'];
         }else{
+            $data['userid']    = $tk_record['userid'];
+            $data['cid']       = $admin['cid'];
+            $data['optid']     = $admin['id'];
+            $data['optname']   = $admin['name'];
+            $data['optdt']     = date('Y-m-d H:i:s');
             $up = $model->create($data);
         }
         

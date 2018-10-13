@@ -39,6 +39,20 @@ class regoods extends AppController
         $this->delCommon('m_regoods', $id);
     }
     
+    /**
+     * 点击采购单显示多条商品列表
+     */
+    function reGoodsLst()
+    {
+        $admin     = $this->islogin();
+        $id        = (int)htmlentities($this->spArgs('id'));
+        $con       = 'del=0 and cid = ' . $admin['cid'];
+        $con      .= ' and status=2 and invoice_id='.$id.'';
+        $model     = spClass('m_goods_inout');
+        $result['results']     = $model->findAll($con);
+        
+        $this->returnSuccess('成功', $result);
+    }
     
 }
 

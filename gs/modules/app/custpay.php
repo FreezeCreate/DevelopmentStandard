@@ -16,7 +16,8 @@ class custpay extends AppController
 //             'custumid'     => '',   //客户id
             'contractid'   => '',   //合同id
             'contractname' => '',   //合同名称
-            'getmoney'     => '',
+            'payall'       => '',   //总收款
+            'getmoney'     => '',   //已收款
             'adddt'        => '收款单申请日期',
             'record'       => '',
             'files'        => '',
@@ -31,33 +32,38 @@ class custpay extends AppController
         );
         $data = $this->receiveData($arg);
         //客户id和名称的新增
-        $contract_data = spClass('m_contract')->find('id='.$data['contractid'].' and del=0 and cid='.$admin['cid'].'');
-        if (empty($contract_data)) $this->returnError('合同数据有误!');
-        $data['custumid'] = $contract_data['custid'];
-        $cust_data = spClass('m_custmang')->find('id='.$contract_data['custid'].' and del=0 and cid='.$admin['cid'].'');
-        if (empty($cust_data)) $this->returnError('用户数据有误!');
-        $data['custname'] = $cust_data['cust_name'];
+        if (!empty($data['contractid'])){
+            $contract_data = spClass('m_contract')->find('id='.$data['contractid'].' and del=0 and cid='.$admin['cid'].'');
+            if (empty($contract_data)) $this->returnError('合同数据有误!');
+            $data['custumid'] = $contract_data['custid'];
+            $cust_data = spClass('m_custmang')->find('id='.$contract_data['custid'].' and del=0 and cid='.$admin['cid'].'');
+            if (empty($cust_data)) $this->returnError('客户数据有误!');
+            $data['custname'] = $cust_data['cust_name'];
+        }
         
         $files = $this->spArgs('files');
         if($files) $data['files'] = implode(',', $files);
         $sum   = $model->findCount('paynumber like "%P'.date('Ymd').'%"');
         $sum   = $sum<9?'0'.($sum+1):($sum+1);
         
-        $data['paynumber']  = 'P'.date('Ymd').$sum;    //p=>pay
-        $data['adddt']   = date('Y-m-d H:i:s');
-        $data['cid']     = $admin['cid'];
-        $data['optid']   = $admin['id'];
-        $data['optname'] = $admin['name'];
-        $data['optdt']   = date('Y-m-d H:i:s');
         if($id){
             $data['status']  = $this->spArgs('status');   //1为结清；2为未结清
             $re = $model->find(array('id'=>$id,'del'=>0,'cid'=>$admin['cid']));
             if(empty($re)) $this->returnError('信息不存在');
 //             if($re['monstatus'] == 1) $this->returnError('该款项已结清，不需要再操作');
             if(!empty($re['paynumber'])) unset($data['paynumber']);
+            
+            $data = $this->checkUpdateArr($re, $data);  //更新方法
+            
             $up = $model->update(array('id'=>$id),$data);
             if ($up) $up = $re['id'];
         }else{
+            $data['paynumber']  = 'P'.date('Ymd').$sum;    //p=>pay
+            $data['adddt']   = date('Y-m-d H:i:s');
+            $data['cid']     = $admin['cid'];
+            $data['optid']   = $admin['id'];
+            $data['optname'] = $admin['name'];
+            $data['optdt']   = date('Y-m-d H:i:s');
 //             $data['monstatus']  = 2;   //1为结清；2为未结清
             $up = $model->create($data);
         }

@@ -10,13 +10,18 @@ class inven extends AppController
     {
         $admin        = $this->islogin();
         $con          = 'del = 0 and cid = ' . $admin['cid'];
-        $searchname   = urldecode(htmlspecialchars($this->spArgs('searchname')));
+        $model        = spClass('m_goods_order');
         
-        $model        = spClass('m_inven');
+        $stock_id     = htmlentities($this->spArgs('stock_id')); //库房id
+        $cateid       = htmlentities($this->spArgs('cateid'));   //商品类别id
         
-        if (!empty($inven_house_name)) {
-            $con .= ' and concat(inven_house_name,inven_name,inven_getlose,salename,inven_date) like "%' . $searchname . '%"';
-            $page_con['searchname'] = $searchname;
+        if (!empty($stock_id)) {
+            $con .= ' and stock_id='.$stock_id.'';
+            $page_con['stock_id'] = $stock_id;
+        }
+        if (!empty($cateid)) {
+            $con .= ' and cateid='.$cateid.'';
+            $page_con['cateid'] = $cateid;
         }
         
         $results = $model->spPager($this->spArgs('page', 1), PAGE_NUM)->findAll($con,'optdt desc,id desc');
@@ -40,7 +45,8 @@ class inven extends AppController
     }
     
     /**
-     * 盘点详情 审核详情TODO
+     * 盘点详情 审核详情TO DO
+     * 按照线上来做
      */
     function invenInfo()
     {
@@ -63,38 +69,37 @@ class inven extends AppController
     {
         $admin           = $this->islogin();
         $model           = spClass('m_inven');
-        $id              = (int)htmlentities($this->spArgs('id'));
         
         $arg = array(
             'inven_house_id'   => '仓库',
             'inven_house_name' => '仓库',
             'inven_num'        => '商品',
             'inven_name'       => '商品',
-            'inven_model'      => '型号',
-            'inven_many'       => '单位',
-            'inven_status'     => '盈亏状态',
-            'inven_getlose'    => '盈亏记录',
+            'inven_model'      => '',   //型号
+            'inven_many'       => '',   //单位
+            'room_num'         => '盘点库存',   //盘点库存
+            'old_num'          => '系统库存',   //系统库存
             'saleid'           => '盘点人',
             'salename'         => '盘点人',
             'inven_date'       => '盘点时间',
         );
         $data              = $this->receiveData($arg);
+        //报损报溢出状态 盈亏状态
+        if ($data['room_num'] > $data['old_num']){  
+            $data['inven_status'] = 2;
+        }else {
+            $data['inven_status'] = 1;
+        }
+        $data['inven_getlose'] = $data['room_num'] - $data['old_num'];  //盈亏记录
+        
         $data['cid']       = $admin['cid'];
         $data['optid']     = $admin['id'];
         $data['optname']   = $admin['name'];
         $data['optdt']     = date('Y-m-d H:i:s');
         $data['status']    = 1;
-        $data['order_num'] = $data['inven_num'];    //goods_order所需数据
+//         $data['order_num'] = $data['inven_num'];    //goods_order所需数据
         
-        if($id){
-            $re = $model->find(array('id'=>$id,'del'=>0,'cid'=>$admin['cid']));
-            if(empty($re)) $this->returnError('盘点不存在');
-            
-            $up = $model->update(array('id'=>$id, 'cid' => $admin['cid']),$data);
-        }else{
-            $up = $model->create($data);
-        }
-        
+        $up = $model->create($data);
         if($up) $this->returnSuccess('成功');
         $this->returnError('失败');
     }

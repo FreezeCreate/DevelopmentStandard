@@ -49,6 +49,7 @@ class passport extends AppController {
             $data['username'] = $username;
             $data['password'] = substr($password, 0, 3) . '******';
             $data['status'] = 1;
+            $result['token'] = $result['login'];
             spClass('m_login')->create($data);
             $this->returnSuccess('登录成功', $result);
         } else {

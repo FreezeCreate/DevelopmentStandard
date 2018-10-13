@@ -72,10 +72,7 @@ class sealapl extends AppController
         );
         $data = $this->receiveData($arg);
         $data['isout']     = (int)htmlentities($this->spArgs('isout')); //是否外带
-        $data['cid']       = $admin['cid'];
-        $data['optid']     = $admin['id'];
-        $data['optname']   = $admin['name'];
-        $data['optdt']     = date('Y-m-d H:i:s');
+        
         $files = $this->spArgs('files');
         if ($files) $data['files'] = implode(',', $files);
         
@@ -84,8 +81,15 @@ class sealapl extends AppController
         if($id){
             $re = $model->find(array('id'=>$id,'del'=>0, 'cid' => $admin['cid']));
             if(empty($re)) $this->returnError('印章申请不存在');
+            
+            $data = $this->checkUpdateArr($re, $data);  //更新方法
+            
             $up = $model->update(array('id'=>$id),$data);
         }else{
+            $data['cid']       = $admin['cid'];
+            $data['optid']     = $admin['id'];
+            $data['optname']   = $admin['name'];
+            $data['optdt']     = date('Y-m-d H:i:s');
             $up = $model->create($data);
         }
         

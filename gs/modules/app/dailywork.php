@@ -91,26 +91,29 @@ class dailywork extends AppController
         $arg = array(
             'workid'      => '计划人',
             'workname'    => '计划人',
-            'workstart'   => '开始日期',
-            'workend'     => '结束日期',
-            'workstatus'  => '完成度',   //1、已完成2、未完成3、未开始
+//             'workstart'   => '开始日期',
+//             'workend'     => '结束日期',
+//             'workstatus'  => '完成度',   //1、已完成2、未完成3、未开始
             'worktitle'   => '计划标题',
             'workcontent' => '计划内容',
             'workspeed'   => '',    //计划速度
             'goal'        => '',    //计划目标
         );
         $data = $this->receiveData($arg);
-        $data['cid']       = $admin['cid'];
-        $data['optid']     = $admin['id'];
-        $data['optname']   = $admin['name'];
-        $data['optdt']     = date('Y-m-d H:i:s');
-        $data['workdname'] = $admin['dname'];
         
         if($id){
             $re = $model->find(array('id'=>$id,'del'=>0,'cid'=>$admin['cid']));
-            if(empty($re)) $this->returnError('分类不存在');
+            if(empty($re)) $this->returnError('数据不存在');
+            
+            $data = $this->checkUpdateArr($re, $data);  //更新方法
+            
             $up = $model->update(array('id'=>$id),$data);
         }else{
+            $data['cid']       = $admin['cid'];
+            $data['optid']     = $admin['id'];
+            $data['optname']   = $admin['name'];
+            $data['optdt']     = date('Y-m-d H:i:s');
+            $data['workdname'] = $admin['dname'];
             $up = $model->create($data);
         }
         

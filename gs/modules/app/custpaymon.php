@@ -5,7 +5,6 @@ class custpaymon extends AppController
 
     /**
      * TODO当monstatus为3时是app报销
-     * TODO客户售后已完成，应编写设备检修的打卡模块
      * 
      */
     function saveCustPayMon()
@@ -19,7 +18,8 @@ class custpaymon extends AppController
             'custname'     => '',   //供应商名称
             'contractid'   => '',   //合同id，当不为合同时不填写
             'contractname' => '',   //合同名称
-            'paymoney'     => '',
+            'payall'       => '',   //总额
+            'paymoney'     => '',   //已付
             'adddt'        => '付款单申请日期',
             'record'       => '款项情况',
             'files'        => '',
@@ -40,22 +40,25 @@ class custpaymon extends AppController
         $sum   = $sum<9?'0'.($sum+1):($sum+1);
         
         $user  = spClass('m_admin')->find('id='.$data['saleid']);
-        $data['did']     = $user['did'];
-        $data['dname']   = $user['dname'];
-        $data['paynumber']  = 'M'.date('Ymd').$sum;    //p=>pay
-        $data['adddt']   = date('Y-m-d H:i:s');
-        $data['cid']     = $admin['cid'];
-        $data['optid']   = $admin['id'];
-        $data['optname'] = $admin['name'];
-        $data['optdt']   = date('Y-m-d H:i:s');
-        $data['status']  = 1;
         
         if($id){
             $re = $model->find(array('id'=>$id,'del'=>0,'cid'=>$admin['cid']));
             if(empty($re)) $this->returnError('信息不存在');
             if(!empty($re['paynumber'])) unset($data['paynumber']);
+            
+            $data = $this->checkUpdateArr($re, $data);  //更新方法
+            
             $up = $model->update(array('id'=>$id),$data);
         }else{
+            $data['did']     = $user['did'];
+            $data['dname']   = $user['dname'];
+            $data['paynumber']  = 'M'.date('Ymd').$sum;    //p=>pay
+            $data['adddt']   = date('Y-m-d H:i:s');
+            $data['cid']     = $admin['cid'];
+            $data['optid']   = $admin['id'];
+            $data['optname'] = $admin['name'];
+            $data['optdt']   = date('Y-m-d H:i:s');
+            $data['status']  = 1;
             $up = $model->create($data);
         }
         
@@ -67,9 +70,51 @@ class custpaymon extends AppController
     }
     
     /**
-     * app付款单新增
+     * 费用报销新增
      */
     function saveCustPayMonApp()
+    {
+        $admin           = $this->islogin();
+        $model           = spClass('m_expend');
+        $id              = (int)htmlentities($this->spArgs('id'));
+        
+        $arg = array(
+            'paymoney'     => '金额',
+            'cateid'       => '用款类别',
+            'adddt'        => '付款单申请日期',
+            'content'      => '',   //说明
+        );
+        $data              = $this->receiveData($arg);
+        $pay_cate = spClass('m_paycate')->find('id='.$data['cateid'].' and del=0 and cid='.$admin['cid'].'');
+        $this->emptyNotice($pay_cate, '分类类别不存在');
+        $data['catename'] = $pay_cate['catename'];
+        
+        if($id){
+            $re = $model->find(array('id'=>$id,'del'=>0,'cid'=>$admin['cid']));
+            if(empty($re)) $this->returnError('信息不存在');
+            $up = $model->update(array('id'=>$id),$data);
+        }else{
+            $data['cid']        = $admin['cid'];
+            $data['optid']      = $admin['id'];
+            $data['optname']    = $admin['name'];
+            $data['optdt']      = date('Y-m-d H:i:s');
+            $data['status']     = 1;
+            $data['saleid']     = $admin['id']; //报销人
+            $data['salename']   = $admin['name'];
+            $up = $model->create($data);
+        }
+        
+        if($up){
+            $this->sendUpcoming($admin, 51, $up, '【'.$data['catename'].'】报销单');
+            $this->returnSuccess('成功');
+        }
+        $this->returnError('失败');
+    }
+    
+    /**
+     * app付款单新增
+     */
+    function saveCustPayMonApp1()
     {
         $admin           = $this->islogin();
         $model           = spClass('m_custpay_mon');
@@ -180,7 +225,70 @@ class custpaymon extends AppController
      */
     
     /*
-     *其他支出列表 
+     *其他支出新增 无审核
+     */
+    function saveOtherPay()
+    {
+        $admin           = $this->islogin();
+        $model           = spClass('m_custpay_mon');
+        $id              = (int)htmlentities($this->spArgs('id'));
+        
+        $arg = array(
+            'custname'     => '',   //供应商名称
+            'payall'       => '',   //总额
+            'paymoney'     => '',   //已付
+            'adddt'        => '付款单申请日期',
+            'record'       => '款项情况',
+            'files'        => '',
+            'paytypeid'    => '付款方式',
+            'paytype'      => '付款方式',
+            'saleid'       => '付款人员',
+            'salename'     => '付款人员',
+            'monstatus'    => '结清状态',   //1为结清；2为未结清
+            'content'      => '',   //备注
+//             'checkstatus'  => '',   //1付款给供应商2其他报销
+            'cateid'       => '用款分类',   //费用科目
+        );
+        $data = $this->receiveData($arg);
+        $data['checkstatus'] = 2;   //1付款给供应商2其他报销
+        $files = $this->spArgs('files');
+        if($files) $data['files'] = implode(',', $files);
+        $sum   = $model->findCount('paynumber like "%M'.date('Ymd').'%"');
+        $sum   = $sum<9?'0'.($sum+1):($sum+1);
+        
+        $user  = spClass('m_admin')->find('id='.$data['saleid']);
+        
+        if($id){
+            $re = $model->find(array('id'=>$id,'del'=>0,'cid'=>$admin['cid']));
+            if(empty($re)) $this->returnError('信息不存在');
+            if(!empty($re['paynumber'])) unset($data['paynumber']);
+            
+            $data = $this->checkUpdateArr($re, $data);  //更新方法
+            
+            $up = $model->update(array('id'=>$id),$data);
+        }else{
+            $data['did']     = $user['did'];
+            $data['dname']   = $user['dname'];
+            $data['paynumber']  = 'M'.date('Ymd').$sum;    //p=>pay
+            $data['adddt']   = date('Y-m-d H:i:s');
+            $data['cid']     = $admin['cid'];
+            $data['optid']   = $admin['id'];
+            $data['optname'] = $admin['name'];
+            $data['optdt']   = date('Y-m-d H:i:s');
+            $data['status']  = 1;
+            $up = $model->create($data);
+        }
+        if ($up) $this->returnSuccess('成功');
+        //无审核
+//         if($up){
+//             $this->sendUpcoming($admin, 48, $up, '【'.$data['paynumber'].'】付款单');
+//             $this->returnSuccess('成功');
+//         }
+        $this->returnError('失败');
+    }
+    
+    /**
+     * 其他支出列表
      */
     function otherPayLst()
     {

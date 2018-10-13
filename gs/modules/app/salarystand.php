@@ -72,16 +72,19 @@ class salarystand extends AppController
             'stdesc'  => '', //描述
         );
         $data = $this->receiveData($arg);
-        $data['cid']       = $admin['cid'];
-        $data['optid']     = $admin['id'];
-        $data['optname']   = $admin['name'];
-        $data['optdt']     = date('Y-m-d H:i:s');
         
         if($id){
             $re = $model->find(array('id'=>$id,'del'=>0,'cid'=>$admin['cid']));
             if(empty($re)) $this->returnError('薪资标准不存在');
+            
+            $data = $this->checkUpdateArr($re, $data);  //更新方法
+            
             $up = $model->update(array('id'=>$id),$data);
         }else{
+            $data['cid']       = $admin['cid'];
+            $data['optid']     = $admin['id'];
+            $data['optname']   = $admin['name'];
+            $data['optdt']     = date('Y-m-d H:i:s');
             $up = $model->create($data);
         }
         

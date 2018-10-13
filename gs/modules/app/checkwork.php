@@ -98,17 +98,20 @@ class checkwork extends AppController {
         unset($data['id']);
         $model = spClass('m_kqinfo');
         
-        $data['status']  = 1;
-        $data['optid']   = $admin['id'];
-        $data['optname'] = $admin['name'];
-        $data['optdt']   = date('Y-m-d H:i:s');
-        
         if ($id) {
             $re = $model->find(array('id' => $id, 'del' => 0), '', 'id');
             if (empty($re)) $this->returnError('信息有误', 1);
+            
+            $data = $this->checkUpdateArr($re, $data);  //更新方法
+            
             $up = $model->update(array('id' => $re['id']), $data);
             if ($up) $ad = $re['id'];
         } else {
+//             $data['status']  = 1;
+            $data['optid']   = $admin['id'];
+            $data['optname'] = $admin['name'];
+            $data['optdt']   = date('Y-m-d H:i:s');
+            
             $data['status']  = 1;
             $data['uid']     = $admin['id'];
             $data['uname']   = $admin['name'];
@@ -187,16 +190,19 @@ class checkwork extends AppController {
             'aname'     => '日程名称',
         );
         $data = $this->receiveData($arg);
-        $data['cid']       = $admin['cid'];
-        $data['optid']     = $admin['id'];
-        $data['optname']   = $admin['name'];
-        $data['optdt']     = date('Y-m-d H:i:s');
         
         if($id){
             $re = $model->find(array('id'=>$id,'del'=>0,'cid'=>$admin['cid']));
             if(empty($re)) $this->returnError('日程不存在');
+            
+            $data = $this->checkUpdateArr($re, $data);  //更新方法
+            
             $up = $model->update(array('id'=>$id),$data);
         }else{
+            $data['cid']       = $admin['cid'];
+            $data['optid']     = $admin['id'];
+            $data['optname']   = $admin['name'];
+            $data['optdt']     = date('Y-m-d H:i:s');
             $up = $model->create($data);
         }
         
@@ -254,13 +260,12 @@ class checkwork extends AppController {
         
         $arg = array(
 //             'uid'      => '打卡人',
-            'dkdt'     => '打卡时间',
+            'dkdt'     => '',   //打卡时间
 //             'type'     => '打卡类型',    //默认为0
             'address'  => '打卡地址',
             'lat'      => '',  //维度
             'lng'      => '',  //经度
             'accuracy' => '', //精确范围
-            'ip'       => '',   //ip
             'explain'  => '',  //explain
             'images'   => '',  //images
         );
@@ -270,8 +275,11 @@ class checkwork extends AppController {
         $data['cid']       = $admin['cid'];
         $data['optid']     = $admin['id'];
         $data['optname']   = $admin['name'];
+        $data['ip']        = Common::getIp();
         $data['optdt']     = date('Y-m-d H:i:s');
         $data['type']      = 0;
+        //app端时间不统一传值的兼容
+        if (empty($data['dkdt'])) $data['dkdt'] = date('Y-m-d H:i:s');
         
         $up = $model->create($data);
         if($up) $this->returnSuccess('成功');

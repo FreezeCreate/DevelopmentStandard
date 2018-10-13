@@ -36,6 +36,64 @@ class AppController extends spController {
         if (!strpos($_SERVER['HTTP_REFERER'], 'token'))
             $this->returnError('非法调用');
     }
+    
+    /**
+     * 保留字段,用于app端冗余字段的清除
+     * @param unknown $arr
+     * @param unknown $str
+     * @return unknown[]
+     */
+    function keepField($arr, $str)
+    {
+        $keep_arr = array();
+        $str_arr  = explode(',', $str);
+        foreach ($str_arr as $k => $v){
+            if (array_key_exists($v, $arr)) $keep_arr[$v] = $arr[$v];
+        }
+        return $keep_arr;
+    }
+    
+    /**
+     * 新旧数组的更新(用于表更新)
+     * @param unknown $old_arr
+     * @param unknown $new_arr
+     * @return unknown
+     */
+    function checkUpdateArr($old_arr, $new_arr)
+    {
+        foreach ($old_arr as $k => $v){
+            if (array_key_exists($k, $new_arr) && !empty($new_arr[$k])){
+                $old_arr[$k] = $new_arr[$k];
+            }
+        }
+        return $old_arr;
+    }
+    
+    /**
+     * 错误提示封装
+     * @param unknown $data
+     * @param unknown $notice_str
+     */
+    function emptyNotice($data, $notice_str)
+    {
+        if (empty($data)) $this->returnError($notice_str);
+    }
+    
+    /**
+     * 舍弃字段，用于app端冗余字段的清除
+     * @param unknown $arr
+     * @param unknown $str
+     * @return unknown[]
+     */
+    function abandonField($arr, $str)
+    {
+        $str_arr = explode(',', $str);
+        foreach ($str_arr as $k => $v){
+            //删除该键名对应值
+            if (array_key_exists($v, $arr)) unset($arr[$v]);
+        }
+        return $arr;
+    }
 
     /**
      * 返回json字符串
@@ -754,8 +812,7 @@ class AppController extends spController {
             }
         }
         //简化流程
-        if (!$user)
-            $this->returnError('错误');
+        if (!$user) $this->returnError('错误');
 //         if ($user['status'] == 4) $this->returnError('已在其他设备登录，请重新登录', 4);
 //         if ($user['status'] == 1) return $user;
 //         $this->returnError('该账号已被限制登录，如有疑问请联系管理员', 3);
@@ -767,9 +824,8 @@ class AppController extends spController {
      */
     function delCommon($model, $id) {
         $admin = $this->islogin();
-        $res = spClass($model)->update(array('id' => $id, 'cid' => $admin['cid']), array('del' => 1));
-        if ($res)
-            $this->returnSuccess('成功');;
+        $res   = spClass($model)->update(array('id' => $id, 'cid' => $admin['cid']), array('del' => 1));
+        if ($res) $this->returnSuccess('成功');;
         $this->returnError('失败');
     }
 

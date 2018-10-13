@@ -117,7 +117,8 @@ class invoice extends AppController
         $month        = urldecode(htmlspecialchars($this->spArgs('month')));
         $day          = urldecode(htmlspecialchars($this->spArgs('day')));
         
-        $model        = spClass('m_goods_order');
+        $con         .= ' and status=1';    //采购status=1
+        $model        = spClass('m_goods_inout');
         $m_invoice    = spClass('m_invoice');
         if (!empty($order_name)) {
             $con .= ' and (order_name = "' . $order_name . '")';
@@ -136,40 +137,44 @@ class invoice extends AppController
             $page_con['year'] = $year.'-'.$month.'-'.$day;
         }
         
-        $results = $model->spPager($this->spArgs('page', 1), PAGE_NUM)->findAll($con,'optdt desc,id desc');
+        $sql = 'select goods_id,goods_name,goods_unit,room_name,optdt,sum(goods_num) as all_num,sum(buyprice) as all_price from '.DB_NAME.'_goods_inout where '.$con.' order by goods_id';
+        //SELECT goods_id,count(goods_num) as real_num FROM `yld_goods_inout` WHERE del=0 group by goods_id
+        $results = $model->spPager($this->spArgs('page', 1), PAGE_NUM)->findAll($sql,'optdt desc,id desc');
         $pager   = $model->spPager()->getPager();
         $result['pager'] = $pager;
-        
-        $sum = $mon = 0;
-        foreach($results as $k=>$v){
-            $in_order = $m_invoice->findAll('invoice_id='.$v['id']);
-            foreach ($in_order as $_v){
-                $sum = $sum + $_v['totalnum'];
-                $mon = $_v['totalmoney'] - $_v['discount'] + $mon;
-            }
-            $result['results'][$k] = $v;
-            $result['results'][$k]['order_sum'] = $sum; //该商品采购总数量
-            $result['results'][$k]['all_money'] = $mon; //该商品采购实际总金额
+        //用sql代替了
+//         $sum = $mon = 0;
+//         foreach($results as $k=>$v){
+//             $in_order = $m_invoice->findAll('invoice_id='.$v['id']);
+//             foreach ($in_order as $_v){
+//                 $sum = $sum + $_v['totalnum'];
+//                 $mon = $_v['totalmoney'] - $_v['discount'] + $mon;
+//             }
+//             $result['results'][$k] = $v;
+//             $result['results'][$k]['order_sum'] = $sum; //该商品采购总数量
+//             $result['results'][$k]['all_money'] = $mon; //该商品采购实际总金额
             
-            $mon = 0;
-            $sum = 0;
-        }
+//             $mon = 0;
+//             $sum = 0;
+//         }
         $this->returnSuccess('成功', $result);
     }
     
     /**
-     * 按商品详情
+     * 按商品详情 无详情，数据太多无法显示，或者列表显示 必须传goods_id
      */
     function orderInfo()
     {
         $admin      = $this->islogin();
-        $model      = spClass('m_goods_order');
+        $m_inout      = spClass('m_goods_inout');
+        $model      = spClass('m_goods');
+        // 必须传goods_id
         $id         = htmlspecialchars($this->spArgs('id'));
         //check params
         if (empty($id)) $this->returnError('id不存在');
-        $results    = $model->find('id='.$id.' and cid='.$admin['cid']);
+        $results    = $model->find('id='.$id.' del=0 and cid='.$admin['cid'].'');
         if (empty($results)) $this->returnError('id非法');
-        $od_result  = spClass('m_invoice')->findAll('invoice_id='.$id);
+        $od_result  = $m_inout->findAll('goods_id='.$id.' and del=0 and cid='.$admin['cid']);
         $result['od_result'] = $od_result;
         $result['results'] = $results;
         
@@ -187,7 +192,7 @@ class invoice extends AppController
         $year         = urldecode(htmlspecialchars($this->spArgs('year')));
         $month        = urldecode(htmlspecialchars($this->spArgs('month')));
         $day          = urldecode(htmlspecialchars($this->spArgs('day')));
-        
+        $con         .= ' and status=1';    //采购status=1
         $model        = spClass('m_supplier');
         $m_invoice    = spClass('m_invoice');
         if (!empty($company)) {
@@ -207,46 +212,69 @@ class invoice extends AppController
             $page_con['year'] = $year.'-'.$month.'-'.$day;
         }
         
-        $results = $model->spPager($this->spArgs('page', 1), PAGE_NUM)->findAll($con,'optdt desc,id desc');
+        $sql     = 'select buldid,buldcom,sum(totalmoney) as all_price,sum(paymoney) as pay_price from '.DB_NAME.'_invoice where '.$con.' group by buldid';
+        $results = $model->spPager($this->spArgs('page', 1), PAGE_NUM)->findAll($sql,'optdt desc,id desc');
         $pager   = $model->spPager()->getPager();
         $result['pager'] = $pager;
-        
-        $sum = $mon = 0;
-        foreach($results as $k=>$v){
-            $in_order = $m_invoice->findAll('buldid='.$v['id']);
-            foreach ($in_order as $_v){
-                $sum = $sum + $_v['totalnum'];
-                $mon = $_v['totalmoney'] - $_v['discount'] + $mon;
-                $one_proce = $_v['oneprice'];
-            }
-            $result['results'][$k] = $v;
-            $result['results'][$k]['order_sum'] = $sum; //该商品采购总数量
-            $result['results'][$k]['all_money'] = $mon; //该商品采购实际总金额
-            $result['results'][$k]['one_price'] = $one_proce; //单价
-            $one_proce = '';
-            $mon = 0;
-            $sum = 0;
-        }
+        //sql已经覆盖了该功能
+//         $sum = $mon = 0;
+//         foreach($results as $k=>$v){
+//             $in_order = $m_invoice->findAll('buldid='.$v['id']);
+//             foreach ($in_order as $_v){
+//                 $sum = $sum + $_v['totalnum'];
+//                 $mon = $_v['totalmoney'] - $_v['discount'] + $mon;
+//                 $one_proce = $_v['oneprice'];
+//             }
+//             $result['results'][$k] = $v;
+//             $result['results'][$k]['order_sum'] = $sum; //该商品采购总数量
+//             $result['results'][$k]['all_money'] = $mon; //该商品采购实际总金额
+//             $result['results'][$k]['one_price'] = $one_proce; //单价
+//             $one_proce = '';
+//             $mon = 0;
+//             $sum = 0;
+//         }
         $this->returnSuccess('成功', $result);
     }
     /**
-     * 按供应商详情
+     * 按供应商详情 库存积压TODO 商品详情
      */
     function supInfo()
     {
         $admin      = $this->islogin();
         $model      = spClass('m_supplier');
+        $m_inout    = spClass('m_goods_inout');
+        
         $id         = htmlspecialchars($this->spArgs('id'));
         //check params
         if (empty($id)) $this->returnError('id不存在');
-        $results    = $model->find('id='.$id.' and cid='.$admin['cid']);
+        $results    = $model->find('id='.$id.' and del=0 and cid='.$admin['cid']);
         if (empty($results)) $this->returnError('id非法');
         $od_result  = spClass('m_invoice')->findAll('buldid='.$id);
-        $result['od_result'] = $od_result;
+        $sup_data = array();
+        foreach ($od_result as $k => $v){
+            $sup_data[] = $m_inout->findAll('status=1 and del=0 and cid='.$admin['cid'].' and invoice_id='.$v['id'].'');
+        }
+        $result['od_result'] = $sup_data;
         $result['results'] = $results;
         
         $this->returnSuccess('成功', $result);
     }
+    
+    /**
+     * 点击采购单显示多条商品列表
+     */
+    function invoiceGoodsLst()
+    {
+        $admin     = $this->islogin();
+        $id        = (int)htmlentities($this->spArgs('id'));
+        $con       = 'del=0 and cid = ' . $admin['cid'];
+        $con      .= ' and status=1 and invoice_id='.$id.'';
+        $model     = spClass('m_goods_inout');
+        $result['results']    = $model->findAll($con);
+        
+        $this->returnSuccess('成功', $result);
+    }
+    
     
     
 }

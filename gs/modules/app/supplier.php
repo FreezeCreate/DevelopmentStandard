@@ -68,7 +68,7 @@ class supplier extends AppController
     }
     
     /**
-     * 供应商审核TODO
+     * 供应商审核
      */
     function supplierCheck()
     {
@@ -77,8 +77,9 @@ class supplier extends AppController
         $id    = (int)htmlentities($this->spArgs('id'));
         
         $arg = array(
-            'checkstatus' => '',
-            'checkinfo'   => '',
+            'checkstatus' => '审核状态',
+//             'checkinfo'   => '',
+
 //             'cgst'         => '',
 //             'cgname'       => '',
 //             'zjst'         => '',
@@ -89,6 +90,9 @@ class supplier extends AppController
 //             'stdt'         => '',
         );
         $data = $this->receiveData($arg);
+        //签名图片
+        $files = $this->spArgs('checkinfo');
+        if ($files) $data['checkinfo'] = implode(',', $files);
         
         //更新审核数据
         if($id){
@@ -140,8 +144,9 @@ class supplier extends AppController
         }elseif (empty($results['offer_status'])){
             $result['checkstatus'] = 2;
         }else {
-            $result['checkstatus'] = 3;
+            $result['checkstatus'] = 4; //为4时不显示审核表单
         }
+        
         //不合格,不做审核
         if ($results['cgst'] == 2 || $results['zjst'] == 2 || $results['scst'] == 2){
             $result['checkstatus'] = 4;
@@ -153,14 +158,24 @@ class supplier extends AppController
             $all_id = array_filter(explode(',', $results['checkid']));
             foreach ($all_id as $_k => $_v){
                 $user[] = $m_user->find('id='.$_v);
+                
+                if ($_k == 0) $user[$_k]['sign_pic'] = $results['cgname'];  //审核签名
+                if ($_k == 1) $user[$_k]['sign_pic'] = $results['zjname'];
+                if ($_k == 2) $user[$_k]['sign_pic'] = $results['scname'];
                 //审核信息,userinfo
                 if ($_k == 3){
                     $user[$_k]['info'] = $this->pass_final;
                 }else {
                     $user[$_k]['info'] = $this->pass_info;
-                    if ($_k == 0 && $results['cgst'] == 2) $user[$_k]['info'] = $this->pass_exit;
-                    if ($_k == 1 && $results['zjst'] == 2) $user[$_k]['info'] = $this->pass_exit;
-                    if ($_k == 2 && $results['scst'] == 2) $user[$_k]['info'] = $this->pass_exit;
+                    if ($_k == 0 && $results['cgst'] == 2){
+                        $user[$_k]['info'] = $this->pass_exit;
+                    }
+                    if ($_k == 1 && $results['zjst'] == 2){
+                        $user[$_k]['info'] = $this->pass_exit;
+                    }
+                    if ($_k == 2 && $results['scst'] == 2){
+                        $user[$_k]['info'] = $this->pass_exit;
+                    }
                 }
             }
         }
@@ -232,18 +247,21 @@ class supplier extends AppController
             'stdt'         => '',
         );
         $data = $this->receiveData($arg);
-        $data['cid']       = $admin['cid'];
-        $data['optid']     = $admin['id'];
-        $data['optname']   = $admin['name'];
-        $data['optdt']     = date('Y-m-d H:i:s');
-        $data['status']    = 1;
         
         if($id){
             $re = $model->find(array('id'=>$id,'del'=>0,'cid'=>$admin['cid']));
             if(empty($re)) $this->returnError('供应商不存在');
+            
+            $data = $this->checkUpdateArr($re, $data);  //更新方法
+            
             $up = $model->update(array('id'=>$id),$data);
             if ($up) $up = $re['id'];
         }else{
+            $data['cid']       = $admin['cid'];
+            $data['optid']     = $admin['id'];
+            $data['optname']   = $admin['name'];
+            $data['optdt']     = date('Y-m-d H:i:s');
+            $data['status']    = 1;
             $up = $model->create($data);
         }
         

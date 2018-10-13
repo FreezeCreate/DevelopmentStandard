@@ -73,42 +73,77 @@ class warehouse extends AppController
         $admin           = $this->islogin();
         $model           = spClass('m_ruku');
         $id              = (int)htmlentities($this->spArgs('id'));
+        $m_inout         = spClass('m_stock_inout');
+        $m_room          = spClass('m_stock_room');
+        $m_goods         = spClass('m_goods');
+        $m_order         = spClass('m_goods_order');
         
         $arg = array(
-            'goods_id'   => '入库产品id',
-            'goods_name' => '入库产品',
+//             'goods_id'   => '入库产品id',
+//             'goods_name' => '入库产品',
             'dt'         => '入库日期',
-            'ru_num'     => '数量',
+            'contnet'    => '', //备注详细内容
+//             'ru_num'     => '数量',
         );
         $data = $this->receiveData($arg);
-        $data['cid']       = $admin['cid'];
-        $data['optid']     = $admin['id'];
-        $data['optname']   = $admin['name'];
-        $data['optdt']     = date('Y-m-d H:i:s');
-        $data['status']    = 1;
-        $m_goods           = spClass('m_goods_order');
-        $goods_info        = $m_goods->find('id='.$data['goods_id']);
         
         if($id){
             $re = $model->find(array('id'=>$id,'del'=>0,'cid'=>$admin['cid']));
             if(empty($re)) $this->returnError('不存在');
             
-            //库存表更新数量
-            if ($data['ru_num'] > $re['ru_num']){
-                $data['order_num'] = $goods_info['order_num'] + ($data['ru_num'] - $re['ru_num']);//重写的update所需数据
-            }else {
-                $data['order_num'] = $goods_info['order_num'] - ($re['ru_num'] - $data['ru_num']);
-            }
+            $data = $this->checkUpdateArr($re, $data);  //更新方法
             
             $up = $model->update(array('id'=>$id),$data);
             if ($up) $up = $re['id'];
         }else{
-            $data['order_num'] = $goods_info['order_num'] + $data['ru_num'];
+            $data['cid']       = $admin['cid'];
+            $data['optid']     = $admin['id'];
+            $data['optname']   = $admin['name'];
+            $data['optdt']     = date('Y-m-d H:i:s');
+            $data['status']    = 1;
             $up = $model->create($data);
+            //副表数据新增
+            if ($up){
+                foreach ($_REQUEST['list'] as $k => $v){
+                    $goods_name = $m_goods->find('id='.$v['goods_id'].'', '', 'id,order_name,cateid,catename,order_spec,order_unit,order_explain');
+                    $v['goods_name'] = $goods_name['order_name'];
+                    $room       = $m_room->find('id='.$v['room_id'].'', '', 'id,room_name');
+                    $v['room_name'] = $room['room_name'];
+                    $v['optid']     = $admin['id'];
+                    $v['optname']   = $admin['name'];
+                    $v['optdt']     = date('Y-m-d H:i:s');
+                    $v['cid']       = $admin['cid'];
+                    $v['invoice_id']= $up;
+                    $v['status']    = 1;
+                    //附表新增数据
+                    $m_inout->create($v);
+                    //采购对库存表的影响
+                    $order_data = $m_order->find('goods_id='.$goods_name['id'].' and stock_id='.$room['id'].' and del=0 and cid='.$admin['cid'].'');
+                    if (empty($order_data)){
+                        //新增库存数据
+                        $o_data['cateid'] = $goods_name['cateid'];
+                        $o_data['goods_id'] = $goods_name['id'];
+                        $o_data['order_name'] = $goods_name['order_name'];
+                        $o_data['order_spec'] = $goods_name['order_spec'];
+                        $o_data['order_unit'] = $goods_name['order_unit'];
+                        $o_data['order_explain'] = $goods_name['order_explain'];
+                        $o_data['stock_id'] = $v['room_id'];
+                        $o_data['stock_name'] = $room['room_name'];
+                        $o_data['order_num'] = $v['goods_num'];
+                        
+                        $m_order->create($data);
+                    }else {
+                        //更新库存数据
+                        $o_data['order_num'] = $order_data['order_num'] + $v['goods_num'];
+                        $m_order->update(array('id' => $order_data), array('order_num' => $o_data['order_num']));
+                    }
+                    $o_data = array();  //置空数据
+                }
+            }
         }
         
         if($up){
-            $this->sendUpcoming($admin, 14, $up, '入库【'.$data['goods_name'].'】 数量'.$data['ru_num']);
+            $this->sendUpcoming($admin, 14, $up, '入库单');
             $this->returnSuccess('成功');
         } 
         $this->returnError('失败');
@@ -193,45 +228,84 @@ class warehouse extends AppController
         $admin           = $this->islogin();
         $model           = spClass('m_chuku');
         $id              = (int)htmlentities($this->spArgs('id'));
+        $m_inout = spClass('m_stock_inout');
+        $m_room  = spClass('m_stock_room');
+        $m_order  = spClass('m_goods_order');
+        $m_goods           = spClass('m_goods');
+        
         
         $arg = array(
-            'goods_id'   => '出库产品id',
-            'goods_name' => '入库产品',
-            'dt'         => '入库日期',
-            'chu_num'    => '数量',
+//             'goods_id'   => '出库产品id',
+//             'goods_name' => '入库产品',
+            'dt'         => '出库日期',
+//             'chu_num'    => '数量',
+            'content'      => '',   //备注详细内容
+            
         );
         $data = $this->receiveData($arg);
-        $data['cid']       = $admin['cid'];
-        $data['optid']     = $admin['id'];
-        $data['optname']   = $admin['name'];
-        $data['optdt']     = date('Y-m-d H:i:s');
-        $m_goods           = spClass('m_goods_order');
-        $goods_info        = $m_goods->find('id='.$data['goods_id']);
-        $data['status']    = 1;
+        
         
         if($id){
             $re = $model->find(array('id'=>$id,'del'=>0,'cid'=>$admin['cid']));
             if(empty($re)) $this->returnError('不存在');
             
-            //库存表更新数量
-//             if ($data['chu_num'] > $re['chu_num']){
-//                 $data['order_num'] = $goods_info['order_num'] - ($data['chu_num'] - $re['chu_num']);//重写的update所需数据
-//             }else {
-//                 $data['order_num'] = $goods_info['order_num'] + ($re['chu_num'] - $data['chu_num']);
-//             }
+            $data = $this->checkUpdateArr($re, $data);  //更新方法
             
             $up = $model->update(array('id'=>$id),$data);   //重写更新
             if ($up) $up = $re['id'];
         }else{
+            $data['cid']       = $admin['cid'];
+            $data['optid']     = $admin['id'];
+            $data['optname']   = $admin['name'];
+            $data['optdt']     = date('Y-m-d H:i:s');
+            $data['status']    = 1;
 //             $data['order_num'] = $goods_info['order_num'] - $data['chu_num'];//重写的create所需数据
             $up = $model->create($data);
+            //副表数据新增
+            if ($up){
+                foreach ($_REQUEST['list'] as $k => $v){
+                    $goods_name = $m_goods->find('id='.$v['goods_id'].'', '', 'id,order_name,cateid,catename,order_spec,order_unit,order_explain');
+                    $v['goods_name'] = $goods_name['order_name'];
+                    $room       = $m_room->find('id='.$v['room_id'].'', '', 'id,room_name');
+                    $v['room_name'] = $room['room_name'];
+                    $v['optid']     = $admin['id'];
+                    $v['optname']   = $admin['name'];
+                    $v['optdt']     = date('Y-m-d H:i:s');
+                    $v['cid']       = $admin['cid'];
+                    $v['invoice_id']= $up;
+                    $v['status']    = 1;
+                    //附表新增数据
+                    $m_inout->create($v);
+                    //采购对库存表的影响
+                    $order_data = $m_order->find('goods_id='.$goods_name['id'].' and stock_id='.$room['id'].' and del=0 and cid='.$admin['cid'].'');
+                    if (empty($order_data)){
+                        //新增库存数据
+                        $o_data['cateid'] = $goods_name['cateid'];
+                        $o_data['goods_id'] = $goods_name['id'];
+                        $o_data['order_name'] = $goods_name['order_name'];
+                        $o_data['order_spec'] = $goods_name['order_spec'];
+                        $o_data['order_unit'] = $goods_name['order_unit'];
+                        $o_data['order_explain'] = $goods_name['order_explain'];
+                        $o_data['stock_id'] = $v['room_id'];
+                        $o_data['stock_name'] = $room['room_name'];
+                        $o_data['order_num'] = $v['goods_num'];
+                        
+                        $m_order->create($data);
+                    }else {
+                        //更新库存数据
+                        $o_data['order_num'] = $order_data['order_num'] - $v['goods_num'];
+                        $m_order->update(array('id' => $order_data), array('order_num' => $o_data['order_num']));
+                    }
+                    $o_data = array();  //置空数据
+                }
+            }
         }
         
         if($up){
             //对商品表的最后出库时间更新
             $goods_arr = $model->find('id='.$up, '', 'goods_id');
             spClass('m_goods_order')->update(array('id' => $goods_arr['goods_id']), array('nextchuku' => $data['dt']));
-            $this->sendUpcoming($admin, 17, $up, '出库【'.$data['goods_name'].'】 数量'.$data['chu_num']);
+            $this->sendUpcoming($admin, 17, $up, '出库单');
             $this->returnSuccess('成功');
         }
         $this->returnError('失败');
@@ -249,6 +323,33 @@ class warehouse extends AppController
         $this->delCommon('m_chuku', $id);
     }
     
+    
+    /**
+     * 入出库的商品列表单
+     */
+    function rukuGoodsLst()
+    {
+        $admin     = $this->islogin();
+        $id        = (int)htmlentities($this->spArgs('id'));
+        $con       = 'del = 0 and cid = ' . $admin['cid'];
+        $con      .= ' and status=3 and stock_id='.$id.'';
+        $model     = spClass('m_stock_inout');
+        $result    = $model->findAll($con);
+        
+        $this->returnSuccess('成功', $result);
+    }
+    
+    function chukuGoodsLst()
+    {
+        $admin     = $this->islogin();
+        $id        = (int)htmlentities($this->spArgs('id'));
+        $con       = 'del = 0 and cid = ' . $admin['cid'];
+        $con      .= ' and status=4 and stock_id='.$id.'';
+        $model     = spClass('m_stock_inout');
+        $result    = $model->findAll($con);
+        
+        $this->returnSuccess('成功', $result);
+    }
     
     
     

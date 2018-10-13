@@ -4,7 +4,7 @@ class goodsorder extends AppController
 {
     
     /**
-     * 商品列表
+     * 库存列表
      */
     function index()
     {
@@ -44,7 +44,7 @@ class goodsorder extends AppController
     }
     
     /**
-     * 删除商品
+     * 删除库存
      */
     function delGoodsOrder()
     {
@@ -53,7 +53,7 @@ class goodsorder extends AppController
     }
     
     /**
-     * 商品详情
+     * 商品库存
      */
     function goodsOrderInfo()
     {
@@ -70,7 +70,7 @@ class goodsorder extends AppController
     }
     
     /**
-     * 添加商品
+     * 添加库存
      */
     function saveGoodsOrder()
     {
@@ -90,16 +90,19 @@ class goodsorder extends AppController
             'order_explain' => '备注',
         );
         $data = $this->receiveData($arg);
-        $data['cid']       = $admin['cid'];
-        $data['optid']     = $admin['id'];
-        $data['optname']   = $admin['name'];
-        $data['optdt']     = date('Y-m-d H:i:s');
         
         if($id){
             $re = $model->find(array('id'=>$id,'del'=>0,'cid'=>$admin['cid']));
             if(empty($re)) $this->returnError('商品不存在');
+            
+            $data = $this->checkUpdateArr($re, $data);  //更新方法
+            
             $up = $model->update(array('id'=>$id),$data);
         }else{
+            $data['cid']       = $admin['cid'];
+            $data['optid']     = $admin['id'];
+            $data['optname']   = $admin['name'];
+            $data['optdt']     = date('Y-m-d H:i:s');
             $up = $model->create($data);
         }
         

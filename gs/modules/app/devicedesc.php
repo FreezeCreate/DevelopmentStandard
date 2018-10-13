@@ -72,11 +72,6 @@ class devicedesc extends AppController
         );
         
         $data = $this->receiveData($arg);
-        $data['cid']       = $admin['cid'];
-        $data['optid']     = $admin['id'];
-        $data['optname']   = $admin['name'];
-        $data['optdt']     = date('Y-m-d H:i:s');
-        $data['status']    = 1;
         
         $device_data = spClass('m_device_desc')->find('id='.$data['deviceid']);
         $data['devicecateid'] = $device_data['device_cateid'];
@@ -86,9 +81,17 @@ class devicedesc extends AppController
         if($id){
             $re = $model->find(array('id'=>$id,'del'=>0,'cid'=>$admin['cid']));
             if(empty($re)) $this->returnError('固资设备报告不存在');
+            
+            $data = $this->checkUpdateArr($re, $data);  //更新方法
+            
             $up = $model->update(array('id'=>$id),$data);
             if ($up) $up = $re['id'];
         }else{
+            $data['cid']       = $admin['cid'];
+            $data['optid']     = $admin['id'];
+            $data['optname']   = $admin['name'];
+            $data['optdt']     = date('Y-m-d H:i:s');
+            $data['status']    = 1;
             $up = $model->create($data);
         }
         

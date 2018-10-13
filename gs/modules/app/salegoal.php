@@ -182,6 +182,8 @@ class salegoal extends AppController
         $data['optid']     = $admin['id'];  //既是操作人，也是制定人
         $data['optname']   = $admin['name'];//既是操作人，也是制定人
         $data['optdt']     = date('Y-m-d H:i:s');
+        $dname             = spClass('m_admin')->find('id='.$data['saleid'].' and del=0 and cid='.$admin['cid'].'', '', 'dname');
+        $data['saledname'] = $dname['dname'];
         if($id){    //销售目标没有更新
 //             $re = $model->find(array('id'=>$id,'del'=>0,'cid'=>$admin['cid']));
 //             if(empty($re)) $this->returnError('信息不存在');
@@ -213,7 +215,9 @@ class salegoal extends AppController
         $contract   = $m_contract->findAll('saleid='.$results['saleid'].' and del=0 and cid='.$admin['cid'].'', '', '');
         $sum = 0;
         foreach ($contract as $_k => $_v){
-            if (substr($results['goaldt'], 0, 7) != substr($_v['signdt'], 0, 7)){
+//             if (substr($results['goaldt'], 0, 7) != substr($_v['signdt'], 0, 7)){
+            if ($results['goaldt'] != substr($_v['signdt'], 0, 7)){
+                    
                 unset($contract[$_k]);
                 continue;
             }
@@ -358,6 +362,7 @@ class salegoal extends AppController
         $salename  = urldecode(htmlspecialchars($this->spArgs('salename')));
         $model     = spClass('m_sale_goal');
         $optdt     = substr($optdt, 0, -3);
+        
         $m_get     = spClass('m_custpay');
         $m_admin   = spClass('m_admin');
         
@@ -412,7 +417,9 @@ class salegoal extends AppController
         $sum = $will = 0;
         foreach($results as $k=>$v){
             //当月、该用户、的销售额
-            $gey_mod = $m_get->findAll('saleid='.$v['saleid'].' and del=0 and cid='.$admin['cid'].' and adddt like "%'.substr($v['goaldt'], 0, -3).'%"');
+            $gey_mod = $m_get->findAll('saleid='.$v['saleid'].' and del=0 and cid='.$admin['cid'].' and adddt like "%'.$v['goaldt'].'%"');
+//             $gey_mod = $m_get->findAll('saleid='.$v['saleid'].' and del=0 and cid='.$admin['cid'].' and adddt like "%'.substr($v['goaldt'], 0, -3).'%"');
+            
             foreach ($gey_mod as $_k => $_v){
                 $sum = $sum + $_v['payall'];    //实际完成统计
             }

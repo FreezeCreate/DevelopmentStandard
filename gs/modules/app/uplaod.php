@@ -12,7 +12,7 @@ class uplaod extends AppController {
         $img = $this->spArgs('image');
         $image = Common::base64_image_content($img, 'tmp');
         if ($image) {
-            $this->returnSuccess('上传成功', array('url' => $image));
+            $this->returnSuccess('上传成功', array('url' => URL.$image));
         } else {
             $this->returnError('上传失败');
         }

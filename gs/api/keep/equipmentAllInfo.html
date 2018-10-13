@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title></title>
+        <link rel="stylesheet" type="text/css" href="../../source/api/public.css"/>
+        <style>
+            td { border: 1px solid #ccc;}
+            .BgGray.textCenter { text-align: left !important; background: #fff !important; font-size: 18px; line-height: 40px; font-weight: 700;}
+        </style>
+    </head>
+    <body>
+        <div style="width: 900px;margin: 50px auto;">
+            <table class="table border">
+                <thead>
+                    <tr>
+                        <td colspan="5" class="textCenter BgGreen">设备详情</td>
+                    </tr>
+                </thead>
+                <tbody class="hover">
+                    <tr>
+                        <td colspan="5" class="BgGray textCenter">请求格式</td>
+                    </tr>
+                    <tr>
+                        <td>URL</td><td colspan="4">/app.php/keep/equipmentAllInfo?token=token&id=id值</td>
+                    </tr>
+                    <tr>
+                        <td>HTTP请求方式</td><td colspan="4">GET</td>
+                    </tr>
+                    <tr>
+                        <td>是否登录验证</td><td colspan="4">是</td>
+                    </tr>
+                    <tr>
+                        <td colspan="5" class="BgGray textCenter">参数说明</td>
+                    </tr>
+                    <tr class="BgGray">
+                        <td>字段名</td>
+                        <td >参数名</td>
+                        <td>必填</td>
+                        <td >参数类型</td>
+                        <td >说明</td>
+                    </tr>
+                    <tr>
+                        <td>token</td>
+                        <td>token</td>
+                        <td>是</td>
+                        <td>string</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>设备id</td>
+                        <td>id</td>
+                        <td>是</td>
+                        <td>int</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td colspan="5" class="BgGray textCenter">正常返回结果</td>
+                    </tr>
+                    <tr class="BgGray">
+                        <td>字段名</td>
+                        <td >变量名</td>
+                        <td>必填</td>
+                        <td>类型</td>
+                        <td >说明</td>
+                    </tr>
+                    <tr>
+                        <td>返回信息</td>
+                        <td >msg</td>
+                        <td>是</td>
+                        <td>string</td>
+                        <td ></td>
+                    </tr>
+                    <tr>
+                        <td>返回状态码</td>
+                        <td >code</td>
+                        <td>是</td>
+                        <td>int</td>
+                        <td ></td>
+                    </tr>
+                    <tr>
+                        <td>设备详细信息</td>
+                        <td >results</td>
+                        <td>是</td>
+                        <td>object</td>
+                        <td >
+                         {
+        "id": "设备id",
+        "number": "设备编号",
+        "custname": "客户名称",
+        "custphone": "客户联系方式",
+        "name": "设备名称",
+        "address": "地址",
+        "optdt": "操作日期",
+        "day": "保养周期",
+        "explain": "备注"
+    }
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>维修单信息</td>
+                        <td >service</td>
+                        <td>是</td>
+                        <td>object</td>
+                        <td >
+                         {
+            "id": "维修单id",
+            "type": "维修单类型",
+            "explain": "备注",
+            "status": "维修状态",
+            "workname": "负责工程师名称",
+            "optdt": "操作时间",
+        }
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>维修记录</td>
+                        <td >log</td>
+                        <td>是</td>
+                        <td>object</td>
+                        <td >
+                         {
+            "id": "维修记录id",
+            "esid": "维修单id",
+            "optid": "操作人id",
+            "optname": "超级管理员",
+            "optdt": "2018-09-29 20:56:43",
+            "explain": "我很不好老弟",
+            "st": "1",
+            "del": "0",
+            "files": ""
+        }
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="5" class="BgGray textCenter">错误返回结果</td>
+                    </tr>
+                    <tr class="BgGray">
+                        <td>字段名</td>
+                        <td >变量名</td>
+                        <td>必填</td>
+                        <td>类型</td>
+                        <td >说明</td>
+                    </tr>
+                    <tr>
+                        <td>返回信息</td>
+                        <td >msg</td>
+                        <td>是</td>
+                        <td>string</td>
+                        <td ></td>
+                    </tr>
+                    <tr>
+                        <td>返回状态码</td>
+                        <td >code</td>
+                        <td>是</td>
+                        <td>int</td>
+                        <td ></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </body>
+</html>

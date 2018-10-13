@@ -331,6 +331,23 @@ class main extends AppController {
         }
         $this->returnSuccess('成功', $results);
     }
+    
+    /**
+     * web端使用的获取职位和员工的列表
+     */
+    function getUsersWeb()
+    {
+        $user = $this->islogin();
+        $m_department = spClass('m_department');
+        $m_user = spClass('m_admin');
+        $results = $m_department->findAll(array('pid' => $user['cid']), '', 'id,name,pid');
+        foreach ($results as $k1 => $v1) {
+            $results[$k1]['name'] = $v1['name'];
+            $results[$k1]['children'] = array_values($m_user->findAll(array('did' => $v1['id'], 'hide' => 0), '', 'id,name,dname,pname,cname'));
+        }
+        $result['results'] = $results;
+        $this->returnSuccess('成功', $result);
+    }
 
     /*     * ****************
      * 获取部门列表

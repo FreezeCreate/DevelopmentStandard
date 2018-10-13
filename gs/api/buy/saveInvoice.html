@@ -49,20 +49,6 @@
                         <td>5523cbad2881cc1ea54a6b55083547c6a932eef2</td>
                     </tr>
                     <tr>
-                        <td>商品id</td>
-                        <td >invoice_id</td>
-                        <td>是</td>
-                        <td>int</td>
-                        <td ></td>
-                    </tr>
-                    <tr>
-                        <td>商品名称</td>
-                        <td >invoice_name</td>
-                        <td>是</td>
-                        <td>string</td>
-                        <td ></td>
-                    </tr>
-                    <tr>
                         <td>供应商公司id</td>
                         <td >buldid</td>
                         <td>是</td>
@@ -72,20 +58,6 @@
                     <tr>
                         <td>供应商公司</td>
                         <td >buldcom</td>
-                        <td>是</td>
-                        <td>string</td>
-                        <td ></td>
-                    </tr>
-                    <tr>
-                        <td>制单人id</td>
-                        <td >addid</td>
-                        <td>是</td>
-                        <td>int</td>
-                        <td ></td>
-                    </tr>
-                    <tr>
-                        <td>制单人</td>
-                        <td >addname</td>
                         <td>是</td>
                         <td>string</td>
                         <td ></td>
@@ -112,27 +84,6 @@
                         <td ></td>
                     </tr>
                     <tr>
-                        <td>折扣金额</td>
-                        <td >discount</td>
-                        <td>否</td>
-                        <td>int</td>
-                        <td ></td>
-                    </tr>
-                    <tr>
-                        <td>总数量</td>
-                        <td >totalnum</td>
-                        <td>是</td>
-                        <td>int</td>
-                        <td ></td>
-                    </tr>
-                    <tr>
-                        <td>单价</td>
-                        <td >oneprice</td>
-                        <td>是</td>
-                        <td>int</td>
-                        <td ></td>
-                    </tr>
-                    <tr>
                         <td>采购时间</td>
                         <td >buydate</td>
                         <td>是</td>
@@ -147,13 +98,6 @@
                         <td >0未付款 1部分付款 2全部付款</td>
                     </tr>
                     <tr>
-                        <td>销售人员id</td>
-                        <td >salesid</td>
-                        <td>是</td>
-                        <td>int</td>
-                        <td ></td>
-                    </tr>
-                    <tr>
                         <td>地址</td>
                         <td >address</td>
                         <td>否</td>
@@ -165,6 +109,72 @@
                         <td >phone</td>
                         <td>否</td>
                         <td>int</td>
+                        <td ></td>
+                    </tr>
+                   <tr>
+                        <td >以下为商品新增字段：</td>
+                    </tr>
+                    <tr>
+                        <td>商品id</td>
+                        <td >goods_id</td>
+                        <td>是</td>
+                        <td>int</td>
+                        <td ></td>
+                    </tr>
+                    <tr>
+                        <td>商品单位</td>
+                        <td >goods_unit</td>
+                        <td>否</td>
+                        <td>string</td>
+                        <td ></td>
+                    </tr>
+                    <tr>
+                        <td>库房id</td>
+                        <td >room_id</td>
+                        <td>是</td>
+                        <td>int</td>
+                        <td ></td>
+                    </tr>
+                    <tr>
+                        <td>商品数量</td>
+                        <td >goods_num</td>
+                        <td>是</td>
+                        <td>int</td>
+                        <td ></td>
+                    </tr>
+                    <tr>
+                        <td>商品单价</td>
+                        <td >goods_price</td>
+                        <td>是</td>
+                        <td>int</td>
+                        <td ></td>
+                    </tr>
+                    <tr>
+                        <td>折扣率</td>
+                        <td >discount</td>
+                        <td>否</td>
+                        <td>int</td>
+                        <td >(传数字入：80)</td>
+                    </tr>
+                    <tr>
+                        <td>折扣额</td>
+                        <td >discountprice</td>
+                        <td>否</td>
+                        <td>int</td>
+                        <td ></td>
+                    </tr>
+                    <tr>
+                        <td>购货金额</td>
+                        <td >buyprice</td>
+                        <td>是</td>
+                        <td>int</td>
+                        <td ></td>
+                    </tr>
+                    <tr>
+                        <td>备注</td>
+                        <td >content</td>
+                        <td>否</td>
+                        <td>string</td>
                         <td ></td>
                     </tr>
                     <tr>

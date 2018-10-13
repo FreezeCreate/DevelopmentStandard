@@ -34,15 +34,42 @@ class custmang extends AppController
      * 通知公告
      * 
      * TODO 所有需审核的详情页面检查
-     * TODO 通知公告提醒
+     * TODO 工作台 (Tips:所有功能完成后，按需渲染工作台数据)
+     * TO DO 通知公告提醒
+     * TO DO 所有更新功能的检查
+     * TODO 记录表格的字段对比，然后新增或修改字段名称，规范化字段
+     * TODO 线上文件下载的bug
      * 
+     * TO DO 上传服务器：第一要素
+     * TO DO 入出库、采购、退货对库存的影响 入出库model库存增减的修改
+     * TO DO 订单app接口的编写 页面要改，按照电脑端的来做
+     * TO DO 新增出入库、采购退货文档的编写
+     * TO DO 点进去看多个商品信息的文档编写
+     * TO DO 新增不要销售人员、不要制单人、不要地址
+     * 
+     * TODO采购申请(status=3列表) 采购明细(status!=3列表)库存积压
+     * TODO商品分类直接选择商品、前端
+     * TO DO客户不要修改删除,
+     * TODO 在我的客户里添加合同申请 
+     * TODO 销售目标：选择自己的下级
+     * TO DO没有销售目标完成状态                     前端沟通显示
+     * TO DO 工作计划没有开始结束时间    前端沟通显示
+     * TO DO 销售目标以月为单位
+     * TODO 很多地方日期和时间的混淆  考勤统计的导航敬哥做 日程只有休息日和工作日
+     * 
+     * TO DO 最后一个模块的整合
+     * TO DO 仓库名的重复判断
+     * TO DO 采购主附表、采购可以采购多个商品   回滚处理单个接口
+     * TO DO 入出库也是可以多商品添加
+     * TO DO 采购明细和退货明细点进去可以看到多个商品的采购信息
+     * TO DO 仓库列表和库房列表重复
+     * TO DO 盘点处理 按照线上进行盘点
      * not TO DO goods_order表加上单位unit字段
      * not TO DO 按供应商和商品的详细信息+上采购列表单
      * 
      * 
      * 
      * 
-     * 工作台 TODO(Tips:所有功能完成后，按需渲染工作台数据)
      * 
      * TO DO 已完成
      * 合同详情里需要显示回款列表信息
@@ -59,8 +86,6 @@ class custmang extends AppController
      * TO DO
      * 供应商三个部门的审核
      * 
-     * TODO
-     * 记录表格的字段对比，然后新增或修改字段名称，规范化字段
      * 
      * 
      */
@@ -143,7 +168,7 @@ class custmang extends AppController
         
         foreach($results as $k=>$v){
             $notic = '';
-            $salename = $m_admin->find('id='.$v['saleid'], '', 'id,username');
+            $salename = $m_admin->find('id='.$v['saleid'], '', 'id,name');
             if (strtotime($v['noticetime']) - time() < 86400 && strtotime($v['noticetime']) - time() > 0){  //提前一天
                 $notic = $v['noticecontent'];
             }
@@ -170,7 +195,7 @@ class custmang extends AppController
                 'noticetime' => $v['noticetime'],
                 'noticecontent' => $notic,
                 'flowid'     => $v['flowid'],
-                'salename'   => $salename['username'],
+                'salename'   => $salename['name'],
                 'record_status'  => $v['record_status'],  //跟进状态
                 'record_addtime' => $v['record_addtime'], //跟进时间
                 'record_explain' => $v['record_explain'], //跟进内容
@@ -209,6 +234,12 @@ class custmang extends AppController
         //客户类型
         $cust_name = spClass('m_cust_cate')->find('id='.$result['results']['type'].' and cid='.$admin['cid'].' and del=0', '', 'catename');
         $result['results']['cust_cate'] = $cust_name['catename'];
+        //客户来源
+        //客户来源类型
+        if ($result['results']['source'] == 1) $result['results']['source'] = '网上开拓';
+        if ($result['results']['source'] == 2) $result['results']['source'] = '电话开拓';
+        if ($result['results']['source'] == 3) $result['results']['source'] = '线下开拓';
+        if ($result['results']['source'] == 4) $result['results']['source'] = '主动来访';
         
         if (empty($result['results'])) $this->returnError('失败');
         $this->returnSuccess('成功', $result);
@@ -225,15 +256,15 @@ class custmang extends AppController
         
         $arg = array(
             'id'         => '',
-            'type'       => '客户从业类型',
-            'sex'        => '性别',
-            'age'        => '年龄',
-            'cust_name'  => '客户名称',
+            'type'       => '', //客户从业类型
+            'sex'        => '', //性别
+            'age'        => '', //年龄
+            'cust_name'  => '', //客户名称
             'custdname'  => '',
-            'custcname'  => '客户公司',
-            'phone'      => '客户手机', //客户手机，不能为空
+            'custcname'  => '', //客户公司
+            'phone'      => '', //客户手机，不能为空 客户手机
             'telephone'  => '',       //客户电话，可以为空
-            'source'     => '客户来源', //来源,$GLOBALS
+            'source'     => '', //来源,$GLOBALS 客户来源
             'email'      => '',
             'address'    => '',
             'retime'     => '',
@@ -246,7 +277,7 @@ class custmang extends AppController
             'goal'       => '',
             'edu'        => '',
             'info'       => '',
-            'saleid'     => '',
+//             'saleid'     => '',
             'pid'        => '',
             'pname'      => '',
             'flowid'     => '', //跟进状态
@@ -258,11 +289,17 @@ class custmang extends AppController
         unset($data['id']);
         
         if ($id) {
-//             $data['flowid'] = htmlspecialchars($this->spArgs('flowid'));    //跟进状态
-            $re = $model->find(array('id' => $id, 'del' => 0, 'cid' => $admin['cid']), '', 'id');
+            $re = $model->find(array('id' => $id, 'del' => 0, 'cid' => $admin['cid']), '');
             if (empty($re)) $this->returnError('信息有误', 1);
+//             $data['pid']    = $re['pid'];
+//             $data['saleid'] = $re['saleid'];
+//             $data['pname']  = $re['pname'];
+//             $data['flowid'] = $re['flowid'];
+//             $data['status'] = $re['flowid'];
+            $data = $this->checkUpdateArr($re, $data);
             $up = $model->update(array('id' => $re['id']), $data);
         } else {
+            $data['saleid']    = $admin['id'];
             $data['applyid']   = $admin['id'];
             $data['applyname'] = $admin['name'];
             $data['applydt']   = date('Y-m-d H:i:s');
@@ -347,6 +384,11 @@ class custmang extends AppController
         //客户类型
         $cust_name = spClass('m_cust_cate')->find('id='.$f_result['type'].' and cid='.$admin['cid'].' and del=0', '', 'catename');
         $f_result['cust_cate'] = $cust_name['catename'];
+        //客户来源类型
+        if ($f_result['source'] == 1) $f_result['source'] = '网上开拓';
+        if ($f_result['source'] == 2) $f_result['source'] = '电话开拓';
+        if ($f_result['source'] == 3) $f_result['source'] = '线下开拓';
+        if ($f_result['source'] == 4) $f_result['source'] = '主动来访';
         
         $t_result = $m_contract->findAll('custid='.$f_id.' and cid='.$admin['cid'].' and del=0');  //合同
         $results['t_result'] = $t_result;
@@ -419,7 +461,7 @@ class custmang extends AppController
     {
         $admin      = $this->islogin();
         $m_contract = spClass('m_contract');
-        $results    = spClass('m_contract_apply')->findAll('status=3 and del=0 and cid='.$admin['id'].' and applyid='.$admin['id'].'');
+        $results    = spClass('m_contract_apply')->findAll('status=3 and del=0 and cid='.$admin['cid'].' and applyid='.$admin['id'].'');
         foreach($results as $k=>$v){
             $exist_contract = $m_contract->find('conapplyid='.$v['id'].' and del=0 and cid='.$admin['cid'].'');
             if (!empty($exist_contract)) continue;  //合同中存在申请的id时说明合同已经通过，无需遍历
@@ -475,23 +517,26 @@ class custmang extends AppController
         //更新客户的签约状态
         spClass('m_custmang')->update(array('id'=>$data['custid'],'cid'=>$admin['cid']),array('flowid' => 3));
         
-        $data['number']  = 'C'.date('Ymd').$sum;
-        $data['adddt']   = date('Y-m-d H:i:s');
-        $data['status']  = 1;
-        $data['cid']     = $admin['cid'];
-        $data['optid']   = $admin['id'];
-        $data['optname'] = $admin['name'];
-        $data['optdt']   = date('Y-m-d H:i:s');
         if($id){
             $re = $model->find(array('id'=>$id.' and cid='.$admin['cid'],'del'=>0));
             if(empty($re)) $this->returnError('信息不存在');
             if($re['status']>=3) $this->returnError('该合同已审核，不可操作');
             if(!empty($re['number'])) unset($data['number']);
+            
+            $data = $this->checkUpdateArr($re, $data);  //更新方法
+            
             $up = $model->update(array('id'=>$id),$data);
             if($up){
                 $ad = $re['id'];
             }
         }else{
+            $data['number']  = 'C'.date('Ymd').$sum;
+            $data['adddt']   = date('Y-m-d H:i:s');
+            $data['status']  = 1;
+            $data['cid']     = $admin['cid'];
+            $data['optid']   = $admin['id'];
+            $data['optname'] = $admin['name'];
+            $data['optdt']   = date('Y-m-d H:i:s');
             $ad = $model->create($data);
         }
         if ($ad) {
@@ -629,22 +674,25 @@ class custmang extends AppController
         );
         $data = $this->receiveData($arg);
         
-        $data['adddt']      = date('Y-m-d H:i:s');
-        $data['status']     = 1;
-        $data['cid']        = $admin['cid'];
-        $data['optid']      = $admin['id'];
-//         $data['applydname'] = $admin['dname'];
-        $data['optname']    = $admin['name'];
-        $data['optdt']      = date('Y-m-d H:i:s');
         if($id){
             $re = $model->find(array('id'=>$id,'del'=>0,'cid'=>$admin['cid']));
             if(empty($re)) $this->returnError('信息不存在');
             if($re['status']>=3) $this->returnError('该合同申请已审核，不可操作');
+            
+            $data = $this->checkUpdateArr($re, $data);  //更新方法
+            
             $up = $model->update(array('id'=>$id),$data);
             if($up){
                 $ad = $re['id'];
             }
         }else{
+            $data['adddt']      = date('Y-m-d H:i:s');
+            $data['status']     = 1;
+            $data['cid']        = $admin['cid'];
+            $data['optid']      = $admin['id'];
+            //         $data['applydname'] = $admin['dname'];
+            $data['optname']    = $admin['name'];
+            $data['optdt']      = date('Y-m-d H:i:s');
             $ad = $model->create($data);
             $id = $ad;
         }

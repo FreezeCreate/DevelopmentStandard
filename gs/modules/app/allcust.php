@@ -35,6 +35,18 @@ class allcust extends AppController
     }
     
     /**
+     * 合同选择所有用户方法
+     */
+    function chooseUser()
+    {
+        $admin   = $this->islogin();
+        $con     = 'del = 0 and cid = ' . $admin['cid'];
+        $result['results'] = spClass('m_custmang')->findAll('del=0 and cid='.$admin['cid'].'', 'id desc', 'id,cust_name');
+        if (empty($result['results'])) $this->returnError('失败');
+        $this->returnSuccess('失败', $result);
+    }
+    
+    /**
      * custmang list page
      * 列表公共方法
      * @param unknown $con
@@ -60,9 +72,8 @@ class allcust extends AppController
 //         $this->results  = $results;
 //         $this->pager    = $m_cust->spPager()->getPager();
 //         $this->page_con = $page_con;
-        $sale    = spClass('m_admin')->findAll('', 'id desc', 'id,username');
         
-        $results = $m_cust->spPager($this->spArgs('page', 1), PAGE_NUM)->findAll($con,'applydt desc,id desc');
+        $results = $m_cust->spPager($this->spArgs('page', 1), PAGE_NUM)->findAll($con,'noticetime desc,birth desc');
         $pager   = $m_cust->spPager()->getPager();
 //         $page    = $pager['current_page'] == $pager['last_page'] ? '0' : $pager['next_page'];
         $result['pager'] = $pager;
@@ -83,7 +94,7 @@ class allcust extends AppController
         foreach($results as $k=>$v){
 //             $result['results'][$k] = $v;    //TODO 渲染所有数据 + 重写api文档 + 重构postman数据
             $notic = '';
-            $salename = $m_admin->find('id='.$v['saleid'], '', 'id,username');
+            $salename = $m_admin->find('id='.$v['saleid'], '', 'id,name');
             if (strtotime($v['noticetime']) - time() < 86400 && strtotime($v['noticetime']) - time() > 0){  //提前一天
                 $notic = $v['noticecontent'];
             }
@@ -110,7 +121,7 @@ class allcust extends AppController
                 'noticetime' => $v['noticetime'],
                 'noticecontent' => $notic,
                 'flowid'     => $v['flowid'],
-                'salename'   => $salename['username'],
+                'salename'   => $salename['name'],
                 'record_status'  => $v['record_status'],    //跟进情况
                 'record_addtime' => $v['record_addtime'],    //最新跟进时间
                 'record_explain' => $v['record_explain'],    //最新跟进时间
