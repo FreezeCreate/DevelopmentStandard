@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>详情</title>
+    <link rel="stylesheet" href="../css/public.css">
+</head>
+<body>
+    <div class="Frame">
+        <div class="FrameTit"><span class="FrameTitName">详情</span><span class="Close"></span></div>
+        <div class="FrameBox">
+            <div class="FrameCont">
+                <div class="FrameTable">
+                    <div class="FrameTableTitl">详情</div>
+                    <table class="FrameTableCont" id="dataItem">
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="FrameTableFoot">
+            <span class="Succ BgGreen" id="addDataSub" style="display:none;">提交</span>
+        </div>
+    </div>
+    <script src="../js/jquery-1.11.0.js"></script>
+    <script src="../js/public.js"></script>
+    <script src="../js/jedate.js" type="text/javascript" charset="utf-8"></script>
+    <script src="../js/dataAdd.js"></script>
+    <script>
+        $(()=>{
+            showDataList("app.php/inven/invenInfo",function(data){
+                if(data.code!=0){
+                    console.error(data.msg);
+                    return false;
+                }
+                var res=data.results,html='';
+                //	{ "id": "id", "inven_house_id": "仓库id", "inven_house_name": "仓库名称", "inven_num": "商品id", "inven_name": "商品名称", "inven_model": "规格型号", "inven_many": "单位", "inven_status": "状态1、报损2、报溢出", "inven_getlose": "盈亏记录", "optid": "操作人id", "optname": "操作人", "optdt": "操作时间", "saleid": "销售id", "salename": "销售名称", "cid": "公司id", "inven_date": "盘点时间", "del": "删除否1、删除0、未删除", "status": "审核状态1、添加2、驳回3、审核成功" }
+                html=`<tr>
+                        <td class="FrameGroupName">仓库名称：</td>
+                        <td>${res.inven_house_name}</td>
+                        <td class="FrameGroupName">商品名称：</td>
+                        <td>${res.inven_name}</td>
+                    </tr>
+                    <tr>
+                        <td class="FrameGroupName">规格型号：</td>
+                        <td>${res.inven_model}</td>
+                        <td class="FrameGroupName">单位：</td>
+                        <td>${res.inven_many}</td>
+                    </tr>
+                    <tr>
+                        <td class="FrameGroupName">状态：</td>
+                        <td>${res.inven_status==1?"报损":(res.inven_status==2?"溢出":"未填写")}</td>
+                        <td class="FrameGroupName">盈亏记录：</td>
+                        <td>${res.inven_getlose}</td>
+                    </tr>
+                    <tr>
+                        <td class="FrameGroupName">操作人：</td>
+                        <td>${res.optname}}</td>
+                        <td class="FrameGroupName">操作时间：</td>
+                        <td>${res.optdt}</td>
+                    </tr>
+                    <tr>
+                        <td class="FrameGroupName">销售名称：</td>
+                        <td>${res.salename}}</td>
+                        <td class="FrameGroupName">盘点时间：</td>
+                        <td>${res.inven_date}</td>
+                    </tr>
+                    <tr>
+                        <td class="FrameGroupName">审核状态：</td>
+                        <td colspan='3'>${res.status==1?"添加":(res.status==2?"驳回":"审核成功")}</td>
+                    </tr>`;
+                $("#dataItem").html(html);
+            });        
+        });
+    </script>
+</body>
+</html>

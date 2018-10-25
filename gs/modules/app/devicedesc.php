@@ -96,6 +96,7 @@ class devicedesc extends AppController
         }
         
         if($up){
+            $this->sendMsgNotice($admin, 49, $up, '【'.$data['descname'].'】固资设备报告');
             $this->sendUpcoming($admin, 49, $up, '【'.$data['descname'].'】固资设备报告');
             $this->returnSuccess('成功');
         }

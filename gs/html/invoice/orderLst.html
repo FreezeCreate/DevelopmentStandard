@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>采购商品汇总</title>
+		<link rel="stylesheet" type="text/css" href="../css/public.css"/>
+	</head>
+	<body style="min-width: 930px;">
+		<div class="ContentBox">
+			<div class="Tables">
+				<div class="TablesHead">
+					<label>
+						<input type="text"class="FrameGroupInput radius searchname" placeholder="搜索"/>
+					</label>
+					<span class="Btn Btn-blue" id="searchNameId"><i class="icon-serch"></i> 查询</span>
+					<span class="Btn Btn-green TablesSerchReset"><i class="icon-reset"></i> 重置</span>
+					<span class="Btn l_refresh Btn-blue">刷新</span>
+				</div>
+				<div class="top20">
+					<table class="Table">
+						<thead>
+							<tr>
+								<th>商品名称</th>
+								<th>该商品采购总数</th>
+								<th>该商品采购总价</th>
+								<th>商品单位</th>
+								<th>购买时间</th>
+								<th>仓库名</th>
+								<th>操作</th>
+							</tr>
+						</thead>
+						<tbody class="textCenter TabBg" id="dataList">
+						</tbody>
+					</table>
+				</div>
+				<div class="noMsg">
+					<div class="noMsgCont">
+						<img src="../images/noMsg.png"/>
+						<span>抱歉！暂时没有数据</span>
+					</div>
+				</div>
+				<div class="Pages textRight top20">
+					<ul class="PagesBox">
+					</ul>
+				</div>
+			</div>
+		</div>
+		<!-- 内容结束 -->
+	<script src="../js/jquery-1.11.0.js" type="text/javascript" charset="utf-8"></script>
+	<script src="../js/public.js" type="text/javascript" charset="utf-8"></script>
+	<!--日期插件-->
+	<script src="../js/jedate.js" type="text/javascript" charset="utf-8"></script>
+	<!--日期插件-->
+	<script src="../js/table.js" type="text/javascript" charset="utf-8"></script>
+	<script type="text/javascript">
+		$(()=>{
+			"use strict"
+			jeDate({
+				dateCell:"#DatStr",
+				format:"YYYY-MM-DD",
+				isinitVal:false,
+				isTime:false, //isClear:false,
+				minDate:"2014-09-19",
+				okfun:function(val){alert(val)}
+			})
+			jeDate({
+				dateCell:"#DatEnd",
+				format:"YYYY-MM-DD",
+				isinitVal:false,
+				isTime:false, //isClear:false,
+				minDate:"2014-09-19",
+				okfun:function(val){alert(val)}
+			})
+			getPagesBox({
+				nowUrl:"app.php/invoice/orderLst",
+				addList(data){
+					$(".noMsg").hide();
+					if(data.code!=0){
+						console.error(data.msg);
+						return false;
+					}
+					var res=data.results,isAlert="待回访";
+					if(!res)return false;
+					var html='';
+					/*
+all_num:"7401"all_price:"12153720"goods_id:"3"goods_name:"电线"goods_unit:"s"id:"1"optdt:"2018-10-15 11:49:15"room_name:"新库房1"*/
+					for(var {id,all_num,all_price,goods_name,goods_unit,optdt,room_name,goods_id} of res){
+						html+=`<tr>
+								<td>${goods_name}</td>
+								<td>${all_num}</td>
+								<td>${all_price}</td>
+								<td>${goods_unit}</td>
+								<td>${optdt}</td>
+								<td>${room_name}</td>
+								<td>
+									<div class="colorBlu list-menu" style="display: inline-block;">
+										操作+
+										<ul class="menu">
+											<li data-url="invoice/orderInfoItem.html?id=${goods_id}" class="colorBlu menu-item NewPop" data-title="采购单详情">
+												<a href="#">详情</a>
+											</li>
+										</ul>
+									</div>
+								</td>
+							</tr>`;
+					}
+					$("#dataList").html(html);
+				}
+			});
+		});
+	</script>
+</html>

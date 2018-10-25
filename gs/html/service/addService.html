@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>新增</title>
+    <link rel="stylesheet" href="../css/public.css">
+</head>
+<body>
+    <div class="Frame">
+        <div class="FrameTit"><span class="FrameTitName">新增</span><span class="Close"></span></div>
+        <div class="FrameBox">
+            <div class="FrameCont">
+                <div class="FrameTable">
+                    <div class="FrameTableTitl">新增</div>
+                    <form id="addData">
+                        <table class="FrameTableCont">
+                            <tr>
+                                <td class="FrameGroupName"><span class="colorRed">*</span>设备名：</td>
+                                <td>
+                                    <select name="eid" id="eid" class="FrameGroupInput equipLst"></select>
+                                </td>
+                                <td class="FrameGroupName"><span class="colorRed">*</span>维修/保养类型：</td>
+                                <td>
+                                    <select name="type" id="type" class="FrameGroupInput">
+                                        <option value="维修">维修</option>
+                                        <option value="保养">保养</option>
+                                    </select>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="FrameGroupName"><span class="colorRed">*</span>处理时间：</td>
+                                <td>                                   
+                                    <input type="text" class="FrameDatGroup" name="handletime" placeholder="点击选择时间" id="DatStr">
+                                </td>
+                                <td class="FrameGroupName"><span class="colorRed">*</span>负责工程师：</td>
+                                <td>
+                                    <select name="workname" id="workid" class="FrameGroupInput saleNameList"></select>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="FrameGroupName">备注：</td>
+                                <td colspan="3" style="min-height:50px;">
+                                    <textarea name="explain" id="explain" class="FrameGroupInput"></textarea>
+                                </td>
+                            </tr>
+                        </table>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div class="FrameTableFoot">
+            <span class="Succ" id="addDataSub">提交</span>
+        </div>
+    </div>
+    <script src="../js/jquery-1.11.0.js"></script>
+    <script src="../js/public.js"></script>
+    <script src="../js/jedate.js" type="text/javascript" charset="utf-8"></script>
+    <script src="../js/dataAdd.js"></script>
+    <script>
+        $(()=>{
+            jeDate({
+                dateCell:"#DatStr",
+                format:"YYYY-MM-DD hh:mm:ss",
+                isinitVal:false,
+                isTime:false, //isClear:false,
+                minDate:"2014-09-19",
+                okfun:function(val){alert(val)}
+            })
+			addDataList("/app.php/service/saveService");
+        });
+    </script>
+</body>
+</html>

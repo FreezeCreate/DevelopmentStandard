@@ -73,7 +73,7 @@ class inven extends AppController
         $arg = array(
             'inven_house_id'   => '仓库',
             'inven_house_name' => '仓库',
-            'inven_num'        => '商品',
+            'inven_num'        => '商品', //id
             'inven_name'       => '商品',
             'inven_model'      => '',   //型号
             'inven_many'       => '',   //单位
@@ -85,6 +85,7 @@ class inven extends AppController
         );
         $data              = $this->receiveData($arg);
         //报损报溢出状态 盈亏状态
+        
         if ($data['room_num'] > $data['old_num']){  
             $data['inven_status'] = 2;
         }else {
@@ -104,6 +105,8 @@ class inven extends AppController
         $this->returnError('失败');
     }
     
+//     function 
+    
     /**
      * 积压-即最后一次出库时间+积压时间<现在的时间
      * 积压时间
@@ -113,7 +116,7 @@ class inven extends AppController
         $admin      = $this->islogin();
         $con        = 'del = 0 and cid = ' . $admin['cid'];
         $order_name = urldecode(htmlspecialchars($this->spArgs('order_name')));   //商品名查找
-        $model      = spClass('m_goods_order');
+        $model      = spClass('m_goods');
         $m_inven    = spClass('m_inven');
         $con       .= ' and '.time().'-UNIX_TIMESTAMP(nextchuku)>updatetime*60*60*24';
 //         $real_sql = 'select a.updatetime,b.*,MAX(b.inven_date) from '.DB_NAME.'_goods_order as a,'.DB_NAME.'_inven as b where a.cid='.$admin['cid'].' and a.del=0 and b.cid='.$admin['cid'].' and b.del=0 and a.id=b.inven_num and '.time().'-UNIX_TIMESTAMP(b.inven_date)>a.updatetime*60*60*24 group by b.inven_num order by b.inven_date desc';
@@ -145,7 +148,70 @@ class inven extends AppController
         $this->returnSuccess('成功', $result);
     }
     
+    /**
+     * 盘点里的库房商品列表
+     */
+    function invenGoodsLst()
+    {
+        $admin      = $this->islogin();
+        $model      = spClass('m_goods_order');
+        $id         = htmlspecialchars($this->spArgs('id'));
+        //check params
+        if (empty($id)) $this->returnError('id不存在');
+        $results    = $model->findAll('stock_id='.$id.' and cid='.$admin['cid']);
+        $result['results'] = $results;
+        
+        $this->returnSuccess('成功', $result);
+    }
     
+    /**
+     * 库房盘点
+     */
+    function saveInvenLst()
+    {
+        $admin           = $this->islogin();
+        $model           = spClass('m_inven');
+        $m_order         = spClass('m_goods_order');
+        $m_goods         = spClass('m_goods');
+        
+//         $arg = array(
+//             'id'   => '库存id',
+//             'room_num' => '盘点库存',
+//         );
+        
+        foreach ($_REQUEST['list'] as $k => $data){
+            $order_data = $m_order->find('id='.$data['id'].'');
+            $goods_data = $m_goods->find('id='.$order_data['goods_id'].'');
+            
+            $data['inven_house_id'] = $order_data['stock_id'];
+            $data['inven_house_name'] = $order_data['stock_name'];
+            $data['inven_num'] = $order_data['goods_id'];
+            $data['inven_name'] = $goods_data['order_name'];   //商品名称
+            $data['inven_model'] = $goods_data['order_spec'];  //规格型号
+            $data['inven_many'] = $goods_data['order_unit'];   //单位
+            $data['optid'] = $admin['id'];
+            $data['optname'] = $admin['name'];
+            $data['optdt'] = date('Y-m-d H:i:s');
+            $data['saleid'] = $admin['id'];
+            $data['salename'] = $admin['name'];
+            $data['cid'] = $admin['cid'];
+            $data['inven_date'] = date('Y-m-d H:i:s');
+            $data['status'] = 3;
+            $data['room_num'] = $data['room_num'];  //盘点库存
+            $data['old_num'] = $order_data['order_num'];    //系统库存
+            
+            if ($data['room_num'] > $data['old_num']){
+                $data['inven_status'] = 2;
+            }else {
+                $data['inven_status'] = 1;
+            }
+            $data['inven_getlose'] = $data['room_num'] - $data['old_num'];  //盈亏记录
+            unset($data['id']);
+            $up = $model->create($data);    //盘点单的录入
+            $m_order->update(array('id' => $data['id']), array('order_num' => $data['room_num']));
+        }
+        $this->returnSuccess('成功');
+    }
     
     
 }

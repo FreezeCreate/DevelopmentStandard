@@ -15,7 +15,7 @@ class invoice extends AppController
     }
     
     /**
-     * 采购单列表-statu=3
+     * 采购单明细列表
      */
     function index()
     {
@@ -64,8 +64,6 @@ class invoice extends AppController
         }
         $this->returnSuccess('成功', $result);
     }
-    
-    
     
     
     /**
@@ -137,9 +135,9 @@ class invoice extends AppController
             $page_con['year'] = $year.'-'.$month.'-'.$day;
         }
         
-        $sql = 'select goods_id,goods_name,goods_unit,room_name,optdt,sum(goods_num) as all_num,sum(buyprice) as all_price from '.DB_NAME.'_goods_inout where '.$con.' order by goods_id';
+        $sql = 'select id,goods_id,goods_name,goods_unit,room_name,optdt,sum(goods_num) as all_num,sum(buyprice) as all_price from '.DB_NAME.'_goods_inout where '.$con.' group by goods_id';
         //SELECT goods_id,count(goods_num) as real_num FROM `yld_goods_inout` WHERE del=0 group by goods_id
-        $results = $model->spPager($this->spArgs('page', 1), PAGE_NUM)->findAll($sql,'optdt desc,id desc');
+        $results = $model->spPager($this->spArgs('page', 1), PAGE_NUM)->findSql($sql,'optdt desc');
         $pager   = $model->spPager()->getPager();
         $result['pager'] = $pager;
         //用sql代替了
@@ -157,6 +155,7 @@ class invoice extends AppController
 //             $mon = 0;
 //             $sum = 0;
 //         }
+        $result['results'] = $results;
         $this->returnSuccess('成功', $result);
     }
     
@@ -166,13 +165,13 @@ class invoice extends AppController
     function orderInfo()
     {
         $admin      = $this->islogin();
-        $m_inout      = spClass('m_goods_inout');
+        $m_inout    = spClass('m_goods_inout');
         $model      = spClass('m_goods');
         // 必须传goods_id
         $id         = htmlspecialchars($this->spArgs('id'));
         //check params
         if (empty($id)) $this->returnError('id不存在');
-        $results    = $model->find('id='.$id.' del=0 and cid='.$admin['cid'].'');
+        $results    = $model->find('id='.$id.' and del=0 and cid='.$admin['cid'].'');
         if (empty($results)) $this->returnError('id非法');
         $od_result  = $m_inout->findAll('goods_id='.$id.' and del=0 and cid='.$admin['cid']);
         $result['od_result'] = $od_result;
@@ -192,7 +191,7 @@ class invoice extends AppController
         $year         = urldecode(htmlspecialchars($this->spArgs('year')));
         $month        = urldecode(htmlspecialchars($this->spArgs('month')));
         $day          = urldecode(htmlspecialchars($this->spArgs('day')));
-        $con         .= ' and status=1';    //采购status=1
+        $con         .= ' and status=3';    //采购status=1
         $model        = spClass('m_supplier');
         $m_invoice    = spClass('m_invoice');
         if (!empty($company)) {
@@ -212,10 +211,15 @@ class invoice extends AppController
             $page_con['year'] = $year.'-'.$month.'-'.$day;
         }
         
-        $sql     = 'select buldid,buldcom,sum(totalmoney) as all_price,sum(paymoney) as pay_price from '.DB_NAME.'_invoice where '.$con.' group by buldid';
-        $results = $model->spPager($this->spArgs('page', 1), PAGE_NUM)->findAll($sql,'optdt desc,id desc');
+        $sql     = 'select id,buldid,optdt,buldcom,sum(totalmoney) as all_price,sum(paymoney) as pay_price from '.DB_NAME.'_invoice where '.$con.' group by buldid';
+        $results = $model->spPager($this->spArgs('page', 1), PAGE_NUM)->findSql($sql,'optdt desc');
         $pager   = $model->spPager()->getPager();
         $result['pager'] = $pager;
+        
+        $result['results'] = $results;
+        foreach ($results as $k => $v){
+            $result['results'][$k]['company'] = $model->find('id='.$v['buldid'].' and del=0 and cid='.$admin['cid'].'');
+        }
         //sql已经覆盖了该功能
 //         $sum = $mon = 0;
 //         foreach($results as $k=>$v){
@@ -236,7 +240,7 @@ class invoice extends AppController
         $this->returnSuccess('成功', $result);
     }
     /**
-     * 按供应商详情 库存积压TODO 商品详情
+     * 按供应商详情 库存积压TO DO 商品详情
      */
     function supInfo()
     {
@@ -250,9 +254,10 @@ class invoice extends AppController
         $results    = $model->find('id='.$id.' and del=0 and cid='.$admin['cid']);
         if (empty($results)) $this->returnError('id非法');
         $od_result  = spClass('m_invoice')->findAll('buldid='.$id);
+        
         $sup_data = array();
         foreach ($od_result as $k => $v){
-            $sup_data[] = $m_inout->findAll('status=1 and del=0 and cid='.$admin['cid'].' and invoice_id='.$v['id'].'');
+            $sup_data[] = $m_inout->find('status=1 and del=0 and cid='.$admin['cid'].' and invoice_id='.$v['id'].'');
         }
         $result['od_result'] = $sup_data;
         $result['results'] = $results;
@@ -275,7 +280,81 @@ class invoice extends AppController
         $this->returnSuccess('成功', $result);
     }
     
+    /**
+     * 采购退货单商品详情
+     */
+    function invoiceGoodsInfo()
+    {
+        $admin      = $this->islogin();
+        $model      = spClass('m_goods_inout');
+        $id         = htmlspecialchars($this->spArgs('id'));
+        //check params
+        if (empty($id)) $this->returnError('id不存在');
+        $results    = $model->find('id='.$id.' and cid='.$admin['cid']);
+        if (empty($results)) $this->returnError('id非法');
+        $result['results'] = $results;
+        
+        $this->returnSuccess('成功', $result);
+    }
     
+    /**
+     * 采购退货单商品详情
+     */
+    function churuGoodsInfo()
+    {
+        $admin      = $this->islogin();
+        $model      = spClass('m_stock_inout');
+        $id         = htmlspecialchars($this->spArgs('id'));
+        //check params
+        if (empty($id)) $this->returnError('id不存在');
+        $results    = $model->find('id='.$id.' and cid='.$admin['cid']);
+        if (empty($results)) $this->returnError('id非法');
+        $result['results'] = $results;
+        
+        $this->returnSuccess('成功', $result);
+    }
+    
+    /**
+     * 采购/退货对库存的影响
+     */
+    function updateWare()
+    {
+        $admin      = $this->islogin();
+        $model      = spClass('m_goods_inout');
+        $m_order    = spClass('m_goods_order');
+        $id         = htmlspecialchars($this->spArgs('id'));
+        //check params
+        $this->emptyNotice($id, 'id不存在');
+        $results    = $model->find('id='.$id.' and cid='.$admin['cid']);
+        $this->emptyNotice($results, '数据不存在或已经被删除');
+        
+        if ($_POST){
+            $arg = array(
+                'id'         => '商品id',
+                'goods_unit' => '',
+                'goods_num'  => '',
+                'content'    => '',
+                'status'     => '',    //1、采购2、退货、3、入库、4、出库
+            );
+            $data = $this->receiveData($arg);
+            $up   = $model->update(array('id' => $id, 'del' => 0, 'cid' => $admin['cid']), $data);
+            if (!$up) $this->returnError('更新失败');
+            
+            //TODO 对库存的影响
+            if ($data['status'] == 1){  //采购
+                $m_thing = $m_order->find(array('goods_id' => $results['goods_id'], 'stock_id' => $results['room_id']));
+                $num = $m_thing['order_num'] + ($data['goods_num'] - $results['goods_num']);
+            }else { //退货
+                $m_thing = $m_order->find(array('goods_id' => $results['goods_id'], 'stock_id' => $results['room_id']));
+                $num = $m_thing['order_num'] - ($data['goods_num'] - $results['goods_num']);
+            }
+            $m_order->update(array('goods_id' => $results['goods_id'], 'stock_id' => $results['room_id']), array('order_num' => $num));    //库存的更新
+            
+        }
+        
+        $result['results'] = $results;
+        $this->returnSuccess('成功', $result);
+    }
     
 }
 

@@ -7,6 +7,16 @@
  */
 class basic extends AppController {
 
+    /**
+     * head-公司基本信息
+     */
+    function headBasic()
+    {
+        $admin = $this->islogin();
+        $result['results'] = spClass('m_company')->find(array('id' => $admin['cid']));
+        $this->returnSuccess('成功', $result);
+    }
+    
     function data() {
         $type = htmlentities($this->spArgs('type'));
         $result = $GLOBALS[$type];

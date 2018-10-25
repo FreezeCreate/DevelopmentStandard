@@ -105,9 +105,9 @@
                             	<td class="FrameGroupName">主体颜色</td>
                                 <td class="colors">
                                     <div class="colorItem blue active"onclick="$('#blue').click()"></div>
-                                    <input type="radio" class="None" name="colors" checked="checked" id="blue" value="#81b1dd,#0d5781" />
+                                    <input type="radio" class="None" name="colors" checked="checked" id="blue" value="#81b1dd" />
                                     <div class="colorItem gree"onclick="$('#gree').click()"></div>
-                                    <input type="radio" class="None" name="colors" id="gree" value="#70a672,#45864b" />
+                                    <input type="radio" class="None" name="colors" id="gree" value="#45864b" />
                                 </td>
                             </tr>
                             <tr>

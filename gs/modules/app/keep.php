@@ -1,7 +1,9 @@
 <?php
 
-class keep extends AppController {
 
+class keep extends AppController 
+{
+    
     /**
      * TO DO 新增一个报销表 费用报销详情页的审核(拒绝和处理)-app
      * TO DO 采购、退货、出库、入库的修改 入库出库的新增文档编写
@@ -14,6 +16,259 @@ class keep extends AppController {
      * TO DO 设备管理页无未处理和已处理项
      * 
      */
+    
+    
+    /**
+     * app端消息提醒处理
+     */
+    function jpushMsg()
+    {
+        require 'jpush/autoload.php';
+        $client = new \JPush\Client($GLOBALS['jpush']['appKey'], $GLOBALS['jpush']['masterSecret']);
+        
+        $client->push()
+               ->setPlatform('all')
+//                ->setPlatform('android')
+               ->addAlias('guansheng1')
+               ->addTag(array('guansheng1', 'guansheng2', 'guansheng3'))
+//                ->addAllAudience()
+//                ->setNotificationAlert('你怎么回事？老弟')    //单条发送
+//                ->iosNotification()
+//                ->androidNotification(array('asd','dsa'))
+                ->androidNotification('摘要'.time().'', array(    //多条安卓发送
+                    'title'      => '标题'.time().'',
+//                     'style'      => 1,   //通知栏样式
+//                     'builder_id' => 1,   //表示通知栏样式 ID
+                    ))
+               
+//             ->message('message', array(
+//                 'title' => 'hellojpush',
+//                 // 'content_type' => 'text',
+// //                 'extras' => array(
+// //                     'key' => 'value',
+// //                     'jiguang'
+// //                 ),
+//             ))
+               ->send();
+    }
+    
+    /**
+     * 例行检查设备分类及其列表
+     */
+    function dyTypeLst()
+    {
+        $admin   = $this->islogin();
+        $model   = spClass('m_dyjy_para');
+        $results = $model->findAll('type<>4', 'type asc,id asc', 'id,type,name');
+        $this->emptyNotice($results, '数据不存在');
+        foreach ($GLOBALS['DYCT_TYPE'] as $k => $v){
+            $pros[$k]['cate'] = $v;
+            $pros[$k]['data'] = $model->findAll(array('type' => $k), 'id asc', 'id as mid,name');
+        }
+        $result['results'] = array_values($pros);
+        $this->returnSuccess('成功', $result);
+    }
+    
+    /**
+     * 单一流程卡列表
+     */
+    function xmProcessLst()
+    {
+        $admin   = $this->islogin();
+        $model   = spClass('m_dyjy_para');
+        $results = $model->findAll(array('type' => 4), 'type asc,id asc', 'id as mid,name');
+        $result['results'] = $results;
+        $this->returnSuccess('成功', $result);
+    }
+    
+    /**
+     * 提醒消息列表 此处返回未读和已读所有数据
+     * 在每个需要审核(即待办事项)和通知公告的地方添加新增todos表的接口
+     * 此处添加接口列表
+     */
+    function noticeMsgLst()
+    {
+        $admin   = $this->islogin();
+        $model   = spClass('m_flow_todos');
+        $con     = 'uid='.$admin['id'].'';
+        
+        $results = $model->spPager($this->spArgs('page', 1), 15)->findAll($con, 'adddt desc', 'id,adddt,modelname,title');    //未读排在最开始、然后按时间排序
+        $this->emptyNotice($results, '暂无数据');
+        
+        $pager = $model->spPager()->getPager();
+        $page = $pager['current_page'] >= $pager['last_page'] ? '0' : $pager['next_page'];
+        $result['page'] = $page;
+        
+        //未读置一
+        $model->update(array('uid' => $admin['id']), array('isread' => 1));
+        
+        $result['results'] = $results;
+        $this->returnSuccess('成功', $result);
+    }
+    
+    /**
+     * 单条详细提醒信息，如果访问此接口则isread置1表示已读
+     */
+    function noticeMsgInfo()
+    {
+        $admin   = $this->islogin();
+        $model   = spClass('m_flow_todos');
+        $id      = (int) htmlspecialchars($this->spArgs('id'));
+        $results = $model->find('id='.$id.'', '', 'id,adddt,title,isread');
+        //isread detail
+        if ($results['isread'] == 0){
+            $up = $model->update(array('id' => $id), array('isread' => 1, 'readdt' => date('Y-m-d H:i:s')));
+            if (!$up) $this->returnError('网络错误,请稍后重试'); 
+        }
+        
+        $this->returnSuccess('成功', $results);
+    }
+    
+    /**
+     * 设备例行检查新增
+     */
+    function routineCheck()
+    {
+        $admin           = $this->islogin();
+        $model           = spClass('m_dyjy');
+        $m_param         = spClass('m_dyjy_para');
+        $data['oid']     = (int) htmlspecialchars($this->spArgs('oid'));
+        $data['mid']     = (int) htmlspecialchars($this->spArgs('mid'));
+        
+        $data['title']   = htmlspecialchars($this->spArgs('title'));    //文件名称，表顶上的名称数据
+        $data['number']  = htmlspecialchars($this->spArgs('number'));   //文件编号
+        $data['name']    = htmlspecialchars($this->spArgs('name'));     //产品名称
+        $data['format']  = htmlspecialchars($this->spArgs('format'));   //规格型号
+        $data['num']     = htmlspecialchars($this->spArgs('num'));      //检验数量
+        $data['dt']      = htmlspecialchars($this->spArgs('dt'));       //检验日期
+        $data['pnumber'] = htmlspecialchars($this->spArgs('pnumber'));  //产品编号
+        $data['sign']    = htmlspecialchars($this->spArgs('sign'));     //检验员
+        $data['prodt']   = htmlspecialchars($this->spArgs('prodt'));    //生产日期
+        
+        $id              = (int) htmlentities($this->spArgs('id'));
+        
+        //para表数据
+        $p_data['type']  = htmlspecialchars($this->spArgs('protype'));
+//         $p_data['name']  = htmlspecialchars($this->spArgs('proname'));
+        $p_data['name']  = $data['name'];
+        
+        //check params
+        $this->emptyNotice($data['pnumber'], '请填写产品编号');
+        $this->emptyNotice($data['name'], '请填写产品名称');
+        $this->emptyNotice($data['sign'], '请上传签名');
+        
+        //数据处理
+        foreach ($_POST as $k => $v){
+            if (strpos($k, 'q') === 0){
+                $q[$k] = $v;
+            }elseif (strpos($k, 'w') === 0){
+                $w[$k] = $v;
+            }elseif (strpos($k, 'e') === 0){
+                $e[$k] = $v;
+            }elseif (strpos($k, 'r') === 0){
+                $r[$k] = $v;
+            }
+        }
+        
+        $data['jilu']        = json_encode($q);
+        $data['jielun']      = json_encode($w);
+        $data['info']        = json_encode($e);
+        $p_data['parameter'] = json_decode($r);
+        
+        //一产品参数对多个检查记录
+        if ($id){
+            $p_re = $m_param->find(array('id' => $id));
+            $this->emptyNotice($p_re, '数据不存在');
+            
+            $p_data = $this->checkUpdateArr($p_re, $p_data);
+            $p_up   = $m_param->update(array('id' => $id), $p_data);
+            //TO DO 确认是几对几的关系再更新数据 一对一
+            if ($p_up){
+                $re = $model->find(array('id' => $id));
+                $this->emptyNotice($re, '数据不存在');
+                
+                $data = $this->checkUpdateArr($re, $data);
+                $up   = $model->update(array('id' => $id), $data);
+            }
+        }else {
+            $p_up = $m_param->create($p_data);
+            if ($p_up){
+                //检查表新增
+                $data['optid']   = $admin['id'];
+                $data['optname'] = $admin['name'];
+                $data['optdt']   = date('Y-m-d H:i:s');
+                $data['status']  = 1;
+                $data['cid']     = $admin['cid'];
+                $up = $model->create($data);
+            }else {
+                $this->returnError('新增检查出错');
+            }
+        }
+        
+        if ($up) $this->returnSuccess('成功');
+        $this->returnError('失败');
+    }
+    
+    /**
+     * 维修单管理 记录条数 待处理 TO DO 权限判断和处理
+     */
+    function serviceCount()
+    {
+        //省略index.php $control = $this->spArgs('c');
+        if (empty($control)) $control = $this->c;
+        if (empty($way)) $way = $this->a;
+        
+        $m_admin = spClass("m_admin");
+        $m_auth  = spClass('m_auth');
+        $m_role  = spClass('m_role');
+        $data['control'] = $control;
+        $data['way']     = $way;
+        $thisauth        = $m_auth->find($data);   //auth鉴权
+        //token验证，然后thisauth鉴权
+        $token = htmlentities($this->spArgs('token'));
+        //已登陆
+        $user = $m_admin->find('login = "' . $token . '"');
+        
+        if (empty($user)) $this->returnError('用户不存在');
+        
+        if ($user) {
+            if ($user['id'] == 1) {
+                $admin = $user;
+            } else {
+                $role = json_decode($user['role'], true);
+                foreach ($role as $k => $v) {
+                    $re_role = $m_role->find("id = " . $v, '', 'promission');
+                    //当前权限判断
+                    if ($re_role) {
+                        $pro = json_decode($re_role['promission']);
+                        if (in_array($thisauth['id'], $pro)) {
+                            $admin = $user;
+                        } else {
+                            $admin = $user;
+                            $user_roll = 1;    //权限判断
+                        }
+                    }
+                }
+            }
+        }
+        
+        $con    = 'del=0';
+        $number = htmlentities($this->spArgs('number'));
+        $model  = spClass('m_equipment_service');
+        $m_todo = spClass('m_flow_todos');
+        if ($user_roll == 1) $con .= ' and workid='.$admin['id'].'';    //对于没有全部查看人的权限判定
+        
+        $sql    = 'select count(*) from '.DB_NAME.'_equipment_service where '.$con.' and status=1';
+        $count  = $model->findSql($sql);
+        $result['count'] = $count[0]['count(*)'];
+        //待办事项是否有红点的统计
+        $todos      = $m_todo->findAll('uid='.$admin['id'].' and isread=0');
+        $todo_count = 0;
+        if (!empty($todos)) $todo_count = 1;
+        $result['todo_status'] = $todo_count;
+        
+        $this->returnSuccess('成功', $result);
+    }
     
     /**
      * 设备维修详情
@@ -162,6 +417,7 @@ class keep extends AppController {
             'id'      => '',
             'workid'  => '',
             'workname'=> '',
+//             'eid'     => '',
         );
         $data = $this->receiveData($args);
         $id = $data['id'];
@@ -174,6 +430,8 @@ class keep extends AppController {
         if (empty($id)) {
             $equipment = $m_equipment->find(array('number' => $data['number'], 'cid' => $admin['cid']));
             if (empty($equipment)) $this->returnError('设备不存在，请检查设备编号是否正确');
+            //设备id=eid
+            $data['eid'] = $equipment['id'];
             $ad = $model->create($data);
             if ($ad) $this->returnSuccess('添加成功');
             $this->returnError('网络错误，请稍后重试');
@@ -216,6 +474,7 @@ class keep extends AppController {
         foreach ($results as $k => $v) {
             $results[$k]['name'] = $v['cust_name'];
         }
+        
         $pager = $model->spPager()->getPager();
         $page = $pager['current_page'] >= $pager['last_page'] ? '0' : $pager['next_page'];
         $result['page'] = $page;
@@ -269,6 +528,7 @@ class keep extends AppController {
         $id = htmlentities($this->spArgs('id'));
         $result = $model->find(array('id' => $id, 'cid' => $admin['cid'], 'del' => 0));
         if (empty($result)) $this->returnError('暂无数据');
+        $result = $this->setEmptyStr($result, '暂无');
         $this->returnSuccess('成功', $result);
     }
 

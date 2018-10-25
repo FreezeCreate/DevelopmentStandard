@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>详情</title>
+    <link rel="stylesheet" href="../css/public.css">
+</head>
+<body>
+    <div class="Frame">
+        <div class="FrameTit"><span class="FrameTitName">详情</span><span class="Close"></span></div>
+        <div class="FrameBox">
+            <div class="FrameCont">
+                <div class="FrameTable">
+                    <div class="FrameTableTitl">详情</div>
+                    <table class="FrameTableCont" id="dataItem">
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="FrameTableFoot">
+        </div>
+    </div>
+    <script src="../js/jquery-1.11.0.js"></script>
+    <script src="../js/public.js"></script>
+    <script src="../js/jedate.js" type="text/javascript" charset="utf-8"></script>
+    <script src="../js/dataAdd.js"></script>
+    <script>
+        $(()=>{
+            showDataList("app.php/goods/goodsOrderInfo",function(data){
+                if(data.code!=0){
+                    console.error(data.msg);
+                    return false;
+                }
+                var res=data.results,html='';
+                //{ "id": "id", "cateid": "类别id", "catename": "类别", "order_name": "商品名称", "order_spec": "规格", "order_num": "数量", "order_explain": "备注", "optid": "操作人id", "optdt": "操作时间", "optname": "操作人", "cid": "公司id", "del": "删除否1、删除0未删除", "stock_id": "库房id", "stock_name": "库房名称", "updatetime": "积压时间周期(天)", "nextchuku": "最近一次出库时间" }
+                html=`<tr>
+                        <td class="FrameGroupName">商品类别：</td>
+                        <td>${res.catename}</td>
+                        <td class="FrameGroupName">商品名称：</td>
+                        <td>${res.order_name}</td>
+                    </tr>
+                    <tr>
+                        <td class="FrameGroupName">规格：</td>
+                        <td>${res.order_spec}</td>
+                        <td class="FrameGroupName">单位：</td>
+                        <td>${res.order_unit}</td>
+                    </tr>
+                    <tr>
+                        <td class="FrameGroupName">操作人：</td>
+                        <td>${res.optname}</td>
+                        <td class="FrameGroupName">操作时间：</td>
+                        <td>${res.optdt}</td>
+                    </tr>
+                    <tr>
+                        <td class="FrameGroupName">挤压时间：</td>
+                        <td>${res.updatetime}</td>
+                        <td class="FrameGroupName">最近一次出库时间：</td>
+                        <td>${res.nextchuku}</td>
+                    </tr>
+                    <tr>
+                        <td class="FrameGroupName">备注：</td>
+                        <td colspan="3">${res.order_explain}</td>
+                    </tr>`;
+                $("#dataItem").html(html);
+            });        
+        });
+    </script>
+</body>
+</html>

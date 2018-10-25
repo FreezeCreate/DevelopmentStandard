@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>修改</title>
+    <link rel="stylesheet" href="../css/public.css">
+</head>
+<body>
+    <div class="Frame">
+        <div class="FrameTit"><span class="FrameTitName">修改</span><span class="Close"></span></div>
+        <div class="FrameBox">
+            <div class="FrameCont">
+                <div class="FrameTable">
+                    <div class="FrameTableTitl">修改</div>
+                    <form id="addData">
+                        <input type="hidden" id="id" name="id">
+                        <table class="FrameTableCont" id="dataItem"></table>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div class="FrameTableFoot">
+            <span class="Succ" id="addDataSubCont">提交</span>
+        </div>
+    </div>
+    <script src="../js/jquery-1.11.0.js"></script>
+    <script src="../js/public.js"></script>
+    <script src="../js/jedate.js" type="text/javascript" charset="utf-8"></script>
+    <script src="../js/dataAdd.js"></script>
+    <script src="../js/ajaxfileupload.js"></script>
+    <script>
+        $(()=>{     
+			jeDate({
+				dateCell:".FrameDatGroup",
+				format:"YYYY-MM-DD hh:mm:ss",
+				isinitVal:false,
+				isTime:false, //isClear:false,
+				minDate:"2014-09-19",
+				okfun:function(val){alert(val)}
+			})
+        	showDataList('/app.php/service/equipmentInfo',function(data){
+                var res=data;
+                $("#id").val(res.id);
+                var files=res.files,files_html='';
+                if(files){
+                    var filesid='';
+                    for(var {id,filename} of files){
+                        if(filesid==''){
+                            filesid+=id;
+                        }else{
+                            filesid=filesid+','+id;
+                        }
+                        files_html+=`<a itemid="${id}" style="display:block;" class="download colorGre">${filename}</a>`;
+                    }
+                    files_html+=`<input type="hidden" id="files" name="files" value="${filesid}">`;
+                }
+                if(res){
+                    var itemhtml='';
+                    itemhtml=`<tr>
+                                <td class="FrameGroupName"><span class="colorRed">*</span>设备编号：</td>
+                                <td>                                    
+                                    <input type="text" class="FrameGroupInput" value="${res.number}" name="number" placeholder="输入设备编号">
+                                </td>
+                                <td class="FrameGroupName"><span class="colorRed">*</span>设备名称：</td>
+                                <td>
+                                    <input type="text" class="FrameGroupInput" value="${res.name}" name="name" placeholder="输入设备名称">
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="FrameGroupName"><span class="colorRed">*</span>客户名称(${res.custname})：</td>
+                                <td>
+                                    <select name="custid" id="custid" class="FrameGroupInput custNameLst"></select>
+                                </td>
+                                <td class="FrameGroupName"><span class="colorRed">*</span>型号规格：</td>
+                                <td>
+                                    <input type="text" class="FrameGroupInput" value="${res.format}" name="format" placeholder="输入规格">
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="FrameGroupName"><span class="colorRed">*</span>客户电话：</td>
+                                <td>
+                                    <input type="text" class="FrameGroupInput" value="${res.custphone}" name="custphone" placeholder="输入号码">
+                                </td>
+                                <td class="FrameGroupName">检验周期/天：</td>
+                                <td>
+                                    <input type="text" class="FrameGroupInput" name="day" value="${res.day}" placeholder="输入天数">
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="FrameGroupName">相关文件 ：</td>
+                                <td>${files_html}
+                                    <input class="None fileToUpload" onchange="ajaxFileUpload()" type="file" name="file" id="file"/>
+                                    <span class="addFile" onclick="$('#file').click()">+添加文件</span>
+                                </td>
+                                <td class="FrameGroupName">地址：</td>
+                                <td>
+                                    <input type="text" name="address" id="" class="FrameGroupInput">
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="FrameGroupName">说明内容：</td>
+                                <td colspan="3" style="min-height:50px;">
+                                    <textarea name="explain" id="explain" class="FrameGroupInput"></textarea>
+                                </td>
+                            </tr>`;
+                    $("#dataItem").html(itemhtml).removeClass("l_loading");
+                    showCustName('.custNameLst');
+                };
+                addDataList("/app.php/service/saveEquipment");
+            });
+        });
+        $(document).on('click','#addDataSubCont',function(){
+            var that = $(this);
+            that.hide().parent().append("<i class='l_loading'></i>");
+            var data = getSubData('addData');
+            data.token = dataToken;
+            $.ajax({
+                type:'post',
+                url:dataURL+'/app.php/service/saveEquipment',
+                data,
+                dataType:'json',
+                success:function(data){
+                    if (data.code != 0) {
+                        alert(data.msg);
+                        that.show().next().remove();
+                        return false;
+                    }
+                    parent.window.closHtml();
+                    location.reload();
+                    alert(data.msg + ",请再次刷新。");
+                },
+                error:function(){
+                    console.error('网络错误');
+                }
+            });
+        });
+        function ajaxFileUpload() {
+            $.ajaxFileUpload({
+                url: dataURL+'/app.php/uplaod/uploadFile',
+                secureuri: false,
+                fileElementId: 'file',
+                dataType: 'json',
+                data: {name: 'file', id: 'file'},
+                success: function(data, status) {
+                    var fileval=$('#files').val();
+                    fileval==''?"":fileval+=',';
+                    if (data.code != 1) {
+                        $('#files').val(fileval+data.id);
+                        $('#file').after(`<span style="display:block;">${data.filename}<span>`);
+                    } else {
+                        console.error(data.msg);
+                    }
+                },
+                error: function(data, status, e) {
+                    console.error(e);
+                }
+            });
+            return false;
+        }
+    </script>
+</body>
+</html>

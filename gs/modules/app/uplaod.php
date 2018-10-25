@@ -7,6 +7,92 @@
  */
 class uplaod extends AppController {
 
+    //上传签名专用
+    function uploadqm() {
+        header('Access-Control-Allow-Origin: *'); // "*"号表示允许任何域向服务器端提交请求；也可以设置指定的域名，那么就允许来自这个域的请求：
+        header('Access-Control-Allow-Methods: POST,GET');
+        header('Access-Control-Max-Age: 1000');
+        
+        $this->logResult("post:" . json_encode($_POST) . "\n get:" . json_encode($_GET) . "\n files:" . json_encode($_FILES));
+        $user = $this->islogin();
+        $data = array("code" => 1, "msg" => "", "src" => "");
+        //         $fileElementName = $_GET['name'];
+        $fileElementName = $this->spArgs('name');
+        
+        if (!empty($_FILES[$fileElementName]['error'])) {
+            switch ($_FILES[$fileElementName]['error']) {
+                case '1':
+                    $data["msg"] = '文件太大，无法上传！';
+                    break;
+                case '2':
+                    $data["msg"] = '文件大小超出了表单的限制！';
+                    break;
+                case '3':
+                    $data["msg"] = '文件上传不完整！';
+                    break;
+                case '4':
+                    $data["msg"] = '没有选择文件！';
+                    break;
+                case '6':
+                    $data["msg"] = '临时文件夹丢失！';
+                    break;
+                case '7':
+                    $data["msg"] = '图片保存失败！';
+                    break;
+                case '8':
+                    $data["msg"] = '文件上传意外终止！';
+                    break;
+                case '999':
+                default:
+                    $data["msg"] = '没有错误！';
+            }
+        } elseif (empty($_FILES[$fileElementName]['tmp_name']) || $_FILES[$fileElementName]['tmp_name'] == 'none') {
+            $data["msg"] = '请选择要上传的文件！';
+        } else {
+            $tempFile = $_FILES[$fileElementName]['tmp_name'];
+            $file_name = $_FILES[$fileElementName]['name'];
+            $pt = strrpos($file_name, ".");
+            $file_ext = substr($file_name, $pt, strlen($file_name) - $pt);
+            
+            //判断文件格式
+            if ($file_ext != ".jpg" && $file_ext != ".JPG" && $file_ext != ".jpeg" && $file_ext != ".JPEG" && $file_ext != ".png" && $file_ext != ".PNG" && $file_ext != ".gif" && $file_ext != ".GIF") {
+                $data["msg"] = '图片格式错误，只能上传jpg、png、gif等格式的图片！';
+                echo json_encode($data);
+                exit;
+            }
+            
+            $rd = Common::randCode(6, 1);
+            
+            $file_name = time() . $rd . $file_ext;
+            
+            $targetFile = APP_PATH . "/tmp/" . $file_name;
+            $re = move_uploaded_file($tempFile, $targetFile);
+            
+            import(APP_PATH . "/include/imgresize.php");
+            $_img = new imgresize($targetFile, $targetFile);
+            $_img->thumb(100, 50);
+            $_img->out();
+            
+            $con = array("id" => $admin['id']);
+            $_path = "/tmp/" . basename($targetFile);
+            $row = array(
+                "qianming" => Common::copy_upload($_path, "qianming/".date('Ymd'))
+            );
+            
+            $re2 = spClass('m_admin')->update($con, $row);
+            if ($re && $re2) {
+                $data["msg"] = "上传成功！";
+                $data["status"] = 1;
+                $data["src"] = $row["qianming"];
+                $_SESSION['admin']["qianming"] = $row["qianming"];
+            } else {
+                $data["msg"] = "上传失败！";
+            }
+        }
+        echo json_encode($data);
+        exit;
+    }
+    
     function uploadimage() {
         $this->logResult("post:" . json_encode($_POST) . "\n get:" . json_encode($_GET) . "\n files:" . json_encode($_FILES));
         $img = $this->spArgs('image');

@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>详情</title>
+    <link rel="stylesheet" href="../css/public.css">
+</head>
+<body>
+    <div class="Frame">
+        <div class="FrameTit"><span class="FrameTitName">详情</span><span class="Close"></span></div>
+        <div class="FrameBox">
+            <div class="FrameCont">
+                <div class="FrameTable">
+                    <div class="FrameTableTitl">详情</div>
+                    <table class="FrameTableCont" id="dataItem">
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="FrameTableFoot">
+            <span class="Succ BgGreen" id="addDataSub" style="display:none;">提交</span>
+        </div>
+    </div>
+    <script src="../js/jquery-1.11.0.js"></script>
+    <script src="../js/public.js"></script>
+    <script src="../js/jedate.js" type="text/javascript" charset="utf-8"></script>
+    <script src="../js/dataAdd.js"></script>
+    <script>
+        $(()=>{
+            showDataList("/app.php/service/liveConInfo",function(data){
+                if(data.code!=0){
+                    console.error(data.msg);
+                    return false;
+                }
+                var res=data,html='';
+                //{ "id": "id", "live_title": "标题", "live_desc": "内容", "live_adddt": "添加时间", "optid": "操作人id", "optname": "操作人", "optdt": "操作时间", "cid": "公司id", "del": "是否删除1、删除0、未删除", "cateid": "类型id", "see": "" }
+                if(res){
+                    html=`<tr>
+                            <td class="FrameGroupName">标题：</td>
+                            <td>${res.live_title}</td>
+                            <td class="FrameGroupName">操作人：</td>
+                            <td>${res.optname}</td>
+                        </tr>
+                        <tr>
+                            <td class="FrameGroupName">添加时间：</td>
+                            <td colspan='3'>${res.live_adddt}</td>
+                        </tr>
+                        <tr>
+                            <td class="FrameGroupName">内容：</td>
+                            <td colspan="3" style="min-height:50px;">${res.live_desc}</td>
+                        </tr>`;
+                    $("#dataItem").html(html);
+                }
+            });
+        });
+    </script>
+</body>
+</html>

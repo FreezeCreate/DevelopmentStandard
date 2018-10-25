@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>详情</title>
+    <link rel="stylesheet" href="../css/public.css">
+</head>
+<body>
+    <div class="Frame">
+        <div class="FrameTit"><span class="FrameTitName">详情</span><span class="Close"></span></div>
+        <div class="FrameBox">
+            <div class="FrameCont">
+                <div class="FrameTable">
+                    <div class="FrameTableTitl">详情</div>
+                    <table class="FrameTableCont" id="dataItem">
+                    </table>
+                    <p class="colorGre" style="margin-top:30px;margin-bottom:10px;">采购记录</p>
+                    <table class="FrameTableCont textCenter" id="od_res">
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="FrameTableFoot"></div>
+    </div>
+    <script src="../js/jquery-1.11.0.js"></script>
+    <script src="../js/public.js"></script>
+    <script src="../js/jedate.js" type="text/javascript" charset="utf-8"></script>
+    <script src="../js/dataAdd.js"></script>
+    <script>
+        $(()=>{
+            showDataList('app.php/invoice/supInfo',function(data){
+                var res=data.results,html='';
+                if(res){
+                    html=`<tr>
+                            <td class="FrameGroupName" >供应商名称：</td>
+                            <td colspan="3">${res.company}</td>
+                        </tr>
+                        <tr>
+                            <td class="FrameGroupName">联系方式</td>
+                            <td>${res.phone}</td>
+                            <td class="FrameGroupName" >地区：</td>
+                            <td>${res.address}</td>
+                        </tr>
+                        <tr>
+                            <td class="FrameGroupName">供货商品类型</td>
+                            <td>${res.goodstype}</td>
+                            <td class="FrameGroupName">是否有工商营业制造和其他合法证明</td>
+                            <td>${res.hfzm==1?"有":"没有"}</td>
+                        </tr>
+                        <tr>
+                            <td class="FrameGroupName">质量情况</td>
+                            <td>${res.zlqk==1?"强":(res.zlqk==2?"一般":"弱")}</td>
+                            <td class="FrameGroupName">产品价格和服务</td>
+                            <td>${res.jgfw==1?"好":(res.jgfw==2?"一般":"差")}</td>
+                        </tr>
+                        <tr>
+                            <td class="FrameGroupName">产品相关资质</td>
+                            <td>${res.xgzz==1?"有":"没有"}</td>
+                            <td class="FrameGroupName">社会信誉是否良好</td>
+                            <td>${res.shxy==1?"好":(res.shxy==2?"一般":"差")}</td>
+                        </tr>
+                        <tr>
+                            <td class="FrameGroupName">采购部评定</td>
+                            <td>${res.cgst==1?"同意":"不同意"}</td>
+                            <td class="FrameGroupName">采购部评定人签名</td>
+                            <td><img src="${dataURL+res.cgname}" alt="加载中..."></td>
+                        </tr>
+                        <tr>
+                            <td class="FrameGroupName">质检部评定</td>
+                            <td>${res.zjst==1?"同意":"不同意"}</td>
+                            <td class="FrameGroupName">质检部评定人签名</td>
+                            <td><img src="${dataURL+res.zjname}" alt="加载中..."></td>
+                        </tr>
+                        <tr>
+                            <td class="FrameGroupName">生产技术部评定</td>
+                            <td>${res.scst==1?"同意":"不同意"}</td>
+                            <td class="FrameGroupName">质检部评定人签名</td>
+                            <td><img src="${dataURL+res.scname}" alt="加载中..."></td>
+                        </tr>
+                        <tr>
+                            <td class="FrameGroupName">是否同意作为本公司合格供方</td>
+                            <td>${res.status==1?"同意":"不同意"}</td>
+                            <td class="FrameGroupName">批准日期</td>
+                            <td>${res.stdt}</td>
+                        </tr>`;
+                    //{ "id": "id", "company": "供应商名称", "address": "地区", "goodstype": "供货商品类型", "name": "联系人", "phone": "联系方式", "explain": "内容", "optid": "操作人id", "optname": "操作人", "optdt": "操作时间", "hfzm": "是否有工商营业制造和其他合法证明 1有 0没有", "zlqk": "质量情况 1强 2一般 3弱", "jgfw": "产品价格和服务 1好 2一般 3差", "xgzz": "产品相关资质 1 有 2,没有", "shxy": "社会信誉是否良好 1好 2一般 3差", "cgst": "采购部评定 1同意 2不同意", "cgname": "采购部评定人签名", "zjst": "质检部评定 1同意 2不同意", "zjname": "质检部评定人签名", "scst": "生产技术部评定 1同意 2不同意", "scname": "生产技术部评定人签名", "offer_status": "是否同意作为本公司合格供方 1同意 2不同意", "stdt": "批准日期", "del": "是否删除 1删除 0正常", "cid": "公司id" }
+                    $("#dataItem").html(html);
+                }
+                var od_res=data.od_result;
+                if(od_res){
+                    var od_html=`<tr class="BgGreen">
+                            <td>序号</td>
+                            <td>商品名称</td>
+                            <td>购货总金额</td>
+                            <td>购货总数</td>
+                            <td>商品规格</td>
+                            <td>库房名称</td>
+                            <td>操作人</td>
+                            <td>操作时间</td>
+                        </tr>`,i=0;
+                    for(var {id,buyprice,goods_name,goods_num,goods_price,goods_unit,room_name,optdt,optname} of od_res){
+                        i++;
+                        od_html+=`<tr>
+                            <td>${i}</td>
+                            <td>${goods_name}</td>
+                            <td>${goods_price}</td>
+                            <td>${goods_num}</td>
+                            <td>${goods_unit}</td>
+                            <td>${room_name}</td>
+                            <td>${optname}</td>
+                            <td>${optdt}</td>
+                        </tr>`;
+                    }
+                    $("#od_res").html(od_html);
+                }
+            });					
+        });
+    </script>
+</body>
+</html>

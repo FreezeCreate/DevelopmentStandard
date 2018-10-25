@@ -48,8 +48,18 @@ class meeting extends AppController
         if (empty($id)) $this->returnError('id不存在');
         $results    = $model->find('id='.$id.' and cid='.$admin['cid']);
         if (empty($results)) $this->returnError('id非法');
-        $result['results'] = $results;
         
+        if (!empty($results['files'])){
+            $file = explode(',', $results['files']);
+            foreach ($file as $k => $v){
+                $files[] = spClass('m_file')->find(array('id' => $v));
+            }
+            $results['files'] = $files;
+        }else {
+            $results['files'] = array();
+        }
+        
+        $result['results'] = $results;
         $this->returnSuccess('成功', $result);
     }
     
@@ -73,8 +83,9 @@ class meeting extends AppController
         );
         $data = $this->receiveData($arg);
         
-        $files = $this->spArgs('files');    //文件处理
-        if ($files) $data['files'] = implode(',', $files);
+//         $files = $this->spArgs('files');    //文件处理
+//         if ($files) $data['files'] = implode(',', $files);
+        $data['files'] = $this->spArgs('files');
         
         if($id){
             $re = $model->find(array('id'=>$id,'del'=>0,'cid'=>$admin['cid']));

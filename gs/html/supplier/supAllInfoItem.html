@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>详情</title>
+    <link rel="stylesheet" href="../css/public.css">
+</head>
+<body>
+    <div class="Frame">
+        <div class="FrameTit"><span class="FrameTitName">详情</span><span class="Close"></span></div>
+        <div class="FrameBox">
+            <div class="FrameCont">
+                <div class="FrameTable">
+                    <div class="FrameTableTitl">详情</div>
+                    <table class="FrameTableCont" id="dataItem"></table>
+                    <p class="colorGre" style="display:none;margin-top:30px;margin-bottom:10px;">退货单列表信息</p>
+                    <table class="FrameTableCont" id="regoods"></table>
+                    <p class="colorGre" style="display:none;margin-top:30px;margin-bottom:10px;">采购单列表信息	</p>
+                    <table class="FrameTableCont textCenter" id="invoice"></table>
+                </div>
+            </div>
+        </div>
+        <div class="FrameTableFoot">
+        </div>
+    </div>
+    <script src="../js/jquery-1.11.0.js"></script>
+    <script src="../js/public.js"></script>
+    <script src="../js/jedate.js" type="text/javascript" charset="utf-8"></script>
+    <script src="../js/dataAdd.js"></script>
+    <script>
+        $(()=>{
+            showDataList("app.php/supplier/supAllInfo",function(data){
+                if(data.code!=0){
+                    console.error(data.msg);
+                    return false;
+                }
+                var res=data.results,html='';
+                if(res){
+                    html=`<tr>
+                            <td class="FrameGroupName">供应商名称：</td>
+                            <td>${res.company}</td>
+                            <td class="FrameGroupName">地区：</td>
+                            <td>${res.address}</td>
+                        </tr>
+                        <tr>
+                            <td class="FrameGroupName">供货商品类型：</td>
+                            <td>${res.goodstype}</td>
+                            <td class="FrameGroupName">联系人：</td>
+                            <td>${res.name}</td>
+                        </tr>
+                        <tr>
+                            <td class="FrameGroupName">联系方式：</td>
+                            <td>${res.phone}</td>
+                            <td class="FrameGroupName">内容：</td>
+                            <td>${res.explain}</td>
+                        </tr>
+                        <tr>
+                            <td class="FrameGroupName">操作人：</td>
+                            <td>${res.optname}</td>
+                            <td class="FrameGroupName">操作时间：</td>
+                            <td>${res.optdt}</td>
+                        </tr>
+                        <tr>
+                            <td class="FrameGroupName">是否有工商营业制造和其他合法证明:</td>
+                            <td>${res.hfzm==1?"有":"没有"}</td>
+                            <td class="FrameGroupName">质量情况:</td>
+                            <td>${res.zlqk==1?"强":(res.zlqk==2?"一般":"弱")}</td>
+                        </tr>
+                        <tr>
+                            <td class="FrameGroupName">产品价格和服务:</td>
+                            <td>${res.jgfw==1?"好":(res.jgfw==2?"一般":"差")}</td>
+                            <td class="FrameGroupName">产品相关资质:</td>
+                            <td>${res.xgzz==1?"有":"没有"}</td>
+                        </tr>
+                        <tr>
+                            <td class="FrameGroupName">采购部评定:</td>
+                            <td>${res.cgst==1?"同意":"不同意"}</td>
+                            <td class="FrameGroupName">采购部评定人签名:</td>
+                            <td>${res.cgname||"无"}</td>
+                        </tr>
+                        <tr>
+                            <td class="FrameGroupName">质检部评定:</td>
+                            <td>${res.zjst==1?"同意":"不同意"}</td>
+                            <td class="FrameGroupName">质检部评定人签名:</td>
+                            <td>${res.zjname||"无"}</td>
+                        </tr>
+                        <tr>
+                            <td class="FrameGroupName">生产技术部评定:</td>
+                            <td>${res.scst==1?"同意":"不同意"}</td>
+                            <td class="FrameGroupName">生产技术部评定人签名:</td>
+                            <td>${res.scname||"无"}</td>
+                        </tr>
+                        <tr>
+                            <td class="FrameGroupName">社会信誉是否良好:</td>
+                            <td colspan="3">${res.shxy==1?"好":(res.shxy==2?"一般":"差")}</td>
+                        </tr>
+                        <tr>
+                            <td class="FrameGroupName">是否同意作为本公司合格供方:</td>
+                            <td>${res.offer_status==1?"同意":"不同意"}</td>
+                            <td class="FrameGroupName">批准日期:</td>
+                            <td>${res.stdt}</td>
+                        </tr>
+                        <tr>
+                            <td class="FrameGroupName">操作人：</td>
+                            <td>${res.optname}</td>
+                            <td class="FrameGroupName">操作时间：</td>
+                            <td>${res.optdt}</td>
+                        </tr>`;
+                    $("#dataItem").html(html);
+                }
+                var regoods=data.regoods,
+                    r_html=`<tr class="BgGreen">
+                        <td>退货单编号</td>
+                        <td>进货单编号</td>
+                        <td>退货公司</td>
+                        <td>退货详情</td>
+                        <td>审核状态</td>
+                    </tr>`;
+                if(regoods.length>0){
+                    for(var {id,renum,invoice_num,reinfo,recompany,status} of regoods){
+                        /*id:"1"del:"0"id:"1"invoice_id:"2"invoice_num:"I2018101502"optdt:"2018-10-15 15:41:10"optid:"1"optname:"超级管理员"recomid:"13"recompany:"冠晟"reinfo:""renum:"R2018101501"status:"3"*/
+                        r_html+=`<tr>
+                                <td>${renum}</td>
+                                <td>${invoice_num}</td>
+                                <td>${recompany}</td>
+                                <td>${reinfo||"无"}</td>
+                                <td>${status==1?"提交":(status==2?"驳回":"审核通过")}</td>
+                            </tr>`;
+                    }
+                    $("#regoods").html(r_html).prev().show();
+                }
+                var invoice=data.invoice,
+                    i_html=`<tr>
+                            <td>编号</td>
+                            <td>供应商</td>
+                            <td>购买金额</td>
+                            <td>总金额</td>
+                            <td>采购时间</td>
+                            <td>付款状态</td>
+                        </tr>`;
+                if(invoice.length>0){
+                    for(var {billnum,buldcom,totalmoney,paymoney,buydate,statecode} of invoice){
+                        i_html+=`<tr>
+                                <td>${billnum}</td>
+                                <td>${buldcom}</td>
+                                <td>${paymoney}</td>
+                                <td>${totalmoney}</td>
+                                <td>${buydate}</td>
+                                <td>${statecode==2?"全部付款":(statecode==1?"部分付款":"未付款")}</td>
+                            </tr>`;
+                    }
+                    $("#invoice").html(i_html).prev().show();
+                }
+            });        
+        });
+    </script>
+</body>
+</html>

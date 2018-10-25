@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>其它收支明细</title>
+		<link rel="stylesheet" type="text/css" href="../css/public.css"/>
+	</head>
+	<body style="min-width: 930px;">
+		<div class="ContentBox">
+			<div class="Tables">
+				<div class="TablesHead">
+					<select class="FrameGroupInput searchdt">
+						<option value="">请输入年份</option>
+						<option value="2018"> 2018年 </option>
+						<option value="2017"> 2017年 </option>
+						<option value="2016"> 2016年 </option>
+					</select>
+					<select class="FrameGroupInput searchdt">
+						<option value="">请输入月份</option>
+						<option value="09"> 9月 </option>
+						<option value="10"> 10月 </option>
+						<option value="11"> 11月 </option>
+					</select>
+					<select class="FrameGroupInput searchdt">
+						<option value="">请输入日期</option>
+						<option value="11"> 11日 </option>
+						<option value="12"> 12日 </option>
+						<option value="13"> 13日 </option>
+						<option value="14"> 14日 </option>
+						<option value="15"> 15日 </option>
+					</select>
+					<!-- <span class="Btn Btn-blue" id="searchNameId"><i class="icon-serch"></i> 查询</span> -->
+					<span class="Btn Btn-green TablesSerchReset"><i class="icon-reset"></i> 重置</span>
+					<span class="Btn l_refresh Btn-blue">刷新</span>
+				</div>
+				<div class="top20">
+					<table class="Table">
+						<thead>
+							<tr>
+								<th>单号</th>
+								<th>收付款</th>
+								<th>客户名称</th>
+								<th>合同名称</th>
+								<th>总流水</th>
+								<th>本次流水</th>
+								<th>添加时间</th>
+								<th>是否结清</th>
+								<th>销售人</th>
+								<th>支付方式</th>
+								<th>流水类型</th>
+							</tr>
+						</thead>
+						<tbody class="textCenter TabBg" id="dataList">
+						</tbody>
+					</table>
+				</div>
+				<div class="noMsg">
+					<div class="noMsgCont">
+						<img src="../images/noMsg.png"/>
+						<span>==》请按日期搜索！</span>
+					</div>
+				</div>
+				<div class="Pages textRight top20">
+					<ul class="PagesBox"></ul>
+				</div>
+			</div>
+		</div>
+		<!-- 内容结束 -->
+	</body>
+	<script src="../js/jquery-1.11.0.js" type="text/javascript" charset="utf-8"></script>
+	<script src="../js/public.js" type="text/javascript" charset="utf-8"></script>
+	<!--日期插件-->
+	<script src="../js/jedate.js" type="text/javascript" charset="utf-8"></script>
+	<!--日期插件-->
+	<script src="../js/table.js" type="text/javascript" charset="utf-8"></script>
+	<script type="text/javascript">
+		$(()=>{
+			"use strict"
+			jeDate({
+				dateCell:"#DatStr",
+				format:"YYYY-MM-DD",
+				isinitVal:false,
+				isTime:false, //isClear:false,
+				minDate:"2018-09-19",
+				okfun:function(val){alert(val)}
+			})
+			jeDate({
+				dateCell:"#DatEnd",
+				format:"YYYY-MM-DD",
+				isinitVal:false,
+				isTime:false, //isClear:false,
+				minDate:"2018-09-19",
+				okfun:function(val){alert(val);}
+			})
+			$(".searchdt").get(0).focus();
+			function showDataList(){
+				var searchdt='';
+				$(".searchdt").each(function(i,e){
+					var that=$(e);
+					if(that.val().length>0){
+						if(that.prev().hasClass("searchdt")){
+							searchdt+='-'+that.val();
+						}else{
+							searchdt+=that.val();
+						}
+					}
+				});
+				getPagesBox({
+					nowUrl:"app.php/custmang/otherBillLst?searchdt="+searchdt,
+					addList(data){
+						$(".noMsg").hide();
+						if(data.code!=0){
+							console.error(data.msg);
+							return false;
+						}
+						var p_res=data.pay,g_res=data.get,html='';
+						if(p_res.length>0){
+							for(var {id,paynumber,custname,contractname,payall,paymoney,adddt,monstatus,salename,checkstatus,paytype} of p_res){
+								html+=`<tr>
+										<td>${paynumber}</td>
+										<td>付款</td>
+										<td>${custname}</td>
+										<td>${contractname}</td>
+										<td>${payall}</td>
+										<td>${paymoney}</td>
+										<td>${adddt}</td>
+										<td>${monstatus}</td>
+										<td>${salename}</td>
+										<td>${checkstatus}</td>
+										<td>${paytype}</td>
+									</tr>`;
+							}
+						}
+						if(g_res.length>0){
+							for(var {id,paynumber,custname,contractname,payall,paymoney,adddt,monstatus,salename,checkstatus,paytype} of p_res){
+								html+=`<tr>
+										<td>${paynumber}</td>
+										<td>收款</td>
+										<td>${custname}</td>
+										<td>${contractname}</td>
+										<td>${payall}</td>
+										<td>${paymoney}</td>
+										<td>${adddt}</td>
+										<td>${monstatus}</td>
+										<td>${salename}</td>
+										<td>${checkstatus}</td>
+										<td>${paytype}</td>
+									</tr>`;
+							}
+						}
+						$("#dataList").html(html);
+						isDelTr("app.php/custmang/delCustmang");						
+					}
+				});				
+			}
+			$(".searchdt").change(showDataList);
+		});
+	</script>
+</html> 

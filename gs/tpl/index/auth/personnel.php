@@ -34,8 +34,8 @@
                         </thead>
                         <tbody class="textCenter TabBg">
                             <?php foreach ($results as $k => $v) { ?>
-                                <tr class="Results<?php echo $v['id'] ?>">
-                                    <td><?php echo $v['number']; ?></td>
+                                <tr class="Results<?php echo $v['id'] ?>" <?php if (!empty($re_data[$k])){echo 'style="color: red;"';echo 'title='.$re_data[$k]['title'].':'.$re_data[$k]['redesc'].'';}?>>
+                                    <td><?php echo $v['number'];?></td>
                                     <td><?php echo $v['name']; ?></td>
                                     <td><?php echo $v['dname'] ?></td>
                                     <td><?php echo $v['pname'] ?></td>

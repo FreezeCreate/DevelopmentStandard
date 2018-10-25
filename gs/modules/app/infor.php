@@ -75,7 +75,10 @@ class infor extends AppController
         
         //TODO 发送给接收人
         
-        if ($up) $this->returnSuccess('成功');
+        if ($up){
+            $this->sendMsgNotice($admin, 1, $up, '【通知公告】'.$data['title'].'', 2);
+            $this->returnSuccess('成功');
+        }
         $this->returnError('失败');
     }
     

@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>新增</title>
+    <link rel="stylesheet" href="../css/public.css">
+    <link rel="stylesheet" href="../css/budge.css">
+</head>
+<body>
+    <div class="Frame">
+        <div class="FrameTit"><span class="FrameTitName">新增</span><span class="Close"></span></div>
+        <div class="FrameBox">
+            <div class="FrameCont">
+                <div class="FrameTable">
+                    <div class="FrameTableTitl">新增预算分类</div>
+                    <form id="addData">
+                        <table class="FrameTableCont">
+                            <tr>
+                                <td class="FrameGroupName"><span class="colorRed">*</span>预算分类名称：</td>
+                                <td>
+                                    <input type="text" class="FrameGroupInput" name="budge_name" placeholder="输入名称">
+                                </td>
+                                <td class="FrameGroupName"><span class="colorRed">*</span>预算金额：</td>
+                                <td>
+                                    <input type="text" class="FrameGroupInput" name="budge_money" placeholder="输入金额">
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="FrameGroupName"><span class="colorRed">*</span>预算控制：</td>
+                                <td>
+                                    <select class="FrameGroupInput" name="budge_prev">
+                                        <option value="">--预算控制--</option>
+                                        <option value="0.1">10%</option>
+                                        <option value="0.2">20%</option>
+                                        <option value="0.3">30%</option>
+                                        <option value="0.4">40%</option>
+                                        <option value="0.5">50%</option>
+                                        <option value="0.6">60%</option>
+                                        <option value="0.7">70%</option>
+                                        <option value="0.8">80%</option>
+                                        <option value="0.9">90%</option>
+                                    </select>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="FrameGroupName"><span class="colorRed">*</span>所属部门：</td>
+                                <td>
+                                    <select class="FrameGroupInput departmentList" name="did"></select>
+                                </td>
+                                <td class="FrameGroupName"><span class="colorRed">*</span>预算月份：</td>
+                                <td class="demo">
+                                    <input type="text" class="FrameDatGroup" id="monthly" name="budge_time">
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="FrameGroupName">预算描述：</td>
+                                <td colspan="3">
+                                    <textarea  class="FrameGroupInput" name="budge_desc"></textarea>
+                                </td>
+                            </tr>
+                        </table>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div class="FrameTableFoot">
+            <span class="Succ" id="addDataSub">提交</span>
+        </div>
+    </div>
+    <script src="../js/jquery-1.11.0.js"></script>
+    <script src="../js/public.js"></script>
+    <script src="../js/jquery.monthpicker.js"></script>
+    <script>
+        $(()=>{
+            $('#monthly').monthpicker({
+                years: [2018,2017,2016,2015, 2014, 2013, 2012, 2011],
+                topOffset: 6
+            })
+			addDataList("/app.php/budge/saveBudge");
+        });
+    </script>
+</body>
+</html>

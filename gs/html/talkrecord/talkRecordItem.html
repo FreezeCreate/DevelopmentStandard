@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>详情</title>
+    <link rel="stylesheet" href="../css/public.css">
+</head>
+<body>
+    <div class="Frame">
+        <div class="FrameTit"><span class="FrameTitName">详情</span><span class="Close"></span></div>
+        <div class="FrameBox">
+            <div class="FrameCont">
+                <div class="FrameTable">
+                    <div class="FrameTableTitl">详情</div>
+                    <table class="FrameTableCont" id="dataItem">
+                    </table>
+                    <p class="colorGre" style="margin-top:30px;margin-bottom:10px;">历史沟通记录</p>
+                    <table class="FrameTableCont textCenter" id="c_res">
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="FrameTableFoot">
+        </div>
+    </div>
+    <script src="../js/jquery-1.11.0.js"></script>
+    <script src="../js/public.js"></script>
+    <script src="../js/jedate.js" type="text/javascript" charset="utf-8"></script>
+    <script src="../js/dataAdd.js"></script>
+    <script>
+        $(()=>{
+        	showDataList("/app.php/talkrecord/talkRecordInfo",function(data){
+                var res=data.results,html='';
+                html=`<tr>
+                        <td class="FrameGroupName" >用户名称：</td>
+                        <td colspan="3">${res.username}</td>
+                    </tr>
+                    <tr>
+                        <td class="FrameGroupName" >心态分析：</td>
+                        <td colspan="3">${res.analysis}</td>
+                    </tr>
+                    <tr>
+                        <td class="FrameGroupName" >操作人：</td>
+                        <td>${res.optname}</td>
+                        <td class="FrameGroupName" >操作时间：</td>
+                        <td>${res.optdt}</td>
+                    </tr>`;
+                $("#dataItem").html(html);	
+                var c_res=data.record;
+                if(c_res){
+                    var cHtml=`<tr class="BgGreen">
+                            <td>沟通对象</td>
+                            <td>沟通时间</td>
+                            <td>沟通情况</td>
+                        </tr>`;
+                    for(var {retime,anarecord} of c_res){
+                        cHtml+=`<tr style="height:45px;">
+                            <td>${res.username}</td>
+                            <td>${retime}</td>
+                            <td>${anarecord}</td>
+                        </tr>`;
+                    }
+                    $("#c_res").html(cHtml);
+                }					
+            });        
+        });
+    </script>
+</body>
+</html>

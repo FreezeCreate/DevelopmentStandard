@@ -27,7 +27,7 @@ class custpay extends AppController
             'salename'     => '销售人员',
             'monstatus'    => '结款状态',   //1为结清；2为未结清
             'content'      => '',   //备注
-            'otherstatus'  => '',   //1、收款2、其他收款    付款表存在此数据，该表字段冗余
+//             'otherstatus'  => '',   //1、收款2、其他收款    付款表存在此数据，该表字段冗余
             'checkstatus'  => '',   //1、合同收款2、其他收款
         );
         $data = $this->receiveData($arg);
@@ -42,7 +42,7 @@ class custpay extends AppController
         }
         
         $files = $this->spArgs('files');
-        if($files) $data['files'] = implode(',', $files);
+        if($files) $data['files'] = $files;
         $sum   = $model->findCount('paynumber like "%P'.date('Ymd').'%"');
         $sum   = $sum<9?'0'.($sum+1):($sum+1);
         
@@ -218,6 +218,16 @@ class custpay extends AppController
             $page_con['searchname'] = $searchname;
         }
         
+        //开始时间和结束时间查询
+        $start      = htmlspecialchars($this->spArgs('start'));
+        $end        = htmlspecialchars($this->spArgs('end'));
+        if (!empty($start)){
+            $con .= ' and optdt>"'.$start.'"';
+        }
+        if (!empty($end)){
+            $con .= ' and optdt<"'.$end.'"';
+        }
+        
         $results = $m_cust_pay->spPager($this->spArgs('page', 1), PAGE_NUM)->findAll($con,'optdt desc,id desc');
         $pager   = $m_cust_pay->spPager()->getPager();
         $result['pager'] = $pager;
@@ -263,8 +273,6 @@ class custpay extends AppController
     }
     
     
-    
-    
     /*
      * 应收款 明细列表 monstatus=2(未结清)
      */
@@ -285,6 +293,16 @@ class custpay extends AppController
         if (!empty($searchdt)){
             $con .= ' and adddt like "%' . $searchdt . '%"';
             $page_con['searchdt'] = $searchdt;
+        }
+        
+        //开始时间和结束时间查询
+        $start      = htmlspecialchars($this->spArgs('start'));
+        $end        = htmlspecialchars($this->spArgs('end'));
+        if (!empty($start)){
+            $con .= ' and optdt>"'.$start.'"';
+        }
+        if (!empty($end)){
+            $con .= ' and optdt<"'.$end.'"';
         }
         
         $results = $m_cust_pay->spPager($this->spArgs('page', 1), PAGE_NUM)->findAll($con,'optdt desc,id desc');

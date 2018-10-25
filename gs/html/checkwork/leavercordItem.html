@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>详情</title>
+    <link rel="stylesheet" href="../css/public.css">
+</head>
+<body>
+    <div class="Frame">
+        <div class="FrameTit"><span class="FrameTitName">详情</span><span class="Close"></span></div>
+        <div class="FrameBox">
+            <div class="FrameCont">
+                <div class="FrameTable">
+                    <div class="FrameTableTitl">详情</div>
+                    <table class="FrameTableCont" id="dataItem">
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="FrameTableFoot">
+            <span class="Succ BgGreen" id="addDataSub" style="display:none;">提交</span>
+        </div>
+    </div>
+    <script src="../js/jquery-1.11.0.js"></script>
+    <script src="../js/public.js"></script>
+    <script src="../js/jedate.js" type="text/javascript" charset="utf-8"></script>
+    <script src="../js/dataAdd.js"></script>
+    <script>
+        $(()=>{
+            showDataList('/app.php/checkwork/kqinfo',function(data){
+                var res=data.results,html='';
+                // { "id": "id", "uid": "请假申请人id", "uname": "请假申请人", "applydt": "申请时间" "explain": "内容", "status": "审核状态1、添加2、驳回3、通过审核", "del": "是否删除1、删除0、未删除", "time": "", "start": "开始时间", "end": "结束时间", "type": "类型：病假、年假", "optid": "操作人id", "optname": "操作人", "optdt": "操作时间", "cid": "公司id", "dname": "部门", "name": "请假申请人" }
+                html=`<tr>
+                        <td class="FrameGroupName" >申请人：</td>
+                        <td>${res.uname}</td>
+                        <td class="FrameGroupName">申请时间：</td>
+                        <td>${res.applydt}</td>
+                    </tr>
+                    <tr>
+                        <td class="FrameGroupName">审核状态：</td>
+                        <td>${res.status==1?"添加":(res.status==2?"驳回":"通过审核")}</td>
+                        <td class="FrameGroupName">类型：</td>
+                        <td>${res.type}</td>
+                    </tr>
+                    <tr>
+                        <td class="FrameGroupName">所在部门：</td>
+                        <td colspan="3">${res.dname}</td>
+                    </tr>
+                    <tr>
+                        <td class="FrameGroupName">开始时间：</td>
+                        <td>${res.start}</td>
+                        <td class="FrameGroupName">结束时间：</td>
+                        <td>${res.end}</td>
+                    </tr>
+                    <tr>
+                        <td class="FrameGroupName">操作人</td>
+                        <td>${res.optname}</td>
+                        <td class="FrameGroupName">操作时间</td>
+                        <td>${res.optdt}</td>
+                    </tr>
+                    <tr>
+                        <td class="FrameGroupName">内容：</td>
+                        <td colspan="3" style="min-height:50px;">${res.explain}</td>
+                    </tr>`;
+                $("#dataItem").html(html);                
+            });					
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>详情</title>
+    <link rel="stylesheet" href="../css/public.css">
+</head>
+<body>
+    <div class="Frame">
+        <div class="FrameTit"><span class="FrameTitName">详情</span><span class="Close"></span></div>
+        <div class="FrameBox">
+            <div class="FrameCont">
+                <div class="FrameTable">
+                    <div class="FrameTableTitl">详情</div>
+                    <table class="FrameTableCont" id="dataItem">
+                    </table>
+                    <p class="colorGre" style="margin-top:30px;margin-bottom:10px;">处理记录</p>
+                    <table class="FrameTableCont textCenter" id="log_res"></table>
+                    <form id="addData"></form>
+                </div>
+            </div>
+        </div>
+        <div class="FrameTableFoot">
+                <span class="Succ BgGreen" id="addDataSub" style="display:none;">提交</span>
+        </div>
+    </div>
+    <script src="../js/jquery-1.11.0.js"></script>
+    <script src="../js/public.js"></script>
+    <script src="../js/jedate.js" type="text/javascript" charset="utf-8"></script>
+    <script src="../js/dataAdd.js"></script>
+    <script src="../js/ajaxfileupload.js"></script>
+    <script>
+        $(()=>{
+            showDataList('app.php/apply/Invoice',function(data){
+                var res=data,html;
+                html=`<tr>
+                        <td class="FrameGroupName" width="20%">供应商公司：</td>
+                        <td colspan='3'>${res.buldcom}</td>
+                    </tr>
+                    <tr>
+                        <td class="FrameGroupName">购货总金额</td>
+                        <td>${res.totalmoney}</td>
+                        <td class="FrameGroupName">本次付款</td>
+                        <td>${res.paymoney}</td>
+                    </tr>
+                    <tr>
+                        <td class="FrameGroupName">是否付款</td>
+                        <td>${res.statecode==0?"未付款":(res.statecode==1?"部分付款":"全部付款")}</td>
+                        <td class="FrameGroupName">采购时间</td>
+                        <td>${res.buydate}</td>
+                    </tr>
+                    <tr>
+                        <td class="FrameGroupName">备注</td>
+                        <td colspan='3'>${res.info}</td>
+                    </tr>`;
+                $("#dataItem").html(html);
+                var log_res=data.log,
+                    log_html=`<tr class="BgGreen">
+                            <td>序号</td>
+                            <td>操作人</td>
+                            <td>操作时间</td>
+                            <td>操作状态</td>
+                            <td>说明</td>
+                            <td>相关文件</td>
+                        </tr>`;
+                if(log_res){
+                    var i=0;
+                    for(var {id,files,checkname,optdt,statusname,explain} of log_res){
+                        i++;
+                        var files_html='';
+                        for(var f in files){
+                            files_html+=`<a itemid="${files[f].id}" style="display:block;" class="download colorGre">${files[f].filename}</a>`;
+                        }
+                        log_html+=`<tr>
+                            <td>${i}</td>
+                            <td>${checkname}</td>
+                            <td>${optdt}</td>
+                            <td>${statusname}</td>
+                            <td>${explain}</td>
+                            <td>${files_html}</td>
+                        </tr>`;
+                    }
+                    $("#log_res").html(log_html);
+                }
+                /*addtime:"2018-09-21 09:17:59"allcheckid:","applydt:"2018-09-21"checksm:nullcid:"81"cname:"合同申请"del:"0"id:"143"modelid:"43"modelname:"合同申请"nowcheckid:",1,"nowcheckname:"超级管理员"number:nulloptdt:"2018-09-21 09:17:59"optid:"1"optname:"超级管理员"status:"1"statustext:"待审核"summary:"【冠晟电气】合同申请"table:"contract_apply"tid:"44"udeptname:nulluid:"1"uname:"超级管理员"*/
+                var b_res=data.bill;
+                if(b_res){
+                    $("#addData").append(`<div class="FrameTableTitl">${b_res.cname}</div>
+                        <table class="FrameTableCont" id="bill_res"></table>`);
+                    $("#addDataSub").show();
+                    var bHtml=`<tr>
+                            <td class="FrameGroupName">状态：</td>
+                            <td>待${b_res.nowcheckname}审核</td>
+                        </tr>
+                        <tr>
+                            <td class="FrameGroupName">处理流程：</td>
+                            <td>${b_res.statustext}</td>
+                        </tr>
+                        <tr>
+                            <td class="FrameGroupName"><span style="color:red;">*</span> 处理人：</td>
+                            <td>${b_res.nowcheckname}</td>
+                        </tr>
+                        <tr>
+                            <td class="FrameGroupName"><span style="color:red;">*</span> 处理动作：</td>
+                            <td>
+                                <label>
+                                    <input type="radio" name="status" value="3"/>同意
+                                    <input type="radio" name="status" value="2"/>驳回
+                                </label>
+                                <input type="hidden" name="id" value="${b_res.id}"/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="FrameGroupName">说明 ：</td>
+                            <td colspan="3">
+                                <textarea name='checksm' class="FrameGroupInput"></textarea>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="FrameGroupName">相关文件：</td>
+                            <td>
+                                <ul class="FileBox">
+                                </ul>
+                                <input class="None addFileVal fileToUpload" type="file" name="fileToUploadHead" id="fileToUploadHead" value="" />
+                                <span class="addFile">+添加文件</span>
+                            </td>
+                        </tr>`;
+                    $("#bill_res").html(bHtml);
+                }
+                addDataList("app.php/apply/saveCheck");
+            });					
+            $(document).on('click','.addFile',function(){
+                $(this).prev().click();
+            });
+            $(document).on('change','#fileToUploadHead',ajaxFileUpload)		
+        });
+        
+        function ajaxFileUpload() {
+            $.ajaxFileUpload({
+                url: dataURL+'/app.php/uplaod/uploadFile',
+                secureuri: false,
+                fileElementId: 'fileToUploadHead',
+                dataType: 'json',
+                data: {name: 'fileToUploadHead', id: 'fileToUploadHead'},
+                success: function(data, status) {
+                    console.log(data);
+                    if (data.code != 1) {
+                        $('#fileToUploadHead').parent().children('.FileBox').html('<li class="FileItem"><input type="hidden" name="files" value="'+data.id+'">'+data.filename+'<span class="DelFile">删除</span></li>')
+                    } else {
+                        Alert(data.msg);
+                    }
+                },
+                error: function(data, status, e) {
+                    Alert(e);
+                }
+            });
+            return false;
+        }
+    </script>
+</body>
+</html>

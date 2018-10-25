@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>修改</title>
+    <link rel="stylesheet" href="../css/public.css">
+</head>
+<body>
+    <div class="Frame">
+        <div class="FrameTit"><span class="FrameTitName">修改</span><span class="Close"></span></div>
+        <div class="FrameBox">
+            <div class="FrameCont">
+                <div class="FrameTable">
+                    <div class="FrameTableTitl">修改</div>
+                    <form id="addData">
+                        <table class="FrameTableCont" id="dataItem">
+                        </table>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div class="FrameTableFoot">
+            <span class="Succ" id="addDataSub">提交</span>
+        </div>
+    </div>
+    <script src="../js/jquery-1.11.0.js"></script>
+    <script src="../js/public.js"></script>
+    <script src="../js/jedate.js" type="text/javascript" charset="utf-8"></script>
+    <script src="../js/dataAdd.js"></script>
+    <script>
+        $(()=>{
+        	showDataList('app.php/custmang/flowcust',function(data){
+                var f_res=data.f_result;
+                if(f_res){
+                    var itemhtml='';
+                    itemhtml=`<tr>
+                                <td class="FrameGroupName">客户名称：</td>
+                                <td>
+                                    <input type="text" name="cust_name" class="FrameGroupInput" value='${f_res.cust_name}'>                                    
+                                    <input type="hidden" name="saleid" value='${f_res.saleid}'>                                    
+                                    <input type="hidden" name="id" value='${f_res.id}'>                                    
+                                </td>
+                                <td class="FrameGroupName">来源(${f_res.source})：</td>
+                                <td>
+                                    <select name="source" class="FrameGroupInput custLyLst"></select>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="FrameGroupName">客户单位：</td>
+                                <td>
+                                    <input type="text" name="custcname" class="FrameGroupInput" value='${f_res.custcname}'/>
+                                </td>
+                                <td class="FrameGroupName">客户类型(${f_res.cust_cate})：</td>
+                                <td>
+                                    <select name="type"  class="FrameGroupInput custJob"></select>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="FrameGroupName">客户所在部门：</td>
+                                <td>
+                                    <input type="text" name="custdname" class="FrameGroupInput" value="${f_res.custdname}"/>
+                                </td>
+                                <td class="FrameGroupName">联系手机：</td>
+                                <td>
+                                    <input type="text" name="phone" class="FrameGroupInput" value="${f_res.phone}"/>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="FrameGroupName">联系电话：</td>
+                                <td >
+                                    <input type="text" name="telephone" class="FrameGroupInput" value='${f_res.telephone}'/>
+                                </td>
+                                <td class="FrameGroupName">邮箱：</td>
+                                <td>
+                                    <input type="text" name="email" class="FrameGroupInput" value="${f_res.email}"/>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="FrameGroupName">性别(${f_res.sex})：</td>
+                                <td >
+                                    <select name="sex" class="FrameGroupInput">
+                                        <option value="男">男</option>
+                                        <option value="女">女</option>
+                                    </select>
+                                </td>
+                                <td class="FrameGroupName">年龄：</td>
+                                <td>
+                                    <input type="text" name="age" class="FrameGroupInput" value="${f_res.age}"/>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="FrameGroupName">提醒时间：</td>
+                                <td>
+                                    <input type="text" name="noticetime" class="FrameDatGroup" id="noticetime" value="${f_res.noticetime}">
+                                </td>
+                                <td class="FrameGroupName">回访时间：</td>
+                                <td >
+                                    <input type="text" name="retime" class="FrameDatGroup" value='${f_res.retime}'/>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="FrameGroupName">提醒内容：</td>
+                                <td colspan="3">
+                                    <textarea name="noticecontent" class="FrameGroupInput">${f_res.noticecontent}</textarea>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="FrameGroupName">客户生日：</td>
+                                <td>
+                                    <input type="text" name="birth" class="FrameDatGroup" value="${f_res.birth}">
+                                </td>
+                                <td class="FrameGroupName">性格：</td>
+                                <td>
+                                    <input type="text" name="charact" class="FrameGroupInput" value="${f_res.charact}">
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="FrameGroupName">评价：</td>
+                                <td colspan="3">
+                                    <input type="text" name="comment" class="FrameGroupInput" value="${f_res.comment}">
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="FrameGroupName">预测：</td>
+                                <td colspan="3">
+                                    <input type="text" name="forecast" class="FrameGroupInput" value="${f_res.forecast}">
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="FrameGroupName">目标：</td>
+                                <td colspan="3">
+                                    <input type="text" name="goal" class="FrameGroupInput" value="${f_res.goal}">
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="FrameGroupName">地址(${f_res.address})：</td>
+                                <td colspan="3" class="address">
+                                    <select id="" class="FrameGroupInput">
+                                        <option value="四川省">四川省</option>
+                                        <option value="强">省份</option>
+                                    </select>
+                                    <select id="" class="FrameGroupInput">
+                                        <option value="成都市">成都市</option>
+                                        <option value="迫">城市</option>
+                                    </select>
+                                    <select name="address" id="" class="FrameGroupInput">
+                                        <option value="武侯区">武侯区</option>
+                                        <option value="症">区域</option>
+                                    </select>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="FrameGroupName">备注：</td>
+                                <td colspan="3">
+                                    <input type="text" name="info" class="FrameGroupInput" value="${f_res.info}">
+                                </td>
+                            </tr>`;
+                    $("#dataItem").html(itemhtml).removeClass("l_loading");
+                };
+                getTypeLst(".custLyLst",'CUST_LAIYUAN');
+                // 客户分类加载
+                $(".custJob").each(function(i,e){
+                    var that=$(e);
+                    showCommonList("app.php/custcate/index",function(data){
+                        if(data.code==0){
+                            var res=data.results,html='';
+                            for(var {id,catename} of res){
+                                html+=`<option   value="${id}">${catename}</option>`;
+                            }
+                            that.html(html);
+                        }else{
+                            console.error("网络错误！");
+                        }
+                    });
+                });
+                // 部门名称加载
+                $(".departmentList").each(function(i,e){
+                    var that=$(e);
+                    showCommonList("app.php/main/departmentLst",function(data){
+                        if(data.code==0){
+                            var res=data.results,html;
+                            for(var {id,name} of res){
+                                html+=`<option   value="${id}">${name}</option>`;
+                            }
+                            that.html(html);
+                        }else{
+                            console.error("网络错误！");
+                        }
+                    });
+                });
+                addDataList("app.php/custmang/saveCustmang");
+            });
+        });
+    </script>
+</body>
+</html>

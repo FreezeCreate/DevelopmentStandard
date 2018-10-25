@@ -389,7 +389,9 @@ class quality extends IndexController {
         $this->menu = $result['menu'];
         $admin = $result['admin'];
         $model = spClass('m_dyjy');
-        $con = 'b.del = 0 and b.type = 1 and b.cid = ' . $admin['cid'];
+//         $con = 'b.del = 0 and b.type = 1 and b.cid = ' . $admin['cid'];
+        $con = 'b.del = 0 and b.cid = ' . $admin['cid'];
+
         $number = urldecode(htmlspecialchars($this->spArgs('number')));
         $st = spClass('m_flow_set')->find(array('id' => 12));
         $st = explode(',', $st['statusstr']);
@@ -404,8 +406,15 @@ class quality extends IndexController {
             $con .= ' and (b.number like "%' . $number . '%")';
             $page_con['number'] = $number;
         }
+//         $sql = 'select a.number as onumber,a.name as oname,b.* from ' . DB_NAME . '_orders as a right outer join ' . DB_NAME . '_dyjy as b on a.id = b.oid where ' . $con . ' order by b.optdt desc';
         $sql = 'select a.number as onumber,a.name as oname,b.* from ' . DB_NAME . '_orders as a right outer join ' . DB_NAME . '_dyjy as b on a.id = b.oid where ' . $con . ' order by b.optdt desc';
         $results = $model->spPager($this->spArgs('page', 1), PAGE_NUM)->findSql($sql);
+
+        //对type的查询
+        foreach ($results as $_k => $_v) {
+            $para_data = spClass('m_dyjy_para')->find(array('id' => $_v['mid']));
+            $results[$_k]['typ'] = $para_data['type'];
+        }
         $this->results = $results;
         $this->pager = $model->spPager()->getPager();
         $this->page_con = $page_con;
@@ -438,6 +447,9 @@ class quality extends IndexController {
         $this->page_con = $page_con;
     }
 
+    /**
+     * 例行检查页面
+     */
     function editDyctlog() {
         $result = $this->get_menu();
         $this->menu = $result['menu'];
@@ -445,14 +457,26 @@ class quality extends IndexController {
         $model = spClass('m_dyjy');
         $id = (int) htmlentities($this->spArgs('id'));
         $mid = (int) htmlentities($this->spArgs('mid'));
-        $this->type = (int) htmlentities($this->spArgs('type'));
+        $type = (int) htmlentities($this->spArgs('type'));
+        
+        $this->type = $type;
+        //产品参数列表
+        $m_para = spClass('m_dyjy_para');
+        $paras = $m_para->findAll();
+        $this->mid = $mid;
+//         dump($mid);die;
+        $that_paras = $m_para->find(array('id' => $mid));
+        $this->that_paras = $that_paras;
+        $this->paras = $paras;
+
         $result = $model->find(array('id' => $id, 'cid' => $admin['cid']));
         if ($result) {
             $result['jilu'] = json_decode($result['jilu'], true);
             $result['jielun'] = json_decode($result['jielun'], true);
-            $mid = empty($mid) ? $result['mid'] : $mid;
+//             $mid = empty($mid) ? $result['mid'] : $mid;
             $this->result = $result;
         }
+        //订单数据
         $orders = spClass('m_orders')->findAll('del = 0 and status > 1', 'optdt desc');
         $this->orders = $orders;
         $examples = spClass('m_jyexamples')->findAll(array('type' => 1), 'id desc', 'id,name');
@@ -460,7 +484,7 @@ class quality extends IndexController {
         $mode = spClass('m_jyexamples')->find(array('id' => $mid));
         if (!empty($mode)) {
             $this->mode = $mode;
-            $this->mid = $mid;
+//             $this->mid = $mid;
         }
     }
 
@@ -471,10 +495,40 @@ class quality extends IndexController {
         $this->findCheck($id, $mid);
         $result = $this->result;
         if ($result) {
-            $mode = spClass('m_jyexamples')->find(array('id' => $result['mid']));
+//             $mode = spClass('m_jyexamples')->find(array('id' => $result['mid']));
+            $mode = spClass('m_dyjy_para')->find(array('id' => $result['mid']));
             $this->mode = $mode;
             $result['jilu'] = json_decode($result['jilu'], true);
             $result['jielun'] = json_decode($result['jielun'], true);
+            $this->result = $result;
+        } else {
+            $this->error('信息不存在');
+        }
+    }
+
+    function dyctlogInfo1() {
+        $id = (int) htmlentities($this->spArgs('id'));
+        $mid = (int) htmlentities($this->spArgs('mid'));
+        $mid = $mid == 13 ? 13 : 12;
+        $this->findCheck($id, $mid);
+        $result = $this->result;
+        $orders = spClass('m_orders')->find(array('id' => $result['oid'])); //订单数据
+        $this->orders = $orders;
+        $pro = spClass('m_dyjy_para')->find(array('id' => $result['mid']));  //产品数据
+        $this->pro = $pro;
+        $type = $pro['type'];   //类型数据
+        $this->type = $type;
+        $that_paras = spClass('m_dyjy_para')->find(array('id' => $result['mid']));    //产品参数数据
+        $this->that_paras = $that_paras;
+        //后几项数据
+
+        if ($result) {
+            $mode = spClass('m_dyjy_para')->find(array('id' => $result['mid']));
+            $this->mode = $mode;
+            $result['jilu'] = json_decode($result['jilu'], true);
+            $result['jielun'] = json_decode($result['jielun'], true);
+            $result['info'] = json_decode($result['info'], true);
+
             $this->result = $result;
         } else {
             $this->error('信息不存在');
@@ -957,6 +1011,112 @@ class quality extends IndexController {
         $this->results = $results;
         $this->pager = $model->spPager()->getPager();
         $this->page_con = $page_con;
+    }
+
+    function dyctparm() {
+        $result = $this->get_menu();
+        $model = spClass('m_dyjy_para');
+        $type = htmlentities($this->spArgs('type'));
+        if ($type) {
+            $con = 'type = ' . $type;
+        }
+        $results = $model->findAll($con);
+        foreach ($results as $k => $v) {
+            $results[$k]['parameter'] = implode(',', json_decode($v['parameter'], true));
+        }
+        $this->results = $results;
+    }
+
+    function addDyctparm() {
+        $admin = $this->get_ajax_menu();
+        $type = htmlentities($this->spArgs('type'));
+        $id = htmlentities($this->spArgs('id'));
+        $model = spClass('m_dyjy_para');
+        $result = $model->find(array('id' => $id));
+        if ($result) {
+            $type = $result['type'];
+            $result['parameter'] = json_decode($result['parameter'], true);
+            $this->result = $result;
+        }
+        $this->type = $type;
+    }
+
+    /**
+     * 产品参数详情
+     */
+    function addDyctparm1() {
+        $admin = $this->get_ajax_menu();
+        $type = htmlentities($this->spArgs('type'));
+        $id = htmlentities($this->spArgs('id'));
+        $model = spClass('m_dyjy_para');
+        $result = $model->find(array('id' => $id));
+        if ($result) {
+            $type = $result['type'];
+            $result['parameter'] = json_decode($result['parameter'], true);
+            $this->result = $result;
+        }
+        $this->type = $type;
+    }
+
+    function dyctparmInfo() {
+        $admin = $this->get_ajax_menu();
+        $type = htmlentities($this->spArgs('type'));
+        $id = htmlentities($this->spArgs('id'));
+        $model = spClass('m_dyjy_para');
+        $result = $model->find(array('id' => $id));
+        if ($result) {
+            $type = $result['type'];
+            $result['parameter'] = json_decode($result['parameter'], true);
+            $this->result = $result;
+        }
+        $this->type = $type;
+    }
+
+    function saveDyctparm() {
+        $admin = $this->get_ajax_menu();
+        $model = spClass('m_dyjy_para');
+        $data['type'] = htmlentities($this->spArgs('type'));
+        $data['name'] = htmlspecialchars($this->spArgs('name'));
+        $parameter = $this->spArgs('parameter');
+        $data['parameter'] = json_encode($parameter);
+        $id = (int) htmlentities($this->spArgs('id'));
+//         dump($_POST);
+//         die;   //TODO
+        if (empty($data['type'])) {
+            $this->msg_json(0, '请选择类别');
+        }
+        if (empty($data['name'])) {
+            $this->msg_json(0, '请填写产品名称');
+        }
+
+        foreach ($parameter as $k => $v) {
+            if (empty($v)) {
+                $this->msg_json(0, '请确认参数填写完整');
+            }
+        }
+        if (empty($id)) {
+            $ad = $model->create($data);
+            if ($ad) {
+                $this->msg_json(1, '添加成功');
+            } else {
+                $this->msg_json(0, '网络错误，请刷新重试');
+            }
+        } else {
+            $re = $model->find(array('id' => $id), '', 'id');
+            if (empty($re)) {
+                $this->msg_json(0, '信息有误，修改失败');
+            }
+            $ad = $model->update(array('id' => $id), $data);
+            if ($ad) {
+                $this->msg_json(1, '修改成功');
+            } else {
+                $this->msg_json(0, '网络错误，请刷新重试');
+            }
+        }
+    }
+
+    function delDyctparm() {
+        
     }
 
 }

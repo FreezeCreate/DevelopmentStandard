@@ -48,7 +48,6 @@ class applyFill extends AppController {
         }
         
         if($up){
-//             $this->sendUpcoming($admin, 45, $up, '【'.$data['invoice_num'].'】退货单');
             $this->returnSuccess('成功');
         }
         $this->returnError('失败');
@@ -194,37 +193,33 @@ class applyFill extends AppController {
             //副表数据新增
             if ($up){
                 foreach ($_REQUEST['list'] as $k => $v){
-                    $goods_name = $m_goods->find('id='.$v['goods_id'].'', '', 'id,order_name,cateid,catename,order_spec,order_unit,order_explain');
-                    $v['goods_name'] = $goods_name['order_name'];
-                    $room       = $m_room->find('id='.$v['room_id'].'', '', 'id,room_name');
-                    $v['room_name'] = $room['room_name'];
-                    $v['optid']     = $admin['id'];
-                    $v['optname']   = $admin['name'];
-                    $v['optdt']     = date('Y-m-d H:i:s');
-                    $v['cid']       = $admin['cid'];
-                    $v['invoice_id']= $up;
-                    $v['status']    = 1;
+//                     $v['room_name'] = $room['room_name'];
+//                     $v['optid']     = $admin['id'];
+//                     $v['optname']   = $admin['name'];
+//                     $v['optdt']     = date('Y-m-d H:i:s');
+//                     $v['cid']       = $admin['cid'];
+//                     $v['invoice_id']= $up;
+//                     $v['status']    = 2;
+                    //从id和goods_num里拿数据
+                    $res = $m_inout->find('id='.$v['id'].'');
+                    $res['goods_num']  = $v['goods_num'];
+                    $res['optid']      = $admin['id'];
+                    $res['optname']    = $admin['name'];
+                    $res['optdt']      = date('Y-m-d H:i:s');
+                    $res['content']    = $v['content'];
+                    $res['invoice_id'] = $up;
+                    $res['status']     = 2;
+                    unset($res['id']);
                     //附表新增数据
-                    $m_inout->create($v);
+                    $m_inout->create($res);
                     //采购对库存表的影响
-                    $order_data = $m_order->find('goods_id='.$goods_name['id'].' and stock_id='.$room['id'].' and del=0 and cid='.$admin['cid'].'');
+                    $order_data = $m_order->find('goods_id='.$res['goods_id'].' and stock_id='.$res['room_id'].' and del=0 and cid='.$admin['cid'].'');
                     if (empty($order_data)){
-                        //新增库存数据
-                        $o_data['cateid'] = $goods_name['cateid'];
-                        $o_data['goods_id'] = $goods_name['id'];
-                        $o_data['order_name'] = $goods_name['order_name'];
-                        $o_data['order_spec'] = $goods_name['order_spec'];
-                        $o_data['order_unit'] = $goods_name['order_unit'];
-                        $o_data['order_explain'] = $goods_name['order_explain'];
-                        $o_data['stock_id'] = $v['room_id'];
-                        $o_data['stock_name'] = $room['room_name'];
-                        $o_data['order_num'] = $v['goods_num'];
-                        
-                        $m_order->create($data);
+                        $this->emptyNotice($order_data, '库存里不存在该商品数据');
                     }else {
                         //更新库存数据
                         $o_data['order_num'] = $order_data['order_num'] - $v['goods_num'];
-                        $m_order->update(array('id' => $order_data), array('order_num' => $o_data['order_num']));
+                        $m_order->update(array('id' => $order_data['id']), array('order_num' => $o_data['order_num']));
                     }
                     $o_data = array();  //置空数据
                 }
@@ -232,6 +227,7 @@ class applyFill extends AppController {
         }
         
         if($up){
+            $this->sendMsgNotice($admin, 45, $up, '【'.$data['invoice_num'].'】退货单', 1);
             $this->sendUpcoming($admin, 45, $up, '【'.$data['invoice_num'].'】退货单');
             $this->returnSuccess('成功');
         } 
@@ -262,8 +258,8 @@ class applyFill extends AppController {
             'info'       => '',
             'discount'   => '', //折扣金额
 //             'salesid'    => '联系人员',
-            'address'    => '采购方地址',
-            'phone'      => '联系方式',
+//             'address'    => '采购方地址',
+//             'phone'      => '联系方式',
             'buydate'    => '采购时间',
         );
         $data = $this->receiveData($arg);
@@ -306,21 +302,27 @@ class applyFill extends AppController {
                     $order_data = $m_order->find('goods_id='.$goods_name['id'].' and stock_id='.$room['id'].' and del=0 and cid='.$admin['cid'].'');
                     if (empty($order_data)){
                         //新增库存数据
+                        $o_data['optid']     = $admin['id'];
+                        $o_data['optname']   = $admin['name'];
+                        $o_data['optdt']     = date('Y-m-d H:i:s');
+                        $o_data['cid']       = $admin['cid'];
+                        
                         $o_data['cateid'] = $goods_name['cateid'];
                         $o_data['goods_id'] = $goods_name['id'];
                         $o_data['order_name'] = $goods_name['order_name'];
-                        $o_data['order_spec'] = $goods_name['order_spec'];
-                        $o_data['order_unit'] = $goods_name['order_unit'];
-                        $o_data['order_explain'] = $goods_name['order_explain'];
+//                         $o_data['order_spec'] = $goods_name['order_spec'];
+//                         $o_data['order_unit'] = $goods_name['order_unit'];
+//                         $o_data['order_explain'] = $goods_name['order_explain'];
                         $o_data['stock_id'] = $v['room_id'];
                         $o_data['stock_name'] = $room['room_name'];
                         $o_data['order_num'] = $v['goods_num'];
                         
-                        $m_order->create($data);
+                        $m_order->create($o_data);
                     }else {
                         //更新库存数据
                         $o_data['order_num'] = $v['goods_num'] + $order_data['order_num'];
-                        $m_order->update(array('id' => $order_data), array('order_num' => $o_data['order_num']));
+                        $m_order->update(array('id' => $order_data['id']), array('order_num' => $o_data['order_num']));
+                        
                     }
                     $o_data = array();  //置空数据
                 }
@@ -328,6 +330,7 @@ class applyFill extends AppController {
         }
         
         if($up){
+            $this->sendMsgNotice($admin, 44, $up, '【'.$data['billnum'].'】采购单', 1);
             $this->sendUpcoming($admin, 44, $up, '【'.$data['billnum'].'】采购单');
             $this->returnSuccess('成功');
         }

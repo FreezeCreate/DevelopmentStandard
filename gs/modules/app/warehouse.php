@@ -29,7 +29,7 @@ class warehouse extends AppController
         
         $searchname = urldecode(htmlspecialchars($this->spArgs('searchname')));
         if (!empty($searchname)) {
-            $con .= ' and concat(dt,goods_name,ru_num) like "%' . $searchname . '%"';
+            $con .= ' and concat(dt,numbers) like "%' . $searchname . '%"';
             $page_con['searchname'] = $searchname;
         }
         
@@ -82,7 +82,7 @@ class warehouse extends AppController
 //             'goods_id'   => '入库产品id',
 //             'goods_name' => '入库产品',
             'dt'         => '入库日期',
-            'contnet'    => '', //备注详细内容
+            'content'    => '', //备注详细内容
 //             'ru_num'     => '数量',
         );
         $data = $this->receiveData($arg);
@@ -96,6 +96,10 @@ class warehouse extends AppController
             $up = $model->update(array('id'=>$id),$data);
             if ($up) $up = $re['id'];
         }else{
+            $sum   = $model->findCount('numbers like "%W'.date('Ymd').'%"');
+            $sum   = $sum<9?'0'.($sum+1):($sum+1);
+            $data['numbers']   = 'W'.date('Ymd').$sum;
+            
             $data['cid']       = $admin['cid'];
             $data['optid']     = $admin['id'];
             $data['optname']   = $admin['name'];
@@ -113,8 +117,8 @@ class warehouse extends AppController
                     $v['optname']   = $admin['name'];
                     $v['optdt']     = date('Y-m-d H:i:s');
                     $v['cid']       = $admin['cid'];
-                    $v['invoice_id']= $up;
-                    $v['status']    = 1;
+                    $v['stock_id']= $up;
+                    $v['status']    = 3;
                     //附表新增数据
                     $m_inout->create($v);
                     //采购对库存表的影响
@@ -131,11 +135,15 @@ class warehouse extends AppController
                         $o_data['stock_name'] = $room['room_name'];
                         $o_data['order_num'] = $v['goods_num'];
                         
-                        $m_order->create($data);
+                        $o_data['optid']     = $admin['id'];
+                        $o_data['optname']   = $admin['name'];
+                        $o_data['optdt']     = date('Y-m-d H:i:s');
+                        $o_data['cid']       = $admin['cid'];
+                        $m_order->create($o_data);
                     }else {
                         //更新库存数据
                         $o_data['order_num'] = $order_data['order_num'] + $v['goods_num'];
-                        $m_order->update(array('id' => $order_data), array('order_num' => $o_data['order_num']));
+                        $m_order->update(array('id' => $order_data['id']), array('order_num' => $o_data['order_num']));
                     }
                     $o_data = array();  //置空数据
                 }
@@ -143,9 +151,10 @@ class warehouse extends AppController
         }
         
         if($up){
-            $this->sendUpcoming($admin, 14, $up, '入库单');
+            $this->sendMsgNotice($admin, 14, $up, '入库单');
+            $this->sendUpcoming($admin, 14, $up, '【'.$data['numbers'].'】入库单');
             $this->returnSuccess('成功');
-        } 
+        }
         $this->returnError('失败');
     }
     
@@ -184,7 +193,7 @@ class warehouse extends AppController
         
         $searchname = urldecode(htmlspecialchars($this->spArgs('searchname')));
         if (!empty($searchname)) {
-            $con .= ' and concat(dt,goods_name,chu_num) like "%' . $searchname . '%"';
+            $con .= ' and concat(dt,numbers) like "%' . $searchname . '%"';
             $page_con['searchname'] = $searchname;
         }
         
@@ -233,7 +242,6 @@ class warehouse extends AppController
         $m_order  = spClass('m_goods_order');
         $m_goods           = spClass('m_goods');
         
-        
         $arg = array(
 //             'goods_id'   => '出库产品id',
 //             'goods_name' => '入库产品',
@@ -243,7 +251,6 @@ class warehouse extends AppController
             
         );
         $data = $this->receiveData($arg);
-        
         
         if($id){
             $re = $model->find(array('id'=>$id,'del'=>0,'cid'=>$admin['cid']));
@@ -259,7 +266,9 @@ class warehouse extends AppController
             $data['optname']   = $admin['name'];
             $data['optdt']     = date('Y-m-d H:i:s');
             $data['status']    = 1;
-//             $data['order_num'] = $goods_info['order_num'] - $data['chu_num'];//重写的create所需数据
+            $sum   = $model->findCount('numbers like "%C'.date('Ymd').'%"');
+            $sum   = $sum<9?'0'.($sum+1):($sum+1);
+            $data['numbers']   = 'C'.date('Ymd').$sum;
             $up = $model->create($data);
             //副表数据新增
             if ($up){
@@ -272,8 +281,8 @@ class warehouse extends AppController
                     $v['optname']   = $admin['name'];
                     $v['optdt']     = date('Y-m-d H:i:s');
                     $v['cid']       = $admin['cid'];
-                    $v['invoice_id']= $up;
-                    $v['status']    = 1;
+                    $v['stock_id']= $up;
+                    $v['status']    = 4;
                     //附表新增数据
                     $m_inout->create($v);
                     //采购对库存表的影响
@@ -289,12 +298,21 @@ class warehouse extends AppController
                         $o_data['stock_id'] = $v['room_id'];
                         $o_data['stock_name'] = $room['room_name'];
                         $o_data['order_num'] = $v['goods_num'];
+                        $o_data['optid']     = $admin['id'];
+                        $o_data['optname']   = $admin['name'];
+                        $o_data['optdt']     = date('Y-m-d H:i:s');
+                        $o_data['cid']       = $admin['cid'];
                         
-                        $m_order->create($data);
+                        $o_data['nextchuku'] = date('Y-m-d H:i:s'); //最近出库时间
+                        $real_up = $m_order->create($o_data);
+                        
                     }else {
+                        //对商品表的最后出库时间更新
+                        $m_goods->update(array('id' => $order_data['id']), array('nextchuku' => date('Y-m-d H:i:s')));
+                        
                         //更新库存数据
                         $o_data['order_num'] = $order_data['order_num'] - $v['goods_num'];
-                        $m_order->update(array('id' => $order_data), array('order_num' => $o_data['order_num']));
+                        $m_order->update(array('id' => $order_data['id']), array('order_num' => $o_data['order_num']));
                     }
                     $o_data = array();  //置空数据
                 }
@@ -302,10 +320,8 @@ class warehouse extends AppController
         }
         
         if($up){
-            //对商品表的最后出库时间更新
-            $goods_arr = $model->find('id='.$up, '', 'goods_id');
-            spClass('m_goods_order')->update(array('id' => $goods_arr['goods_id']), array('nextchuku' => $data['dt']));
-            $this->sendUpcoming($admin, 17, $up, '出库单');
+            $this->sendMsgNotice($admin, 17, $up, '出库单');
+            $this->sendUpcoming($admin, 17, $up, '【'.$data['numbers'].'】出库单');
             $this->returnSuccess('成功');
         }
         $this->returnError('失败');
@@ -334,7 +350,7 @@ class warehouse extends AppController
         $con       = 'del = 0 and cid = ' . $admin['cid'];
         $con      .= ' and status=3 and stock_id='.$id.'';
         $model     = spClass('m_stock_inout');
-        $result    = $model->findAll($con);
+        $result['results']    = $model->findAll($con);
         
         $this->returnSuccess('成功', $result);
     }
@@ -346,8 +362,49 @@ class warehouse extends AppController
         $con       = 'del = 0 and cid = ' . $admin['cid'];
         $con      .= ' and status=4 and stock_id='.$id.'';
         $model     = spClass('m_stock_inout');
-        $result    = $model->findAll($con);
+        $result['results']    = $model->findAll($con);
         
+        $this->returnSuccess('成功', $result);
+    }
+    
+    /**
+     * 出库/入库对库存的影响
+     */
+    function updateWare()
+    {
+        $admin      = $this->islogin();
+        $model      = spClass('m_stock_inout');
+        $m_order    = spClass('m_goods_order');
+        $id         = htmlspecialchars($this->spArgs('id'));
+        //check params
+        $this->emptyNotice($id, 'id不存在');
+        $results    = $model->find('id='.$id.' and cid='.$admin['cid']);
+        $this->emptyNotice($results, '数据不存在或已经被删除');
+        
+        if ($_POST){
+            $arg = array(
+                'id'         => '商品id',
+                'goods_unit' => '',
+                'goods_num'  => '',
+                'content'    => '',
+                'status'     => '',    //1、采购2、退货、3、入库、4、出库
+            );
+            $data = $this->receiveData($arg);
+            $up   = $model->update(array('id' => $id, 'del' => 0, 'cid' => $admin['cid']), $data);
+            if (!$up) $this->returnError('更新失败');
+            
+            //对库存的影响
+            if ($data['status'] == 3){  //采购
+                $m_thing = $m_order->find(array('goods_id' => $results['goods_id'], 'stock_id' => $results['room_id']));
+                $num = $m_thing['order_num'] + ($data['goods_num'] - $results['goods_num']);
+            }else { //退货
+                $m_thing = $m_order->find(array('goods_id' => $results['goods_id'], 'stock_id' => $results['room_id']));
+                $num = $m_thing['order_num'] - ($data['goods_num'] - $results['goods_num']);
+            }
+            $m_order->update(array('goods_id' => $results['goods_id'], 'stock_id' => $results['room_id']), array('order_num' => $num));    //库存的更新
+        }
+        
+        $result['results'] = $results;
         $this->returnSuccess('成功', $result);
     }
     

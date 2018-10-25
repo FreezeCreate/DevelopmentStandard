@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>详情</title>
+    <link rel="stylesheet" href="../css/public.css">
+</head>
+<body>
+    <div class="Frame">
+        <div class="FrameTit"><span class="FrameTitName">详情</span><span class="Close"></span></div>
+        <div class="FrameBox">
+            <div class="FrameCont">
+                <div class="FrameTable">
+                    <div class="FrameTableTitl">详情</div>
+                    <table class="FrameTableCont" id="dataItem">
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="FrameTableFoot">
+            <span class="Succ BgGreen" id="addDataSub" style="display:none;">提交</span>
+        </div>
+    </div>
+    <script src="../js/jquery-1.11.0.js"></script>
+    <script src="../js/public.js"></script>
+    <script src="../js/jedate.js" type="text/javascript" charset="utf-8"></script>
+    <script src="../js/dataAdd.js"></script>
+    <script>
+        $(()=>{
+            showDataList("app.php/custpaymon/otherPayInfo",function(data){
+                if(data.code!=0){
+                    console.error(data.msg);
+                    return false;
+                }
+                var res=data.results,html='';
+                html=`<tr>
+                        <td class="FrameGroupName">付款单号：</td>
+                        <td>${res.paynumber}</td>
+                        <td class="FrameGroupName">客户名称：</td>
+                        <td>${res.custname}</td>
+                    </tr>
+                    <tr>
+                        <td class="FrameGroupName">合同名称：</td>
+                        <td>${res.contractname}</td>
+                        <td class="FrameGroupName">记录信息：</td>
+                        <td>${res.record}</td>
+                    </tr>
+                    <tr>
+                        <td class="FrameGroupName">总付款：</td>
+                        <td>${res.payall}</td>
+                        <td class="FrameGroupName">本次付款：</td>
+                        <td>${res.paymoney}</td>
+                    </tr>
+                    <tr>
+                        <td class="FrameGroupName">添加时间：</td>
+                        <td>${res.adddt}</td>
+                        <td class="FrameGroupName">结款状态：</td>
+                        <td>${res.monstatus==1?"结清":"未结清"}</td>
+                    </tr>
+                    <tr>
+                        <td class="FrameGroupName">付款类型：</td>
+                        <td>${res.paytype}</td>
+                        <td class="FrameGroupName">支出原因：</td>
+                        <td>${res.checkstatus==1?"供应商采购付款":"其它支出"}</td>
+                    </tr>
+                    <tr>
+                        <td class="FrameGroupName">销售名称：</td>
+                        <td>${res.salename}</td>
+                        <td class="FrameGroupName">部门名称：</td>
+                        <td>${res.dname}</td>
+                    </tr>
+                    <tr>
+                        <td class="FrameGroupName">文件：</td>
+                        <td colspan="3">${res.files}</td>
+                    </tr>
+                    <tr>
+                        <td class="FrameGroupName">内容：</td>
+                        <td colspan="3" style="min-height:50px;">${res.content}</td>
+                    </tr>`;
+                $("#dataItem").html(html);
+            });        
+        });
+    </script>
+</body>
+</html>

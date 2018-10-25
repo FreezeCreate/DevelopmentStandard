@@ -101,6 +101,7 @@ class pxjl extends AppController
         }
         
         if($up){
+            $this->sendMsgNotice($admin, 31, $up, '【'.$data['title'].'】培训管理');
             $this->sendUpcoming($admin, 31, $up, '【'.$data['title'].'】培训管理');
             $this->returnSuccess('成功');
         }

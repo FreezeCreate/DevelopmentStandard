@@ -33,12 +33,58 @@ class custmang extends AppController
      * OA参数设置
      * 通知公告
      * 
-     * TODO 所有需审核的详情页面检查
-     * TODO 工作台 (Tips:所有功能完成后，按需渲染工作台数据)
      * TO DO 通知公告提醒
      * TO DO 所有更新功能的检查
+     * TODO 所有需审核的详情页面检查
      * TODO 记录表格的字段对比，然后新增或修改字段名称，规范化字段
-     * TODO 线上文件下载的bug
+     * TO DO 很多地方日期和时间的混淆
+     * 
+     * TODO 最后一个参数类型的单选bug;
+     * TO DO 我的客户详情返回的电话，如果为空就写成空字符串;
+     * 
+     * TO DO 合同申请：如果没有通过就没有完善合同按钮;申请列表要有状态;
+     * TO DO 打卡记录 有ip数据，不要精确范围数据;
+     * TO DO 财务模块按照区间来查询;开始时间和结束时间;
+     * TODO h5开始做例行检查、知识库做成h5
+     * TO DO 打卡统一做成乐居帮的样式;
+     * TODO 例行检查的日期插件;
+     * TO DO 例行检查的选中问题;
+     * TO DO get_menu和get_ajax_menusession、cookie同步清除的优化
+     * 
+     * TO DO 更新页面的渲染;
+     * TO DO 参数详情页面;
+     * 
+     * TO DO 添加设备检查需要一个设备二维码存库 + 上传文件字段
+     * 
+     * TO DO 待办事项和通知公告的消息列表提醒 app端
+     * TO DO 设备例行检查新增的接口文档
+     * TO DO 列表商品的更新
+     * TO DO header动态数据
+     * 
+     * 
+     * 
+     * TO DO 最近出库时间和积压时间的设置
+     * 
+     * TO DO 集成极光推送
+     * TO DO 客户用客户分类来选择用户 用部门和人员的形式来写
+     * TO DO 商品分类直接选择商品,前端
+     * TODO 工作台 (Tips:所有功能完成后，按需渲染工作台数据) 通知公告+打卡 index模块/apply下的方法对应跳转
+     * TO DO 安卓和IOS端两种类型推送消息的编写-- TODO 待账号数据的沟通
+     * TODO app端传type的id,前端H5传数据，传过来新增
+     * 
+     * 
+     * 前端：例行检查记录、盘点
+     * TO DO session和cookie的同存,第一次登陆后即存session,然后交给前端存cookie
+     * TO DO 新增销售目标和列表是制定日期
+     * TO DO 员工关系的提醒，在第一模块的员工里
+     * TO DO 预算控制的重构和api文档编写
+     * TO DO 工作计划，参照我们的OA
+     * TO DO 其他收款不要合同收款
+     * TO DO 我的申请里面的客户只能是我自己的客户
+     * TO DO 销售目标：选择自己的下级
+     * TO DO 盘点没改前端 
+     * TO DO 例行检查界面 
+     * TO DO 供应商上传签名的界面
      * 
      * TO DO 上传服务器：第一要素
      * TO DO 入出库、采购、退货对库存的影响 入出库model库存增减的修改
@@ -47,16 +93,14 @@ class custmang extends AppController
      * TO DO 点进去看多个商品信息的文档编写
      * TO DO 新增不要销售人员、不要制单人、不要地址
      * 
-     * TODO采购申请(status=3列表) 采购明细(status!=3列表)库存积压
-     * TODO商品分类直接选择商品、前端
+     * TO DO采购申请(status=3列表) 采购明细(status!=3列表)库存积压
      * TO DO客户不要修改删除,
-     * TODO 在我的客户里添加合同申请 
-     * TODO 销售目标：选择自己的下级
+     * TO DO 在我的客户里添加合同申请 
+     * TO DO 图标库更改
      * TO DO没有销售目标完成状态                     前端沟通显示
      * TO DO 工作计划没有开始结束时间    前端沟通显示
      * TO DO 销售目标以月为单位
-     * TODO 很多地方日期和时间的混淆  考勤统计的导航敬哥做 日程只有休息日和工作日
-     * 
+     * TO DO 考勤统计的导航敬哥做 日程只有休息日和工作日
      * TO DO 最后一个模块的整合
      * TO DO 仓库名的重复判断
      * TO DO 采购主附表、采购可以采购多个商品   回滚处理单个接口
@@ -66,10 +110,6 @@ class custmang extends AppController
      * TO DO 盘点处理 按照线上进行盘点
      * not TO DO goods_order表加上单位unit字段
      * not TO DO 按供应商和商品的详细信息+上采购列表单
-     * 
-     * 
-     * 
-     * 
      * 
      * TO DO 已完成
      * 合同详情里需要显示回款列表信息
@@ -85,8 +125,6 @@ class custmang extends AppController
      * 加入session和cookie(登陆不用做)
      * TO DO
      * 供应商三个部门的审核
-     * 
-     * 
      * 
      */
     
@@ -168,7 +206,7 @@ class custmang extends AppController
         
         foreach($results as $k=>$v){
             $notic = '';
-            $salename = $m_admin->find('id='.$v['saleid'], '', 'id,name');
+            $salename = $m_admin->find(array('id'=>$v['saleid']), '', 'id,name');
             if (strtotime($v['noticetime']) - time() < 86400 && strtotime($v['noticetime']) - time() > 0){  //提前一天
                 $notic = $v['noticecontent'];
             }
@@ -183,7 +221,7 @@ class custmang extends AppController
                 $notic = $v['noticecontent'];
             }
             
-            $cust_cate = $m_cate->find('id='.$v['type'], '', 'catename');   //客户类型显示
+            $cust_cate = $m_cate->find(array('id' => $v['type']), '', 'catename');   //客户类型显示
             $result['results'][$k] = array(
                 'id'         => $v['id'],
                 'cust_name'  => $v['cust_name'],
@@ -256,10 +294,10 @@ class custmang extends AppController
         
         $arg = array(
             'id'         => '',
-            'type'       => '', //客户从业类型
+            'type'       => '客户从业类型', //客户从业类型
             'sex'        => '', //性别
             'age'        => '', //年龄
-            'cust_name'  => '', //客户名称
+            'cust_name'  => '客户名称', //客户名称
             'custdname'  => '',
             'custcname'  => '', //客户公司
             'phone'      => '', //客户手机，不能为空 客户手机
@@ -290,7 +328,7 @@ class custmang extends AppController
         
         if ($id) {
             $re = $model->find(array('id' => $id, 'del' => 0, 'cid' => $admin['cid']), '');
-            if (empty($re)) $this->returnError('信息有误', 1);
+            if (empty($re)) $this->returnError('信息有误');
 //             $data['pid']    = $re['pid'];
 //             $data['saleid'] = $re['saleid'];
 //             $data['pname']  = $re['pname'];
@@ -459,9 +497,25 @@ class custmang extends AppController
      */
     function applyCheckLst()
     {
+//         $admin      = $this->islogin();
+//         $m_contract = spClass('m_contract');
+//         $results    = spClass('m_contract_apply')->findAll('status=3 and del=0 and cid='.$admin['cid'].' and applyid='.$admin['id'].'');
+//         foreach($results as $k=>$v){
+//             $exist_contract = $m_contract->find('conapplyid='.$v['id'].' and del=0 and cid='.$admin['cid'].'');
+//             if (!empty($exist_contract)) continue;  //合同中存在申请的id时说明合同已经通过，无需遍历
+//             $result['results'][] = array(
+//                 'apply_id'             => $v['id'],
+//                 'apply_contractname'   => $v['contractname'],
+//             );
+//         }
+        
+//         $this->returnSuccess('成功', $result);
+        
+        
         $admin      = $this->islogin();
+        $id         = htmlspecialchars($this->spArgs('id'));
         $m_contract = spClass('m_contract');
-        $results    = spClass('m_contract_apply')->findAll('status=3 and del=0 and cid='.$admin['cid'].' and applyid='.$admin['id'].'');
+        $results    = spClass('m_contract_apply')->findAll('status=3 and del=0 and custid='.$id.' and cid='.$admin['cid'].' and applyid='.$admin['id'].'');
         foreach($results as $k=>$v){
             $exist_contract = $m_contract->find('conapplyid='.$v['id'].' and del=0 and cid='.$admin['cid'].'');
             if (!empty($exist_contract)) continue;  //合同中存在申请的id时说明合同已经通过，无需遍历
@@ -505,12 +559,9 @@ class custmang extends AppController
         $data['saleid']     = $apply_data['applyid'];
         $data['custid']     = $apply_data['custid'];    //客户id
         $data['conapplyid'] = $apply_data['id'];    //合同申请id
-        $data['files']      = $apply_data['files'];  //文件资料
-//         $files = $this->spArgs('files');
-//         if ($files) $data['files'] = implode(',', $files);
+//         $data['files']      = $apply_data['files'];  //文件资料
+        $data['files'] = $this->spArgs('files');    //前端已经做了处理
         
-//         $files = $this->spArgs('files');
-//         if($files) $data['files'] = implode(',', $files);
         $sum   = $model->findCount('number like "%C'.date('Ymd').'%"');
         $sum   = $sum<9?'0'.($sum+1):($sum+1);
         
@@ -538,6 +589,8 @@ class custmang extends AppController
             $data['optname'] = $admin['name'];
             $data['optdt']   = date('Y-m-d H:i:s');
             $ad = $model->create($data);
+            //合同申请表的constatus置1
+            spClass('m_contract_apply')->update(array('id' => $applyid), array('constatus' => 1));
         }
         if ($ad) {
             //合同已经经过了申请合同的审核，不在需要审核 TODO
@@ -626,14 +679,39 @@ class custmang extends AppController
     {
         $admin      = $this->islogin();
         $m_contract = spClass('m_contract');
+        $m_file     = spClass('m_file');
         $id         = htmlspecialchars($this->spArgs('id'));
         //check params
         if (empty($id)) $this->returnError('id不存在');
         $results    = $m_contract->find('id='.$id.' and cid='.$admin['cid']);
         if (empty($results)) $this->returnError('id非法');
-        $result['results'] = $results;
-        $result['custpay'] = spClass('m_custpay')->findAll('contractid='.$id.' and del=0 and cid='.$admin['cid'].'');
         
+        //files处理
+        if (!empty($results['files'])){
+            $re_file = explode(',', $results['files']);
+            foreach ($re_file as $k => $v){
+                $reak[] = $m_file->find(array('id' => $v));
+            }
+        }
+        
+        $results['files']  = $reak;
+        $result['results'] = $results;
+        $cust_pay = spClass('m_custpay')->findAll('contractid='.$id.' and del=0 and cid='.$admin['cid'].'');
+        foreach ($cust_pay as $_k => $_v){
+            if (!empty($_v['files'])){
+                if (strpos($_v['files'], ',')){
+                    $re_file1 = explode(',', $_v['files']);
+                }else {
+                    $re_file1[] = $_v['files'];
+                }
+                
+                foreach ($re_file1 as $__k => $__v){
+                    $reak1[] = $m_file->find(array('id' => $__v));
+                }
+                $cust_pay[$_k]['files'] = $reak1;
+            }
+        }
+        $result['custpay'] = $cust_pay;
         $this->returnSuccess('成功', $result);
     }
     
@@ -663,16 +741,22 @@ class custmang extends AppController
         $id              = (int)htmlentities($this->spArgs('id'));
         $arg = array(
             'custid'          => '客户id',
-            'applyname'       => '申请人(销售人员)',
+//             'applyname'       => '申请人(销售人员)',
             'contractname'    => '申请合同名称',
             'contractdesc'    => '合同对方简介',
             'contractcontent' => '合同内容',
 //             'applydname'      => '申请部门',
             'suggest'         => '审核意见',
-            'applyid'         => '申请人',
+//             'applyid'         => '申请人',
             'applydt'         => '申请日期',
         );
         $data = $this->receiveData($arg);
+        $cust_data = spClass('m_custmang')->find('id='.$data['custid'].'');
+        $data['custname'] = $cust_data['cust_name'];
+        
+        //申请人数据
+        $data['applyid']   = $admin['id'];
+        $data['applyname'] = $admin['name'];
         
         if($id){
             $re = $model->find(array('id'=>$id,'del'=>0,'cid'=>$admin['cid']));
@@ -697,6 +781,7 @@ class custmang extends AppController
             $id = $ad;
         }
         if ($ad) {
+            $this->sendMsgNotice($admin, 43, $id, '【'.$data['contractname'].'】合同申请');
             $this->sendUpcoming($admin, 43, $id, '【'.$data['contractname'].'】合同申请');
             $this->returnSuccess('成功');
         } else {
@@ -834,6 +919,15 @@ class custmang extends AppController
         if (!empty($searchname)) {
             $con .= ' and concat(a.number,a.name,a.adddt,a.cname,a.money,a.startdt,a.enddt,a.signdt,a.salename) like "%' . $searchname . '%"';
             $page_con['searchname'] = $searchname;
+        }
+        //开始时间和结束时间查询
+        $start      = htmlspecialchars($this->spArgs('start'));
+        $end        = htmlspecialchars($this->spArgs('end'));
+        if (!empty($start)){
+            $con .= ' and a.optdt>"'.$start.'"';
+        }
+        if (!empty($end)){
+            $con .= ' and a.optdt<"'.$end.'"';
         }
         
         $sql     = 'select a.* from '.DB_NAME.'_contract as a,'.DB_NAME.'_custpay as b where '.$con.' and b.del=0 and b.cid='.$admin['cid'].' and a.id=b.contractid group by a.id order by a.id desc';

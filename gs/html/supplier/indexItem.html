@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>详情</title>
+    <link rel="stylesheet" href="../css/public.css">
+</head>
+<body>
+    <div class="Frame">
+        <div class="FrameTit"><span class="FrameTitName">详情</span><span class="Close"></span></div>
+        <div class="FrameBox">
+            <div class="FrameCont">
+                <div class="FrameTable">
+                    <div class="FrameTableTitl">详情</div>
+                    <table class="FrameTableCont" id="dataItem">
+                    </table>
+                    <p class="colorGre" style="display:none;margin-top:30px;margin-bottom:10px;">审核的用户数据</p>
+                    <table class="FrameTableCont textCenter" id="u_res">
+                    </table>
+                    <div class="FrameTableTitl" style="display: none;margin-top:30px;">审核</div>
+                    <form id="addData">
+                        <input type="hidden" name="id" value id="id">
+                        <table class="FrameTableCont" id="status_res" style="display: none;">
+                            <tr>
+                                <td class="FrameGroupName">评定人审核:</td>
+                                <td>
+                                    <label>
+                                        <span class="radio">通过</span>
+                                        <input name="checkstatus" class="None" type="radio" autocomplete="off" value="1">
+                                    </label>
+                                    <label>
+                                        <span class="radio">驳回</span>
+                                        <input class="None" name="checkstatus" type="radio" value="2">
+                                    </label>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="FrameGroupName">评定人签名:</td>
+                                <td>
+                                    <!-- <ul class="FileBox"></ul> -->
+                                    <input type="hidden" name="checkinfo" id="checkinfo">
+                                    <img class="dataImg" src="../images/sign.png" onclick="$('#checkinfos').click()">
+                                    <input class="None upfile" type="file" name="checkinfos" id="checkinfos" value="" onchange="ajaxFileUpload()">
+                                </td>
+                            </tr>
+                        </table>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div class="FrameTableFoot">
+            <span class="Succ" id="addDataSub" style="display: none;">提交</span>
+        </div>
+    </div>
+    <script src="../js/jquery-1.11.0.js"></script>
+    <script src="../js/public.js"></script>
+    <script src="../js/table.js"></script>
+    <script src="../js/jedate.js" type="text/javascript" charset="utf-8"></script>
+    <script src="../js/dataAdd.js"></script>
+    <script src="../js/ajaxfileupload.js"></script>
+    <script>
+        $(()=>{
+            showDataList("app.php/supplier/supplierInfo",function(data){
+                if(data.code!=0){
+                    console.error(data.msg);
+                    return false;
+                }
+                var res=data.results,html='';
+                html=`<tr>
+                        <td class="FrameGroupName" width="30%">供应商名称：</td>
+                        <td colspan="3">${res.company}</td>
+                    </tr>
+                    <tr>
+                        <td class="FrameGroupName">地区：</td>
+                        <td>${res.address}</td>
+                        <td class="FrameGroupName">供货商品类型：</td>
+                        <td>${res.goodstype}</td>
+                    </tr>
+                    <tr>
+                        <td class="FrameGroupName">联系人：</td>
+                        <td>${res.name}</td>
+                        <td class="FrameGroupName">联系方式：</td>
+                        <td>${res.phone}</td>
+                    </tr>
+                    <tr>
+                        <td class="FrameGroupName">内容：</td>
+                        <td colspan="3">${res.explain}</td>
+                    </tr>
+                    <tr>
+                        <td class="FrameGroupName">是否有工商营业制造和其他合法证明:</td>
+                        <td colspan="3">${res.hfzm==1?"有":"没有"}</td>
+                    </tr>
+                    <tr>
+                        <td class="FrameGroupName">产品价格和服务:</td>
+                        <td>${res.jgfw==1?"好":(res.jgfw==2?"一般":"差")}</td>
+                        <td class="FrameGroupName">产品相关资质:</td>
+                        <td>${res.xgzz==1?"有":"没有"}</td>
+                    </tr>
+                    <tr>
+                        <td class="FrameGroupName">社会信誉是否良好:</td>
+                        <td>${res.shxy==1?"好":(res.shxy==2?"一般":"差")}</td>
+                        <td class="FrameGroupName">质量情况:</td>
+                        <td>${res.zlqk==1?"强":(res.zlqk==2?"一般":"弱")}</td>
+                    </tr>`;
+                    var check_status=data.checkstatus;
+                    if(check_status!=4){
+                        $("#status_res").show().parent().prev().show();
+                        $("#addDataSub").show();
+                    }
+                    if(check_status==2){
+                        $("#status_res").parent().prev().html("终审");
+                    }
+                //	{ "id": "id", "company": "供应商名称", "address": "地区", "goodstype": "供货商品类型", "name": "联系人", "phone": "联系方式", "explain": "内容", "optid": "操作人id", "optname": "操作人", "optdt": "操作时间", "hfzm": "是否有工商营业制造和其他合法证明 1有 0没有", "zlqk": "质量情况 1强 2一般 3弱", "jgfw": "产品价格和服务 1好 2一般 3差", "xgzz": "产品相关资质 1 有 2,没有", "shxy": "社会信誉是否良好 1好 2一般 3差", "cgst": "采购部评定 1同意 2不同意", "cgname": "采购部评定人签名", "zjst": "质检部评定 1同意 2不同意", "zjname": "质检部评定人签名", "scst": "生产技术部评定 1同意 2不同意", "scname": "生产技术部评定人签名", "offer_status": "是否同意作为本公司合格供方 1同意 2不同意", "stdt": "批准日期", "del": "是否删除 1删除 0正常", "cid": "公司id" }\                
+                $("#dataItem").html(html);
+                var userLst=data.user;
+                if(userLst.length>0){
+                    var u_html=`<tr class="BgGreen">
+                            <td>用户名称</td>
+                            <td>用户部门</td>
+                            <td>用户职位</td>
+                            <td>审核签名</td>
+                            <td>审核信息</td>
+                        </tr>`;
+                    var url='/images/logo.png',title='';
+                    for(var {name,dname,pname,sign_pic,info} of userLst){
+                        if(sign_pic){
+                            url=sign_pic;
+                        }
+                        u_html+=`<tr>
+                            <td>${name}</td>
+                            <td>${dname}</td>
+                            <td>${pname}</td>
+                            <td style="width:100px;"><img src="${dataURL+url}" title="${title}" style="width:100%;" alt="审核签名"></td>
+                            <td>${info}</td>
+                        </tr>`;
+                    }
+                    $("#u_res").html(u_html).prev().show();
+                }
+                $("#id").val(res.id);
+			    addDataList("/app.php/supplier/supplierCheck");
+            });  
+        });
+        
+        function ajaxFileUpload() {
+            $.ajaxFileUpload({
+                url: dataURL+'/app.php/uplaod/uploadqm',
+                secureuri: false,
+                fileElementId: 'checkinfos',
+                dataType: 'json',
+                data: {name: 'checkinfos', id: 'checkinfos'},
+                success: function(data, status) {
+                    console.log(data);
+                    if (data.status != 0) {
+                        $('.dataImg').attr('src', dataURL+data.src);
+                        //$('#checkinfo').parent().children('.FileBox').append('<li class="FileItem"><span class="FileItemNam">' + data.filename + '</span><input type="hidden" name="checkinfo" value="' + data.id + '"/><span class="DelFile">删除</span></li>')
+                        $('#checkinfo').val(data.src);
+                    } else {
+                        console.error(data.msg);
+                    }
+                },
+                error: function(data, status, e) {
+                    console.error(e);
+                }
+            });
+            return false;
+        }
+    </script>
+</body>
+</html>

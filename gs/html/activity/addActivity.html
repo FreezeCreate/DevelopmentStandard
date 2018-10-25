@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>新增</title>
+    <link rel="stylesheet" href="../css/public.css">
+</head>
+<body>
+    <div class="Frame">
+        <div class="FrameTit"><span class="FrameTitName">新增</span><span class="Close"></span></div>
+        <div class="FrameBox">
+            <div class="FrameCont">
+                <div class="FrameTable">
+                    <div class="FrameTableTitl">新增</div>
+                    <form id="addData">
+                        <table class="FrameTableCont">
+                            <tr>
+                                <td class="FrameGroupName"  ><span class="colorRed">*</span>标题：</td>
+                                <td>
+                                    <input type="text" name="title" placeholder="活动标题" class=" FrameGroupInput">
+                                </td>
+                                <td class="FrameGroupName"  ><span class="colorRed">*</span>活动类别：</td>
+                                <td>
+                                    <input type="text" name="type" placeholder="活动类别" class=" FrameGroupInput">
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="FrameGroupName"  ><span class="colorRed">*</span>活动开始日期：</td>
+                                <td>
+                                    <input type="text" name="startdt" placeholder="点击选择日期" class="FrameDatGroup DatEnd">
+                                </td>
+                                <td class="FrameGroupName"  ><span class="colorRed">*</span>活动结束日期：</td>
+                                <td>
+                                    <input type="text" name="enddt" placeholder="点击选择日期" class="FrameDatGroup DatEnd">
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="FrameGroupName"><span class="colorRed">*</span>活动地点：</td>
+                                <td>
+                                    <input type="text" name="actwhere" placeholder="输入地址" class="FrameGroupInput">
+                                </td>
+                                <td class="FrameGroupName">活动背景：</td>
+                                <td>
+                                    <input type="text" name="actback" placeholder="输入标题" class="FrameGroupInput">
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="FrameGroupName"><span class="colorRed">*</span>预计花销：</td>
+                                <td>
+                                    <input type="text" name="paywill" placeholder="输入金额" class="FrameGroupInput">
+                                </td>
+                                <td class="FrameGroupName"><span class="colorRed">*</span>实际花销：</td>
+                                <td>
+                                    <input type="text" name="payfact" placeholder="输入金额" class="FrameGroupInput">
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="FrameGroupName">活动所需：</td>
+                                <td colspan="3">
+                                    <textarea class="FrameGroupInput" name="actneed" placeholder="活动所需"></textarea>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="FrameGroupName">线路说明：</td>
+                                <td colspan="3">
+                                    <textarea class="FrameGroupInput" name="actline" placeholder="线路说明"></textarea>
+                                </td>
+                            </tr>
+                        </table>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div class="FrameTableFoot">
+            <span class="Succ" id="addDataSub">提交</span>
+        </div>
+    </div>
+    <script src="../js/jquery-1.11.0.js"></script>
+    <script src="../js/public.js"></script>
+    <script src="../js/jedate.js" type="text/javascript" charset="utf-8"></script>
+    <script src="../js/dataAdd.js"></script>
+    <script>
+        $(()=>{
+			jeDate({
+				dateCell:".DatEnd",
+				format:"YYYY-MM-DD hh:mm:ss",
+				isinitVal:false,
+				isTime:false, //isClear:false,
+				minDate:"2014-09-19",
+				okfun:function(val){alert(val)}
+			})
+			addDataList("/app.php/activity/saveActivity");
+        });
+    </script>
+</body>
+</html>

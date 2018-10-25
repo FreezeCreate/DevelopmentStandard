@@ -2,11 +2,180 @@
 
 class service extends AppController 
 {
-
+    /**
+     * 检查表存储
+     */
+    function saveProductCheck()
+    {
+        $admin           = $this->islogin();
+        $model           = spClass('m_dyjy');
+        $data['oid']     = (int) htmlspecialchars($this->spArgs('oid'));
+        $data['mid']     = (int) htmlspecialchars($this->spArgs('mid'));//产品(带参数表)id
+        $data['title']   = htmlspecialchars($this->spArgs('title'));    //文件名称，表顶上的名称数据
+        $data['number']  = htmlspecialchars($this->spArgs('number'));   //文件编号
+        $data['name']    = htmlspecialchars($this->spArgs('name'));     //产品名称
+        $data['format']  = htmlspecialchars($this->spArgs('format'));   //规格型号
+        $data['num']     = htmlspecialchars($this->spArgs('num'));      //检验数量
+        $data['dt']      = htmlspecialchars($this->spArgs('dt'));       //检验日期
+        $data['pnumber'] = htmlspecialchars($this->spArgs('pnumber'));  //产品编号
+        $data['sign']    = htmlspecialchars($this->spArgs('sign'));     //检验员
+        $data['prodt']   = htmlspecialchars($this->spArgs('prodt'));    //生产日期
+        $id              = (int) htmlentities($this->spArgs('id'));
+        //获取mid
+        $mid_arr = explode('/', parse_url($_SERVER["HTTP_REFERER"])['path']);
+        $data['mid']            = $mid_arr[6];
+        
+        //check params
+        $this->emptyNotice($data['pnumber'], '请填写产品编号');
+        $this->emptyNotice($data['name'], '请填写产品名称');
+        $this->emptyNotice($data['sign'], '请上传签名');
+        
+        //数据处理
+        foreach ($_POST as $k => $v){
+            if (strpos($k, 'q') === 0){
+                $q[$k] = $v;
+            }elseif (strpos($k, 'w') === 0){
+                $w[$k] = $v;
+            }elseif (strpos($k, 'e') === 0){
+                $e[$k] = $v;
+            }elseif (strpos($k, 'r') === 0){
+                $r[$k] = $v;
+            }
+        }
+        $data['jilu']        = json_encode($q);
+        $data['jielun']      = json_encode($w);
+        $data['info']        = json_encode($e);
+        
+        //一产品参数对多个检查记录
+        if ($id){
+            $re = $model->find(array('id' => $id));
+            $this->emptyNotice($re, '数据不存在');
+            
+            $data = $this->checkUpdateArr($re, $data);
+            $up   = $model->update(array('id' => $id), $data);
+        }else {
+            //检查表新增
+            $data['optid']   = $admin['id'];
+            $data['optname'] = $admin['name'];
+            $data['optdt']   = date('Y-m-d H:i:s');
+            $data['status']  = 1;
+            $data['cid']     = $admin['cid'];
+            $up = $model->create($data);
+        }
+        
+        if ($up) $this->returnSuccess('成功');
+        $this->returnError('失败');
+    }
+    
+    /**
+     * 参数表存储
+     */
+    function saveProductParams()
+    {
+        $admin           = $this->islogin();
+        $m_param         = spClass('m_dyjy_para');
+        $data['name']    = htmlspecialchars($this->spArgs('name'));     //产品名称
+        $id              = (int) htmlentities($this->spArgs('id'));
+        //para表数据
+        $p_data['type']  = htmlspecialchars($this->spArgs('type'));
+        $p_data['name']  = $data['name'];
+        
+        //check params
+        $this->emptyNotice($p_data['name'], '请填写产品名称');
+        $this->emptyNotice($p_data['type'], '请填写产品类型');
+        
+        //数据处理
+        foreach ($_POST as $k => $v){
+            if (strpos($k, 'q') === 0){
+                $q[$k] = $v;
+            }elseif (strpos($k, 'w') === 0){
+                $w[$k] = $v;
+            }elseif (strpos($k, 'e') === 0){
+                $e[$k] = $v;
+            }elseif (strpos($k, 'r') === 0){
+                $r[$k] = $v;
+            }
+        }
+        
+        $p_data['parameter'] = json_decode($r);
+        
+        //一产品参数对多个检查记录
+        if ($id){
+            $p_re = $m_param->find(array('id' => $id));
+            $this->emptyNotice($p_re, '数据不存在');
+            $p_data = $this->checkUpdateArr($p_re, $p_data);
+            
+            $p_up = $m_param->update(array('id'=>$id), $data);
+        }else {
+            $p_up = $m_param->create($p_data);
+        }
+        if ($p_up) $this->returnSuccess('成功');
+        $this->returnError('失败');
+    }
+    
+    /**
+     * 检查内容详情
+     */
+    function productCheckInfo()
+    {
+        $admin      = $this->islogin();
+        $model      = spClass('m_dyjy');
+        $id         = htmlspecialchars($this->spArgs('id'));
+        //check params
+        if (empty($id)) $this->returnError('id不存在');
+        $results    = $model->find('id='.$id.'');
+        if (empty($results)) $this->returnError('id非法');
+        
+        $result['results'] = $results;
+        $this->returnSuccess('成功', $result);
+    }
+    
+    /**
+     * 检查表详情
+     */
+    function productParamsInfo()
+    {
+        $admin      = $this->islogin();
+        $model      = spClass('m_dyjy_para');
+        $id         = htmlspecialchars($this->spArgs('id'));
+        //check params
+        if (empty($id)) $this->returnError('id不存在');
+        $results    = $model->find('id='.$id.'');
+        if (empty($results)) $this->returnError('id非法');
+        
+        $result['results'] = $results;
+        $this->returnSuccess('成功', $result);
+    }
+    
+    /**
+     * 当文件入库后，将数据库数据渲染至$text中
+     * 二维码生成指定目录
+     */
+    function qrCodeSet($id, $text, $dir = '/uploads/qrimg/')
+    {
+        $admin = $this->islogin();
+        $this->emptyNotice($id, '请指定相应的设备生成二维码');
+        
+        include "phpqrcode/qrlib.php";
+        //param set
+        $qr_name  = time().mt_rand(1000, 9999).'.jpg';
+        $now_path = strtotime(date("Y-m-d",time())).'/';
+        //dir set
+        $this->dirCreate('.'.$dir);
+        $this->dirCreate('.'.$dir.$now_path);
+        //图片的生成和入库
+        $path_name = '.'.$dir.$now_path.$qr_name;
+        $real_dir  = $dir.$now_path.$qr_name;
+//         QRcode::png('fuck', 'uploads/'.$qr_name, QR_ECLEVEL_L, 10, 3, true);//保存且打印图片
+        $enc = QRencode::factory(QR_ECLEVEL_L, 10, 3);
+        $enc->encodePNG($text, $path_name, $saveandprint = false);
+        
+        $res = spClass('m_equipment')->update(array('id' => $id), array('qrimg' => $real_dir));
+        $this->emptyNotice($res, '二维码生成失败,请重试');
+    }
+    
     /**
      * 设备新增&修改
-     * TODO 文档的编写
-     * TODO 费用报销的删除在支出表中有
      * 
      */
     function saveEquipment() 
@@ -30,6 +199,10 @@ class service extends AppController
         $data['optid']   = $admin['id'];
         $data['optname'] = $admin['name'];
         $data['optdt']   = date('Y-m-d H:i:s');
+        //web上传文件处理
+//         $files = $this->spArgs('files');
+//         if ($files) $data['files'] = implode(',', $files);
+        $data['files'] = $this->spArgs('files');    //前端已经做了处理
         
         if (empty($id)) {
             $data['cid'] = $admin['cid'];
@@ -38,9 +211,12 @@ class service extends AppController
             //客户数据录入
             $data['custname']  = $cust['cust_name'];
             $data['custphone'] = $cust['phone'];
-            $ad = $model->create($data);
-            if ($ad) $this->returnSuccess('添加成功');
-            $this->returnError('网络错误，请稍后重试');
+            $up = $model->create($data);
+            
+            //二维码模块
+            $url_path = '/qrimg/index?id='.$up;
+            $qr_url   = URL.$url_path.'/';
+            if ($up) $this->qrCodeSet($up, $qr_url); //二维码
         } else {
             $re = $model->find(array('cid' => $admin['cid'], 'id' => $id));
             $this->emptyNotice($re, '数据有误，修改失败');
@@ -50,9 +226,28 @@ class service extends AppController
             $data['custname']  = $cust['cust_name'];
             $data['custphone'] = $cust['phone'];
             $up = $model->update(array('id' => $id), $data);
-            if ($up) $this->returnSuccess('修改成功');
-            $this->returnError('网络错误，请稍后重试');
+            
+//             $result = $model->find('id='.$id.'');
+//             if (!empty($result['files'])) {
+//                 $m_file = spClass('m_file');
+//                 $files  = $m_file->findAll('id in (' . $result['files'] . ')', '', 'id,filename,filepath');
+//                 $result['files'] = $files;
+//                 foreach ($result['files'] as $_k => $_v){
+//                     $url .= '&'.$_v['filepath'];
+//                     $file_name .= '&'.$_v['filename'];
+//                 }
+            
+//             } else {
+//                 $result['files'] = array();
+//                 $url = '';  //无文件的url
+//             }
+//             $url = URL.'/qrimg/index?file='.urlencode($url).'&file_name='.urlencode($file_name).'&cname='.urlencode($admin['cname']);//TODO对图片做URL处理
+            $url_path = '/qrimg/index?id='.$id;
+            $qr_url   = URL.$url_path;
+            if ($up) $this->qrCodeSet($id, $qr_url); //二维码
         }
+        if ($up) $this->returnSuccess('成功');
+        $this->returnError('网络错误，请稍后重试');
     }
     
     /**
@@ -186,21 +381,18 @@ class service extends AppController
     {
         $admin = $this->islogin();
         $model = spClass('m_custmang');
-        $name = urldecode(htmlspecialchars($this->spArgs('name')));
-        $con = 'del = 0 and cid = ' . $admin['cid'] . ' and saleid = ' . $admin['id'];
-        if($name){
-            $con .= ' and cust_name like "%'.$name.'%"';
+        $con   = 'del = 0 and cid = ' . $admin['cid'] . ' and saleid = ' . $admin['id'];
+        
+        $cate  = spClass('m_cust_cate')->findAll('del=0 and cid='.$admin['cid'].'');
+        foreach ($cate as $k => $v){
+            $results[$k]['name']     = $v['catename'];
+            $results[$k]['children'] = $model->findAll('del = 0 and cid = ' . $admin['cid'] . ' and saleid = ' . $admin['id'].' and type='.$v['id'].'', '', 'id,cust_name');
+            foreach ($results[$k]['children'] as $_k => $_v){
+                $results[$k]['children'][$_k]['name'] = $results[$k]['children'][$_k]['cust_name'];
+                unset($results[$k]['children'][$_k]['cust_name']);
+            }
         }
-        $results = $model->spPager($this->spArgs('page', 1), PAGE_NUM)->findAll($con, 'applydt desc', 'id,cust_name,phone');
-        if (empty($results)) {
-            $this->returnError('暂无数据');
-        }
-        foreach ($results as $k => $v) {
-            $results[$k]['name'] = $v['cust_name'];
-        }
-        $pager = $model->spPager()->getPager();
-        $page = $pager['current_page'] >= $pager['last_page'] ? '0' : $pager['next_page'];
-        $result['page'] = $page;
+        
         $result['results'] = $results;
         $this->returnSuccess('成功', $result);
     }
@@ -216,6 +408,15 @@ class service extends AppController
         $id     = htmlentities($this->spArgs('id'));
         $result = $model->find(array('id' => $id, 'cid' => $admin['cid'], 'del' => 0));
         $this->emptyNotice($result, '数据不存在或已删除');
+        if (!empty($result['files'])){
+            $file = explode(',', $result['files']);
+            foreach ($file as $k => $v){
+                $files[] = spClass('m_file')->find(array('id' => $v), '', 'id,filepath,filename');
+            }
+            $result['files'] = $files;
+        }else {
+            $result['files'] = array();
+        }
         
         $service = $m_equipment_service->findAll('eid = ' . $id);
         if (!empty($service)) $result['service'] = $service;
@@ -462,8 +663,11 @@ class service extends AppController
         $admin = $this->islogin();
         $model = spClass('m_livecon');
         $name  = urldecode(htmlspecialchars($this->spArgs('name')));
+        $cateid  = (int)htmlspecialchars($this->spArgs('cateid'));
+        
         $con   = 'del=0 and cid='.$admin['cid'].'';
         if($name) $con .= ' and title like "%'.$name.'%"';    //where like
+        if ($cateid) $con .= ' and cateid='.$cateid.'';
         
         $results = $model->spPager($this->spArgs('page', 1), PAGE_NUM)->findAll($con, 'optdt desc');
         $pager   = $model->spPager()->getPager();

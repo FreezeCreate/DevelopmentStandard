@@ -16,6 +16,8 @@ define("SOURCE_PATH", "/source/app");
 define("UPLOAD_PATH", "/uploads");
 define("DB_NAME", "yld");
 define("URL", "http://192.168.1.136");
+// define("URL", "http://gscs.sem98.com");
+
 
 define("ROOT", $_SERVER['DOCUMENT_ROOT']); //调试
 

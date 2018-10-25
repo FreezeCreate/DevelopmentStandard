@@ -33,7 +33,7 @@ class dailywork extends AppController
         $searchname = urldecode(htmlspecialchars($this->spArgs('searchname'))); //按照计划标题查询
         $model     = spClass('m_work_deal');
         if (!empty($searchname)) {
-            $con .= ' and concat(workname,workstart,workend,worktitle,workdname,workspeed,goal) like "%' . $searchname . '%"';
+            $con .= ' and concat(workname,worktitle,workdname) like "%' . $searchname . '%"';
             $page_con['searchname'] = $searchname;
         }
         
@@ -89,17 +89,18 @@ class dailywork extends AppController
         $id              = (int)htmlentities($this->spArgs('id'));
         
         $arg = array(
-            'workid'      => '计划人',
-            'workname'    => '计划人',
-//             'workstart'   => '开始日期',
-//             'workend'     => '结束日期',
-//             'workstatus'  => '完成度',   //1、已完成2、未完成3、未开始
+            'plantime'    => '计划日期',
+            'workid'      => '',    //计划人
+            'workname'    => '',    //计划人
             'worktitle'   => '计划标题',
             'workcontent' => '计划内容',
-            'workspeed'   => '',    //计划速度
-            'goal'        => '',    //计划目标
         );
         $data = $this->receiveData($arg);
+        if (empty($data['workid'])){
+            $data['workid'] = $admin['id'];
+            $data['workname'] = $admin['name'];
+        }
+        
         
         if($id){
             $re = $model->find(array('id'=>$id,'del'=>0,'cid'=>$admin['cid']));

@@ -138,6 +138,7 @@
         //minDate: "2015-10-19 00:00:00",
         //maxDate: "2016-11-8 00:00:00"
     });
+    Refresh();
     function do_sub() {
         loading();
         $.ajax({

@@ -236,7 +236,7 @@ class basic extends IndexController {
         $data['email'] = htmlspecialchars($this->spArgs('email'));
         $data['fax'] = htmlspecialchars($this->spArgs('fax'));
         $data['logo'] = htmlspecialchars($this->spArgs('logo'));
-        $data['color'] = htmlspecialchars($this->spArgs('color'));
+        $data['color'] = htmlspecialchars($this->spArgs('colors'));
         $data['explain'] = htmlspecialchars($this->spArgs('explain'));
         $id = htmlentities($this->spArgs('id'));
         $model = spClass('m_company');

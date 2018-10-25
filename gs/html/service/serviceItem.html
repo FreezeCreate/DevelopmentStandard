@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>详情</title>
+    <link rel="stylesheet" href="../css/public.css">
+</head>
+<body>
+    <div class="Frame">
+        <div class="FrameTit"><span class="FrameTitName">详情</span><span class="Close"></span></div>
+        <div class="FrameBox">
+            <div class="FrameCont">
+                <div class="FrameTable">
+                    <div class="FrameTableTitl">详情</div>
+                    <table class="FrameTableCont" id="dataItem">
+                    </table>
+                    <p class="colorGre" style="margin-top:30px;margin-bottom:10px;display: none;">维修记录</p>
+                    <table class="FrameTableCont textCenter" id="s_res">
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="FrameTableFoot">
+            <span class="Succ BgGreen" id="addDataSub" style="display:none;">提交</span>
+        </div>
+    </div>
+    <script src="../js/jquery-1.11.0.js"></script>
+    <script src="../js/public.js"></script>
+    <script src="../js/jedate.js" type="text/javascript" charset="utf-8"></script>
+    <script src="../js/dataAdd.js"></script>
+    <script>
+        $(()=>{
+            showDataList("/app.php/service/serviceInfo",function(data){
+                if(data.code!=0){
+                    console.error(data.msg);
+                    return false;
+                }
+                var res=data,html='';
+                //{ "id": "维修单id", "eid": "设备id", "type": "维修类型：维修、保养", "explain": "备注详情", "status": "维修/保养状态：0、未分配人员1、已分配人员但未处理2、已处理", "workid": "负责工程师id", "workname": "负责工程师名称", "optid": "操作人id", "optname": "操作人", "optdt": "操作时间", "del": "是否删除1、删除0、未删除", "handletime": "处理时间", "see": "是否查看1、查看0、未查看", "log":{ "id": "维修处理记录id", "esid": "维修单id", "optid": "操作人id", "optname": "操作人", "optdt": "操作时间", "explain": "备注说明", "st": "", "del": "是否删除1、已删除0、未删除", "files": "" }, }
+                if(res){
+                    html=`<tr>
+                            <td class="FrameGroupName">设备名：</td>
+                            <td colspan='3'>${res.equip_name}</td>
+                        </tr>
+                        <tr>
+                            <td class="FrameGroupName">维修/保养类型：</td>
+                            <td>${res.type}</td>
+                            <td class="FrameGroupName">维修/保养状态：</td>
+                            <td>${res.status==2?"已处理":(res.status==1?"已分配但未处理":"未分配")}</td>
+                        </tr>
+                        <tr>
+                            <td class="FrameGroupName">负责工程师：</td>
+                            <td>${res.workname}</td>
+                            <td class="FrameGroupName">处理时间：</td>
+                            <td>${res.handletime}</td>
+                        </tr>
+                        <tr>
+                            <td class="FrameGroupName">备注：</td>
+                            <td colspan="3" style="min-height:50px;">${res.explain}</td>
+                        </tr>`;
+                    $("#dataItem").html(html);
+                    var log=res.log;
+                    if(log){
+                        var s_html=`<tr class='BgGreen'>
+                                <td>操作人</td>
+                                <td>操作时间</td>
+                                <td>备注说明</td>
+                                <td>相关文件</td>
+                            </tr>`;
+                        for(var {optname,files,optdt,explain} of log){
+                            var f_img=[];
+                            if(files.length>0){
+                                f_img=files.split(",");
+                                var img_html=``;
+                                for(var url in f_img){
+                                    img_html+=`<span class='Btn BgGreen ImgPop' data-src="${f_img[url]}">图${url}</span>`;
+                                }
+                            }
+                            //"service"
+                            s_html+=`<tr>
+                                <td>${optname}</td>
+                                <td>${optdt}</td>
+                                <td>${explain}</td>
+                                <td>${img_html||'无'}</td>
+                            </tr>`;
+                        }
+                        $("#s_res").html(s_html).prev().show();
+                    }
+                    $(".ImgPop").click(function(){
+                        var that=$(this),i_html='';
+                        var url=that.data("src");
+                        i_html=`<img src='${url}' style='width:100%;' alt='加载失败'>`;
+                        Alert(i_html);
+                    });
+                }
+            });
+        });
+    </script>
+</body>
+</html>

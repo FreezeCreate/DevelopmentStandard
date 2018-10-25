@@ -160,6 +160,7 @@ class applyFill extends IndexController {
             }
             $up = $model->update(array('id' => $id), $data);
             if ($up) {
+                $this->sendMsgNotice(20, $id, '【内审检查表】' . $data['number']);
                 $this->sendUpcoming(20, $id, '【内审检查表】' . $data['number']);
                 $this->msg_json(1, '操作成功');
             } else {
@@ -169,6 +170,7 @@ class applyFill extends IndexController {
             $data['cid'] = $admin['cid'];
             $ad = $model->create($data);
             if ($ad) {
+                $this->sendMsgNotice(20, $ad, '【内审检查表】' . $data['number']);
                 $this->sendUpcoming(20, $ad, '【内审检查表】' . $data['number']);
                 $this->msg_json(1, '操作成功');
             } else {
@@ -217,6 +219,7 @@ class applyFill extends IndexController {
             }
             $up = $model->update(array('id' => $id), $data);
             if ($up) {
+                $this->sendMsgNotice(21, $id, '【内部审核计划表】' . $data['number']);
                 $this->sendUpcoming(21, $id, '【内部审核计划表】' . $data['number']);
                 $this->msg_json(1, '操作成功');
             } else {
@@ -226,6 +229,7 @@ class applyFill extends IndexController {
             $data['cid'] = $admin['cid'];
             $ad = $model->create($data);
             if ($ad) {
+                $this->sendMsgNotice(21, $ad, '【内部审核计划表】' . $data['number']);
                 $this->sendUpcoming(21, $ad, '【内部审核计划表】' . $data['number']);
                 $this->msg_json(1, '操作成功');
             } else {
@@ -276,6 +280,7 @@ class applyFill extends IndexController {
             }
             $up = $model->update(array('id' => $id), $data);
             if ($up) {
+                $this->sendMsgNotice(22, $id, '【内部审核总结报告】' . $data['number']);
                 $this->sendUpcoming(22, $id, '【内部审核总结报告】' . $data['number']);
                 $this->msg_json(1, '操作成功');
             } else {
@@ -285,6 +290,7 @@ class applyFill extends IndexController {
             $data['cid'] = $admin['cid'];
             $ad = $model->create($data);
             if ($ad) {
+                $this->sendMsgNotice(22, $ad, '【内部审核总结报告】' . $data['number']);
                 $this->sendUpcoming(22, $ad, '【内部审核总结报告】' . $data['number']);
                 $this->msg_json(1, '操作成功');
             } else {
@@ -343,6 +349,7 @@ class applyFill extends IndexController {
                     $data_ch[$k]['wid'] = $id;
                 }
                 spClass('m_wjqd_ch')->updateAll(array('wid'=>$id),$data_ch);
+                $this->sendMsgNotice(23, $id, '【文件清单】' . $data['number']);
                 $this->sendUpcoming(23, $id, '【文件清单】' . $data['number']);
                 $this->msg_json(1, '操作成功');
             } else {
@@ -356,6 +363,7 @@ class applyFill extends IndexController {
                     $data_ch[$k]['wid'] = $ad;
                 }
                 spClass('m_wjqd_ch')->updateAll(array('wid'=>$ad),$data_ch);
+                $this->sendMsgNotice(23, $ad, '【文件清单】' . $data['number']);
                 $this->sendUpcoming(23, $ad, '【文件清单】' . $data['number']);
                 $this->msg_json(1, '操作成功');
             } else {
@@ -414,6 +422,7 @@ class applyFill extends IndexController {
                     $data_ch[$k]['wid'] = $id;
                 }
                 spClass('m_wjff_ch')->updateAll(array('wid'=>$id),$data_ch);
+                $this->sendMsgNotice(24, $id, '【文件分发记录】' . $data['number']);
                 $this->sendUpcoming(24, $id, '【文件分发记录】' . $data['number']);
                 $this->msg_json(1, '操作成功');
             } else {
@@ -427,6 +436,7 @@ class applyFill extends IndexController {
                     $data_ch[$k]['wid'] = $ad;
                 }
                 spClass('m_wjff_ch')->updateAll(array('wid'=>$ad),$data_ch);
+                $this->sendMsgNotice(24, $ad, '【文件分发记录】' . $data['number']);
                 $this->sendUpcoming(24, $ad, '【文件分发记录】' . $data['number']);
                 $todos = array(
                     'modelid' => 24,
@@ -488,6 +498,7 @@ class applyFill extends IndexController {
             }
             $up = $model->update(array('id' => $id), $data);
             if ($up) {
+                $this->sendMsgNotice(25, $id, '【文件修订申请】' . $data['number']);
                 $this->sendUpcoming(25, $id, '【文件修订申请】' . $data['number']);
                 $this->msg_json(1, '操作成功');
             } else {
@@ -497,6 +508,7 @@ class applyFill extends IndexController {
             $data['cid'] = $admin['cid'];
             $ad = $model->create($data);
             if ($ad) {
+                $this->sendMsgNotice(25, $ad, '【文件修订申请】' . $data['number']);
                 $this->sendUpcoming(25, $ad, '【文件修订申请】' . $data['number']);
                 $this->msg_json(1, '操作成功');
             } else {
@@ -555,6 +567,7 @@ class applyFill extends IndexController {
                     $data_ch[$k]['bid'] = $id;
                 }
                 spClass('m_bdly_ch')->updateAll(array('bid'=>$id),$data_ch);
+                $this->sendMsgNotice(23, $id, '【文件清单】' . $data['number']);
                 $this->sendUpcoming(23, $id, '【文件清单】' . $data['number']);
                 $this->msg_json(1, '操作成功');
             } else {
@@ -568,6 +581,7 @@ class applyFill extends IndexController {
                     $data_ch[$k]['bid'] = $ad;
                 }
                 spClass('m_bdly_ch')->updateAll(array('bid'=>$ad),$data_ch);
+                $this->sendMsgNotice(23, $ad, '【文件清单】' . $data['number']);
                 $this->sendUpcoming(23, $ad, '【文件清单】' . $data['number']);
                 $this->msg_json(1, '操作成功');
             } else {
@@ -629,6 +643,7 @@ class applyFill extends IndexController {
                     $data_ch[$k]['wid'] = $id;
                 }
                 spClass('m_wlwj_ch')->updateAll(array('wid'=>$id),$data_ch);
+                $this->sendMsgNotice(29, $id, '【外来文件清单】' . $data['number']);
                 $this->sendUpcoming(29, $id, '【外来文件清单】' . $data['number']);
                 $this->msg_json(1, '操作成功');
             } else {
@@ -642,6 +657,7 @@ class applyFill extends IndexController {
                     $data_ch[$k]['wid'] = $ad;
                 }
                 spClass('m_wlwj_ch')->updateAll(array('wid'=>$ad),$data_ch);
+                $this->sendMsgNotice(29, $ad, '【外来文件清单】' . $data['number']);
                 $this->sendUpcoming(29, $ad, '【外来文件清单】' . $data['number']);
                 $this->msg_json(1, '操作成功');
             } else {
@@ -700,6 +716,7 @@ class applyFill extends IndexController {
                     $data_ch[$k]['pid'] = $id;
                 }
                 spClass('m_ndpxjh_ch')->updateAll(array('pid'=>$id),$data_ch);
+                $this->sendMsgNotice(30, $id, '【年度培训计划】' . $data['number']);
                 $this->sendUpcoming(30, $id, '【年度培训计划】' . $data['number']);
                 $this->msg_json(1, '操作成功');
             } else {
@@ -713,6 +730,7 @@ class applyFill extends IndexController {
                     $data_ch[$k]['pid'] = $ad;
                 }
                 spClass('m_ndpxjh_ch')->updateAll(array('pid'=>$ad),$data_ch);
+                $this->sendMsgNotice(30, $ad, '【年度培训计划】' . $data['number']);
                 $this->sendUpcoming(30, $ad, '【年度培训计划】' . $data['number']);
                 $this->msg_json(1, '操作成功');
             } else {
@@ -771,6 +789,7 @@ class applyFill extends IndexController {
                     $data_ch[$k]['pid'] = $id;
                 }
                 spClass('m_pxjl_ch')->updateAll(array('pid'=>$id),$data_ch);
+                $this->sendMsgNotice(31, $id, '【培训记录】' . $data['number']);
                 $this->sendUpcoming(31, $id, '【培训记录】' . $data['number']);
                 $this->msg_json(1, '操作成功');
             } else {
@@ -784,6 +803,7 @@ class applyFill extends IndexController {
                     $data_ch[$k]['pid'] = $ad;
                 }
                 spClass('m_pxjl_ch')->updateAll(array('pid'=>$ad),$data_ch);
+                $this->sendMsgNotice(31, $ad, '【培训记录】' . $data['number']);
                 $this->sendUpcoming(31, $ad, '【培训记录】' . $data['number']);
                 $this->msg_json(1, '操作成功');
             } else {
@@ -832,6 +852,7 @@ class applyFill extends IndexController {
             }
             $up = $model->update(array('id' => $id), $data);
             if ($up) {
+                $this->sendMsgNotice(32, $id, '【年度内审计划】' . $data['number']);
                 $this->sendUpcoming(32, $id, '【年度内审计划】' . $data['number']);
                 $this->msg_json(1, '操作成功');
             } else {
@@ -841,6 +862,7 @@ class applyFill extends IndexController {
             $data['cid'] = $admin['cid'];
             $ad = $model->create($data);
             if ($ad) {
+                $this->sendMsgNotice(32, $ad, '【年度内审计划】' . $data['number']);
                 $this->sendUpcoming(32, $ad, '【年度内审计划】' . $data['number']);
                 $this->msg_json(1, '操作成功');
             } else {
@@ -904,6 +926,7 @@ class applyFill extends IndexController {
                     $data_ch[$k]['pid'] = $id;
                 }
                 spClass('m_hzcp_ch')->updateAll(array('pid'=>$id),$data_ch);
+                $this->sendMsgNotice(33, $id, '【文件清单】' . $data['number']);
                 $this->sendUpcoming(33, $id, '【文件清单】' . $data['number']);
                 $this->msg_json(1, '操作成功');
             } else {
@@ -917,6 +940,7 @@ class applyFill extends IndexController {
                     $data_ch[$k]['pid'] = $ad;
                 }
                 spClass('m_hzcp_ch')->updateAll(array('pid'=>$ad),$data_ch);
+                $this->sendMsgNotice(33, $ad, '【文件清单】' . $data['number']);
                 $this->sendUpcoming(33, $ad, '【文件清单】' . $data['number']);
                 $this->msg_json(1, '操作成功');
             } else {
@@ -971,6 +995,7 @@ class applyFill extends IndexController {
             }
             $up = $model->update(array('id' => $id), $data);
             if ($up) {
+                $this->sendMsgNotice(34, $id, '【生产设备保养记录】' . $data['number']);
                 $this->sendUpcoming(34, $id, '【生产设备保养记录】' . $data['number']);
                 $this->msg_json(1, '操作成功');
             } else {
@@ -980,6 +1005,7 @@ class applyFill extends IndexController {
             $data['cid'] = $admin['cid'];
             $ad = $model->create($data);
             if ($ad) {
+                $this->sendMsgNotice(34, $ad, '【生产设备保养记录】' . $data['number']);
                 $this->sendUpcoming(34, $ad, '【生产设备保养记录】' . $data['number']);
                 $this->msg_json(1, '操作成功');
             } else {
@@ -1041,6 +1067,7 @@ class applyFill extends IndexController {
                     $data_ch[$k]['pid'] = $id;
                 }
                 spClass('m_zztz_ch')->updateAll(array('pid'=>$id),$data_ch);
+                $this->sendMsgNotice(35, $id, '【自制图纸记录】' . $data['number']);
                 $this->sendUpcoming(35, $id, '【自制图纸记录】' . $data['number']);
                 $this->msg_json(1, '操作成功');
             } else {
@@ -1054,6 +1081,7 @@ class applyFill extends IndexController {
                     $data_ch[$k]['pid'] = $ad;
                 }
                 spClass('m_zztz_ch')->updateAll(array('pid'=>$ad),$data_ch);
+                $this->sendMsgNotice(35, $ad, '【自制图纸记录】' . $data['number']);
                 $this->sendUpcoming(35, $ad, '【自制图纸记录】' . $data['number']);
                 $this->msg_json(1, '操作成功');
             } else {
@@ -1117,6 +1145,7 @@ class applyFill extends IndexController {
                     $data_ch[$k]['pid'] = $id;
                 }
                 spClass('m_sbwxjh_ch')->updateAll(array('pid'=>$id),$data_ch);
+                $this->sendMsgNotice(36, $id, '【生产设备维修计划】' . $data['number']);
                 $this->sendUpcoming(36, $id, '【生产设备维修计划】' . $data['number']);
                 $this->msg_json(1, '操作成功');
             } else {
@@ -1130,6 +1159,7 @@ class applyFill extends IndexController {
                     $data_ch[$k]['pid'] = $ad;
                 }
                 spClass('m_sbwxjh_ch')->updateAll(array('pid'=>$ad),$data_ch);
+                $this->sendMsgNotice(36, $ad, '【生产设备维修计划】' . $data['number']);
                 $this->sendUpcoming(36, $ad, '【生产设备维修计划】' . $data['number']);
                 $this->msg_json(1, '操作成功');
             } else {
@@ -1191,6 +1221,7 @@ class applyFill extends IndexController {
                     $data_ch[$k]['pid'] = $id;
                 }
                 spClass('m_bsd_ch')->updateAll(array('pid'=>$id),$data_ch);
+                $this->sendMsgNotice(37, $id, '【报损单】' . $data['number']);
                 $this->sendUpcoming(37, $id, '【报损单】' . $data['number']);
                 $this->msg_json(1, '操作成功');
             } else {
@@ -1204,6 +1235,7 @@ class applyFill extends IndexController {
                     $data_ch[$k]['pid'] = $ad;
                 }
                 spClass('m_bsd_ch')->updateAll(array('pid'=>$ad),$data_ch);
+                $this->sendMsgNotice(37, $ad, '【报损单】' . $data['number']);
                 $this->sendUpcoming(37, $ad, '【报损单】' . $data['number']);
                 $this->msg_json(1, '操作成功');
             } else {
@@ -1259,6 +1291,7 @@ class applyFill extends IndexController {
             }
             $up = $model->update(array('id' => $id), $data);
             if ($up) {
+                $this->sendMsgNotice(28, $id, '【供应商管理】' . $data['number']);
                 $this->sendUpcoming(28, $id, '【供应商管理】' . $data['number']);
                 $this->msg_json(1, '操作成功');
             } else {
@@ -1268,6 +1301,7 @@ class applyFill extends IndexController {
             $data['cid'] = $admin['cid'];
             $ad = $model->create($data);
             if ($ad) {
+                $this->sendMsgNotice(28, $ad, '【供应商管理】' . $data['number']);
                 $this->sendUpcoming(28, $ad, '【供应商管理】' . $data['number']);
                 $this->msg_json(1, '操作成功');
             } else {
@@ -1325,6 +1359,7 @@ class applyFill extends IndexController {
             }
             $up = $model->update(array('id' => $id), $data);
             if ($up) {
+                $this->sendMsgNotice(42, $id, '【顾客反馈记录】' . $data['number']);
                 $this->sendUpcoming(42, $id, '【顾客反馈记录】' . $data['number']);
                 $this->msg_json(1, '操作成功');
             } else {
@@ -1334,6 +1369,7 @@ class applyFill extends IndexController {
             $data['cid'] = $admin['cid'];
             $ad = $model->create($data);
             if ($ad) {
+                $this->sendMsgNotice(42, $ad, '【顾客反馈记录】' . $data['number']);
                 $this->sendUpcoming(42, $ad, '【顾客反馈记录】' . $data['number']);
                 $this->msg_json(1, '操作成功');
             } else {
@@ -1393,6 +1429,7 @@ class applyFill extends IndexController {
                     $data[$k]['sid'] = $id;
                 }
                 spClass('m_sbtz_log')->updateAll(array('sid'=>$id),$data);
+                $this->sendMsgNotice(38, $id, '【检验和试验设备台账】' . $data_log['number']);
                 $this->sendUpcoming(38, $id, '【检验和试验设备台账】' . $data_log['number']);
                 $this->msg_json(1, '操作成功');
             } else {
@@ -1406,6 +1443,7 @@ class applyFill extends IndexController {
                     $data[$k]['sid'] = $ad;
                 }
                 spClass('m_sbtz_log')->updateAll(array('sid'=>$ad),$data);
+                $this->sendMsgNotice(38, $ad, '【检验和试验设备台账】' . $data_log['number']);
                 $this->sendUpcoming(38, $ad, '【检验和试验设备台账】' . $data_log['number']);
                 $this->msg_json(1, '操作成功');
             } else {
@@ -1451,6 +1489,7 @@ class applyFill extends IndexController {
             }
             $up = $model->update(array('id' => $id), $data);
             if ($up) {
+                $this->sendMsgNotice(39, $id, '【设备运行检查记录】' . $data['number']);
                 $this->sendUpcoming(39, $id, '【设备运行检查记录】' . $data['number']);
                 $this->msg_json(1, '操作成功');
             } else {
@@ -1460,6 +1499,7 @@ class applyFill extends IndexController {
             $data['cid'] = $admin['cid'];
             $ad = $model->create($data);
             if ($ad) {
+                $this->sendMsgNotice(39, $ad, '【设备运行检查记录】' . $data['number']);
                 $this->sendUpcoming(39, $ad, '【设备运行检查记录】' . $data['number']);
                 $this->msg_json(1, '操作成功');
             } else {
@@ -1523,6 +1563,7 @@ class applyFill extends IndexController {
                     $data_ch[$k]['pid'] = $id;
                 }
                 spClass('m_bzffjl_ch')->updateAll(array('pid'=>$id),$data_ch);
+                $this->sendMsgNotice(40, $id, '【标识发放记录】' . $data['number']);
                 $this->sendUpcoming(40, $id, '【标识发放记录】' . $data['number']);
                 $this->msg_json(1, '操作成功');
             } else {
@@ -1536,6 +1577,7 @@ class applyFill extends IndexController {
                     $data_ch[$k]['pid'] = $ad;
                 }
                 spClass('m_bzffjl_ch')->updateAll(array('pid'=>$ad),$data_ch);
+                $this->sendMsgNotice(40, $ad, '【标识发放记录】' . $data['number']);
                 $this->sendUpcoming(40, $ad, '【标识发放记录】' . $data['number']);
                 $this->msg_json(1, '操作成功');
             } else {
@@ -1597,6 +1639,7 @@ class applyFill extends IndexController {
                     $data_ch[$k]['pid'] = $id;
                 }
                 spClass('m_sbxzjh_ch')->updateAll(array('pid'=>$id),$data_ch);
+                $this->sendMsgNotice(41, $id, '【检测设备校准计划】' . $data['number']);
                 $this->sendUpcoming(41, $id, '【检测设备校准计划】' . $data['number']);
                 $this->msg_json(1, '操作成功');
             } else {
@@ -1610,6 +1653,7 @@ class applyFill extends IndexController {
                     $data_ch[$k]['pid'] = $ad;
                 }
                 spClass('m_sbxzjh_ch')->updateAll(array('pid'=>$ad),$data_ch);
+                $this->sendMsgNotice(41, $ad, '【检测设备校准计划】' . $data['number']);
                 $this->sendUpcoming(41, $ad, '【检测设备校准计划】' . $data['number']);
                 $todos = array(
                     'modelid' => 41,

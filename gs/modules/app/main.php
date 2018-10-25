@@ -15,6 +15,89 @@ class main extends AppController {
     }
     
     /**
+     * 待办事项的消息条数提醒
+     */
+    function todoNotice()
+    {
+        $admin     = $this->islogin();
+        $m_bill    = spClass('m_flow_bill');
+        $sql       = 'select count(*) from '.DB_NAME.'_flow_bill where del = 0 and nowcheckid like "%,'.$admin['id'].',%"';
+        $bill_data = $m_bill->findSql($sql);
+        $num       = 0;
+        if (!empty($bill_data)){
+            $num = $bill_data[0]['count(*)'];
+        }
+        $result['num'] = $num;
+        $this->returnSuccess('成功', $result);
+    }
+    
+    /**
+     * 用户数据和头像
+     */
+    function userInfo()
+    {
+        $admin = $this->islogin();
+        $result['results'] = spClass('m_admin')->find('id='.$admin['id'].'');
+        $this->returnSuccess('成功', $result);
+    }
+    
+    /**
+     * 用户修改资料
+     */
+    function editUserInfo() 
+    {
+        $admin   = $this->islogin();
+        $m_admin = spClass('m_admin');
+        $data['phone']    = htmlspecialchars($this->spArgs('phone'));
+        $data['trumpet']  = htmlspecialchars($this->spArgs('trumpet'));
+        $data['idCard']   = htmlspecialchars($this->spArgs('idCard'));
+        $data['birthday'] = htmlspecialchars($this->spArgs('birthday'));
+        $data['email']    = htmlspecialchars($this->spArgs('email'));
+        $data['QQ']       = htmlspecialchars($this->spArgs('QQ'));
+        $this->emptyNotice($data['phone'], '手机号不能为空');
+        $up = $m_admin->update(array('id' => $admin['id']), $data);
+        if ($up) $this->returnSuccess('修改成功');
+        $this->returnError('修改失败');
+    }
+    
+    /**
+     * 用户修改密码
+     */
+    function updatePwd() 
+    {
+        $admin            = $this->islogin();
+        $model            = spClass("m_admin");
+        
+        $password         = $this->spArgs('password');
+        $new_password     = $this->spArgs('new_password');
+        $confirm_password = $this->spArgs('confirm_password');
+        //param check
+        $this->emptyNotice($password, '原密码不能为空！');
+        $this->emptyNotice($new_password, '新密码不能为空！');
+        if ($new_password != $confirm_password) $this->returnError("两次密码输入不一致");
+        
+        $con = array("id" => $admin["id"]);
+        $re  = $model->find($con);
+        if ($re) {
+            if ($re["password"] != md5(md5($password))) $this->returnError('原密码错误！');
+        }
+        $data = array('password' => md5(md5($new_password)));
+        $r    = $model->update($con, $data);
+        if ($r) $this->returnSuccess('修改成功，下次请用新密码登录');
+        $this->returnError('修改失败');
+    }
+    
+    /**
+     * 前后端分离的退出登录
+     */
+    function appLouOut()
+    {
+        if (empty($_COOKIE['xxx'])) $this->success('退出成功', spUrl('main', 'login'));
+        $this->success('退出成功', spUrl('main', 'login'));
+    }
+    
+    
+    /**
      * 超全局变量参数
      */
     function data() 
@@ -84,7 +167,7 @@ class main extends AppController {
     function departmentLst()
     {
         $admin   = $this->islogin();
-        $results = spClass('m_department')->findAll('', 'id desc');
+        $results = spClass('m_department')->findAll(array('cid' => $admin['cid']), 'id desc');
         foreach ($results as $k => $v){
             $result['results'][$k] = $v;
         }
@@ -97,7 +180,7 @@ class main extends AppController {
     function userLst()
     {
         $admin   = $this->islogin();
-        $results = spClass('m_admin')->findAll('', 'id asc', 'id,name');
+        $results = spClass('m_admin')->findAll(array('cid' => $admin['cid']), 'id asc', 'id,name');
         foreach ($results as $k => $v){
             $result['results'][] = array('id' => $v['id'], 'username' => $v['name']);
         }
@@ -121,28 +204,6 @@ class main extends AppController {
     {
         $this->islogin();
         $result['results'] =  array(1 => '网上开拓', 2 => '电话开拓', 3 => '线下开拓', 4 => '主动来访');
-        $this->returnSuccess('成功', $result);
-    }
-    /*
-     * 客户行业类型-已废弃
-     */
-    function custJob()
-    {
-        $this->islogin();
-        $result['results'] =  array(
-            1 => "电气",
-            2 => "机械",
-            4 => "互联网",
-            5 => "餐饮",
-            6 => "医疗",
-            7 => "建筑",
-            8 => "交通",
-            9 => "物资",
-            10 => "办公",
-            11 => "体育",
-            12 => "旅游",
-            13 => "水利",
-        );
         $this->returnSuccess('成功', $result);
     }
     
@@ -228,15 +289,38 @@ class main extends AppController {
      */
     function menuLst($oid)
     {
-        //TODO 导航栏的权限判断
-        $oid = htmlspecialchars($this->spArgs('oid'));
+        $admin  = $this->islogin();
+        $m_role = spClass('m_role');
+        $m_auth = spClass('m_auth');
+        $oid    = htmlspecialchars($this->spArgs('oid'));
         if (empty($oid)) $oid = 0;
-        $result['results'] = spClass('m_auth')->findAll('oid='.$oid.' and hide = 0 and pid = 0','sort');
+        
+        //权限返回处理
+        if ($admin['id'] == 1){
+            $con = 'hide = 0 and pid = 0';
+        }else {
+            foreach (json_decode($admin['role']) as $k => $v){
+                $my_role  = $m_role->find(array('id' => $v), '', 'promission');
+                $my_auth .= implode(',', json_decode($my_role['promission']));
+            }
+            $con = 'hide = 0 and pid = 0 and id in ('.$my_auth.')';
+        }
+        
+        $result['results'] = $m_auth->findAll(''.$con.' and oid='.$oid.'','sort');
         foreach($result['results'] as $k=>$v){
-            $result['results'][$k]['children'] = spClass('m_auth')->findAll('oid='.$oid.' and hide = 0 and pid = '.$v['id'],'sort');
+            $result['results'][$k]['children'] = $m_auth->findAll('oid='.$oid.' and hide = 0 and pid = '.$v['id'],'sort');
         }
         
         $this->returnSuccess(1, $result);
+        //TODO 导航栏的权限判断
+//         $oid = htmlspecialchars($this->spArgs('oid'));
+//         if (empty($oid)) $oid = 0;
+//         $result['results'] = spClass('m_auth')->findAll('oid='.$oid.' and hide = 0 and pid = 0','sort');
+//         foreach($result['results'] as $k=>$v){
+//             $result['results'][$k]['children'] = spClass('m_auth')->findAll('oid='.$oid.' and hide = 0 and pid = '.$v['id'],'sort');
+//         }
+        
+//         $this->returnSuccess(1, $result);
     }
     
     function editMyinfo() {
@@ -261,9 +345,12 @@ class main extends AppController {
 
     function logout() {
         unset($_SESSION['admin']);
-        $this->success('退出成功', spUrl('main', 'login'));
+        setcookie('token', '', '', '/');
+        setcookie('aeds', 'assad', '', '/');
+        $this->jump('http://gscs.sem98.com/main/login');
     }
-
+    
+    
     function edit_password() {
         $admin = $this->get_ajax_menu();
         $password = $this->spArgs('password');
@@ -348,7 +435,24 @@ class main extends AppController {
         $result['results'] = $results;
         $this->returnSuccess('成功', $result);
     }
-
+    
+    /**
+     * web端使用的获取职位和员工的列表
+     */
+    function mySaleLst()
+    {
+        $user = $this->islogin();
+        $m_department = spClass('m_department');
+        $m_user = spClass('m_admin');
+        $results = $m_department->findAll(array('pid' => $user['cid']), '', 'id,name,pid');
+        foreach ($results as $k1 => $v1) {
+            $results[$k1]['name'] = $v1['name'];
+            $results[$k1]['children'] = array_values($m_user->findAll(array('did' => $v1['id'], 'hide' => 0, 'del' => 0, 'sid' => $user['id']), '', 'id,name,dname,pname,cname'));
+        }
+        $result['results'] = $results;
+        $this->returnSuccess('成功', $result);
+    }
+    
     /*     * ****************
      * 获取部门列表
      * **************** */

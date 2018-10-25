@@ -46,8 +46,8 @@
                                         <div class="list-menu" style="display: inline-block;">
                                             操作  ＋
                                             <ul class="menu">
-                                                <li class="menu-item NewPop" data-url="<?php echo spUrl($c, 'dyctlogInfo', array('id' => $v['id'])) ?>" data-title="例行检验记录详情"><a >详情</a></li>
-                                                <li class="menu-item NewPop" data-url="<?php echo spUrl($c, 'editDyctlog', array('id' => $v['id'])) ?>" data-title="编辑例行检验记录"><a >编辑</a></li>
+                                                <li class="menu-item NewPop" data-url="<?php echo spUrl($c, 'dyctlogInfo1', array('id' => $v['id'])) ?>" data-title="例行检验记录详情"><a >详情</a></li>
+                                                <li class="menu-item NewPop" data-url="<?php echo spUrl($c, 'editDyctlog', array('id' => $v['id'], 'type' => $v['typ'])) ?>" data-title="编辑例行检验记录"><a >编辑</a></li>
                                                 <li class="menu-item NewPop" data-url="<?php echo spUrl($c, 'editReport', array('oid' => $v['oid'])) ?>" data-title="不合格品报告"><a >+不合格品报告</a></li>
                                                 
                                             </ul>

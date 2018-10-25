@@ -78,7 +78,7 @@ class supplier extends AppController
         
         $arg = array(
             'checkstatus' => '审核状态',
-//             'checkinfo'   => '',
+            'checkinfo'   => '',
 
 //             'cgst'         => '',
 //             'cgname'       => '',
@@ -92,7 +92,7 @@ class supplier extends AppController
         $data = $this->receiveData($arg);
         //签名图片
         $files = $this->spArgs('checkinfo');
-        if ($files) $data['checkinfo'] = implode(',', $files);
+        if ($files) $data['checkinfo'] = $files;
         
         //更新审核数据
         if($id){
@@ -135,6 +135,7 @@ class supplier extends AppController
         $admin   = $this->islogin();
         $model   = spClass('m_supplier');
         $m_user  = spClass('m_admin');
+        $m_file  = spClass('m_file');
         $id      = (int)htmlentities($this->spArgs('id'));
         $results = $model->find(array('id'=>$id, 'del' => 0, 'cid' => $admin['cid']));
         
@@ -146,7 +147,6 @@ class supplier extends AppController
         }else {
             $result['checkstatus'] = 4; //为4时不显示审核表单
         }
-        
         //不合格,不做审核
         if ($results['cgst'] == 2 || $results['zjst'] == 2 || $results['scst'] == 2){
             $result['checkstatus'] = 4;
@@ -158,6 +158,19 @@ class supplier extends AppController
             $all_id = array_filter(explode(',', $results['checkid']));
             foreach ($all_id as $_k => $_v){
                 $user[] = $m_user->find('id='.$_v);
+                
+//                 if (!empty($results['cgname'])){
+//                     $file_path = $m_file->find(array('id' => $results['cgname']));
+//                     $results['cgname'] = $file_path;
+//                 }
+//                 if (!empty($results['zjname'])){
+//                     $file_path1 = $m_file->find(array('id' => $results['zjname']));
+//                     $results['zjname'] = $file_path1;
+//                 }
+//                 if (!empty($results['scname'])){
+//                     $file_path2 = $m_file->find(array('id' => $results['scname']));
+//                     $results['scname'] = $file_path2;
+//                 }
                 
                 if ($_k == 0) $user[$_k]['sign_pic'] = $results['cgname'];  //审核签名
                 if ($_k == 1) $user[$_k]['sign_pic'] = $results['zjname'];
@@ -180,6 +193,8 @@ class supplier extends AppController
             }
         }
         
+        
+//         dump($results);die;
         $result['results'] = $results;
         $result['user']    = $user;
         
@@ -314,6 +329,16 @@ class supplier extends AppController
             $con .= ' and concat(a.company,a.address,a.goodstype,a.phone) like "%' . $searchname . '%"';
             $page_con['searchname'] = $searchname;
         }
+        //开始时间和结束时间查询
+        $start      = htmlspecialchars($this->spArgs('start'));
+        $end        = htmlspecialchars($this->spArgs('end'));
+        if (!empty($start)){
+            $con .= ' and a.optdt>"'.$start.'"';
+        }
+        if (!empty($end)){
+            $con .= ' and a.optdt<"'.$end.'"';
+        }
+        
         $sql     = 'select a.* from '.DB_NAME.'_supplier as a,'.DB_NAME.'_custpay_mon as b where '.$con.' and b.del=0 and b.cid='.$admin['cid'].' and a.id=b.custumid group by a.id order by a.id desc';
         $results = $model->spPager($this->spArgs('page', 1), PAGE_NUM)->findSql($sql);
         $pager   = $model->spPager()->getPager();

@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>详情</title>
+    <link rel="stylesheet" href="../css/public.css">
+</head>
+<body>
+    <div class="Frame">
+        <div class="FrameTit"><span class="FrameTitName">详情</span><span class="Close"></span></div>
+        <div class="FrameBox">
+            <div class="FrameCont">
+                <div class="FrameTable">
+                    <div class="FrameTableTitl">详情</div>
+                    <table class="FrameTableCont" id="dataItem">
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="FrameTableFoot">
+            <span class="Succ BgGreen" id="addDataSub" style="display:none;">提交</span>
+        </div>
+    </div>
+    <script src="../js/jquery-1.11.0.js"></script>
+    <script src="../js/public.js"></script>
+    <script src="../js/jedate.js" type="text/javascript" charset="utf-8"></script>
+    <script src="../js/dataAdd.js"></script>
+    <script>
+        $(()=>{
+            showDataList("app.php/devicecate/deviceCateInfo",function(data){
+                if(data.code!=0){
+                    console.error(data.msg);
+                    return false;
+                }
+                var res=data.results,html='';
+                //{ "id": "id", "catename": "固资设备分类名称", "catedesc": "分类详情", "optid": "操作人id", "optdt": "操作日期", "optname": "操作人", "cid": "公司id", "del": "是否删除1、删除0、未删除" }
+                html=`<tr>
+                        <td class="FrameGroupName">固资设备分类名称：</td>
+                        <td>${res.catename}</td>
+                        <td class="FrameGroupName">分类详情：</td>
+                        <td>${res.catedesc}</td>
+                    </tr>
+                    <tr>
+                        <td class="FrameGroupName">操作人：</td>
+                        <td>${res.optname}</td>
+                        <td class="FrameGroupName">操作时间：</td>
+                        <td>${res.optdt}</td>
+                    </tr>`;
+                $("#dataItem").html(html);
+            });        
+        });
+    </script>
+</body>
+</html>

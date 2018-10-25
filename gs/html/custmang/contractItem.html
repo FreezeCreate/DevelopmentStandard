@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>详情</title>
+    <link rel="stylesheet" href="../css/public.css">
+</head>
+<body>
+    <div class="Frame">
+        <div class="FrameTit"><span class="FrameTitName">详情</span><span class="Close"></span></div>
+        <div class="FrameBox">
+            <div class="FrameCont">
+                <div class="FrameTable">
+                    <div class="FrameTableTitl">详情</div>
+                    <table class="FrameTableCont" id="dataItem">
+                    </table>
+                    <p class="colorGre" style="display: none;margin-top:30px;margin-bottom:10px;">每笔付款信息</p>
+                    <table class="FrameTableCont textCenter">
+                        <thead>
+                        </thead>
+                        <tbody id="custpay"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="FrameTableFoot">
+        </div>
+    </div>
+    <script src="../js/jquery-1.11.0.js"></script>
+    <script src="../js/public.js"></script>
+    <script src="../js/jedate.js" type="text/javascript" charset="utf-8"></script>
+    <script src="../js/dataAdd.js"></script>
+    <script>
+        $(()=>{		
+        	showDataList("app.php/custmang/contractInfo",function(data){
+                var res=data.results,html='';   
+                var files_html='',files=res.files;
+                if(files){
+                    for(var {id,filename} of files){
+                        files_html+=`<a itemid="${id}" style="display:block;" class="download colorGre">${filename}</a>`;
+                    }
+                }
+                html=`<tr>
+                        <td class="FrameGroupName">合同名称：</td>
+                        <td>${res.name}</td>
+                        <td class="FrameGroupName">签约金额：</td>
+                        <td>${res.money}</td>
+                    </tr>
+                    <tr>
+                        <td class="FrameGroupName">合同签署日期：</td>
+                        <td>${res.signdt}</td>
+                        <td class="FrameGroupName">合同添加时间：</td>
+                        <td>${res.adddt}</td>
+                    </tr>
+                    <tr>
+                        <td class="FrameGroupName">合同开始日期：</td>
+                        <td>${res.startdt}</td>
+                        <td class="FrameGroupName">合同终止日期：</td>
+                        <td>${res.enddt}</td>
+                    </tr>
+                    <tr>
+                        <td class="FrameGroupName">联系电话：</td>
+                        <td>${res.phone}</td>
+                        <td class="FrameGroupName">销售人：</td>
+                        <td>${res.salename}</td>
+                    </tr>
+                    <tr>
+                        <td class="FrameGroupName">操作人：</td>
+                        <td>${res.optname}</td>
+                        <td class="FrameGroupName">操作时间：</td>
+                        <td>${res.optdt}</td>
+                    </tr>
+                    <tr>
+                        <td class="FrameGroupName">状态：</td>
+                        <td colspan="3">${res.status==1?"提交":(res.status==2?"驳回":"确认审核")}</td>
+                    </tr>
+                    <tr>
+                        <td class="FrameGroupName">说明：</td>
+                        <td colspan="3">${res.explain}</td>
+                    </tr>
+                    <tr>
+                        <td class="FrameGroupName">相关文件：</td>
+                        <td colspan="3">${files_html||'无'}</td>
+                    </tr>
+                    <tr>
+                        <td class="FrameGroupName">合同内容：</td>
+                        <td colspan="3">${res.content}</td>
+                    </tr>`;
+                $("#dataItem").html(html);
+                var custPay=data.custpay,
+                    cHtml=`<tr class="BgGreen">
+                            <th>付款编号</th>
+                            <th>付款金额</th>
+                            <th>操作人</th>
+                            <th>操作时间</th>
+                            <th>付款方式</th>
+                            <th>相关文件</th>
+                            <th>记录内容</th>
+                        </tr>`;
+                if(custPay.length>0){
+                    for(var i in custPay){
+                        var files_html='';
+                        for(var {id,filename} of custPay[i].files){
+                            files_html+=`<a itemid="${id}" style="display:block;" class="download colorGre">${filename}</a>`;
+                        }
+                        cHtml+=`<tr>
+                                <td>${custPay[i].paynumber}</td>
+                                <td>${custPay[i].getmoney}</td>
+                                <td>${custPay[i].optname}</td>
+                                <td>${custPay[i].optdt}</td>
+                                <td>${custPay[i].paytype}</td>
+                                <td>${files_html}</td>
+                                <td>${custPay[i].record||"空"}</td>
+                            </tr>`;
+                    }
+                    $("#custpay").append(cHtml).parent().prev().show();
+                }
+            });        
+        });
+    </script>
+</body>
+</html>

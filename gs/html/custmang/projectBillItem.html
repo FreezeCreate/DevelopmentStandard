@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>详情</title>
+    <link rel="stylesheet" href="../css/public.css">
+</head>
+<body>
+    <div class="Frame">
+        <div class="FrameTit"><span class="FrameTitName">详情</span><span class="Close"></span></div>
+        <div class="FrameBox">
+            <div class="FrameCont">
+                <div class="FrameTable">
+                    <div class="FrameTableTitl">项目（合同）详细信息</div>
+                    <table class="FrameTableCont" id="dataItem">
+                    </table>
+                    <p class="colorGre" style="display:none;margin-top:30px;margin-bottom:10px;">收款列表信息</p>
+                    <table class="FrameTableCont" id="paymon">
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="FrameTableFoot">
+            未收款:<span class="Succ BgGreen">0</span>
+        </div>
+    </div>
+    <script src="../js/jquery-1.11.0.js"></script>
+    <script src="../js/public.js"></script>
+    <script src="../js/jedate.js" type="text/javascript" charset="utf-8"></script>
+    <script src="../js/dataAdd.js"></script>
+    <script>
+        $(()=>{
+            showDataList("app.php/custmang/projectBill",function(data){
+                var bal=data.balance;
+                if(bal>0)$(".Succ").html((bal).toFixed(2));
+                if(data.code!=0){
+                    console.error(data.msg);
+                    return false;
+                }
+                var res=data.results,html='';
+                if(res){
+                    html=`<tr>
+                            <td class="FrameGroupName">合同编号：</td>
+                            <td>${res.number}</td>
+                            <td class="FrameGroupName">合同名称：</td>
+                            <td>${res.name}</td>
+                        </tr>
+                        <tr>
+                            <td class="FrameGroupName">添加时间：</td>
+                            <td>${res.adddt}</td>
+                            <td class="FrameGroupName">签约金额：</td>
+                            <td>${res.money}</td>
+                        </tr>
+                        <tr>
+                            <td class="FrameGroupName">合同开始日期：</td>
+                            <td>${res.startdt}</td>
+                            <td class="FrameGroupName">合同结束日期：</td>
+                            <td>${res.enddt}</td>
+                        </tr>
+                        <tr>
+                            <td class="FrameGroupName">合同签约日期：</td>
+                            <td>${res.signdt}</td>
+                            <td class="FrameGroupName">客户电话：</td>
+                            <td>${res.phone}</td>
+                        </tr>
+                        <tr>
+                            <td class="FrameGroupName">状态：</td>
+                            <td>${res.status==1?"提交":(res.status==2?"驳回":"确认审核")}</td>
+                            <td class="FrameGroupName">电子合同档案：</td>
+                            <td>${res.files}</td>
+                        </tr>
+                        <tr>
+                            <td class="FrameGroupName">销售名称：</td>
+                            <td>${res.salename}</td>
+                            <td class="FrameGroupName">说明：</td>
+                            <td>${res.explain}</td>
+                        </tr>
+                        <tr>
+                            <td class="FrameGroupName">内容：</td>
+                            <td colspan="3" style="min-height:50px;">${res.content}</td>
+                        </tr>`;
+                    $("#dataItem").html(html);
+                }
+                var paymon=data.paymon,
+                    c_html=`<tr>
+                        <td>付款单号</td>
+                        <td>客户名称</td>
+                        <td>本次付款</td>
+                        <td>付款时间</td>
+                        <td>付款方式</td>
+                        <td>操作人</td>
+                    </tr>`;
+                if(paymon){
+                    //	{ "id": "id", "paynumber": "付款单号", "custumid": "客户id", "custname": "客户名称", "contractid": "合同id", "contractname": "合同名称", "payall": "总金额", "getmoney": "本次实付金额", "record": "记录", "optid": "操作人id", "optdt": "操作时间", "optname": "操作人", "adddt": "添加时间", "content": "内容", "monstatus": "结清状态1、结清2、未结清" "del": "删除状态1、删除0、未删除", "cid": "公司id", "files": "文件", "saleid": "销售id", "salename": "销售名称", "paytypeid": "付款类型id", "paytype": "付款类型", "checkstatus": "收款类型1、合同收款2、其他收款" }
+                    $("#paymon").prev().show();
+                    for(var {id,paynumber,custname,getmoney,adddt,paytype,salename} of paymon){
+                        c_html+=`<tr>
+                                <td>${paynumber}</td>
+                                <td>${custname}</td>
+                                <td>${getmoney}</td>
+                                <td>${adddt}</td>
+                                <td>${paytype}</td>
+                                <td>${salename}</td>
+                            </tr>`;
+                    }
+                    $("#paymon").html(c_html);
+                }
+            });        
+        });
+    </script>
+</body>
+</html>

@@ -121,6 +121,7 @@ class checkwork extends AppController {
             $ad = $model->create($data);
         }
         if ($ad) {
+            $this->sendMsgNotice($admin, 50, $ad, '[' . $data['type'] . ']' . $data['start'] . '->' . $data['end']);
             $this->sendUpcoming($admin, 50, $ad, '[' . $data['type'] . ']' . $data['start'] . '->' . $data['end']);
             $this->returnSuccess('成功');
         } else {
@@ -262,7 +263,7 @@ class checkwork extends AppController {
 //             'uid'      => '打卡人',
             'dkdt'     => '',   //打卡时间
 //             'type'     => '打卡类型',    //默认为0
-            'address'  => '打卡地址',
+            'address'  => '',   //打卡地址
             'lat'      => '',  //维度
             'lng'      => '',  //经度
             'accuracy' => '', //精确范围
@@ -284,6 +285,41 @@ class checkwork extends AppController {
         $up = $model->create($data);
         if($up) $this->returnSuccess('成功');
         $this->returnError('失败');
+    }
+    
+    /**
+     * 是否打卡
+     */
+    function isPerClock()
+    {
+        $admin   = $this->islogin();
+        $sql     = 'select * from '.DB_NAME.'_kqdkjl where uid='.$admin['id'].' and dkdt like "%'.date('Y-m-d').'%" order by dkdt desc';
+        $results = spClass('m_kqdkjl')->findSql($sql);
+        $up      = spClass('m_kqsjgz')->find('cid='.$admin['id'].' and name like "%下班%"');
+        $on      = spClass('m_kqsjgz')->find('cid='.$admin['id'].' and name like "%上班%"');
+        
+        $on_time = $up_time = '未打卡';
+        foreach ($results as $k => $v){
+            if ($v['dkdt'] < $on['stime']){
+                $on_time = '已打卡';
+                $on_clo  = $v['dkdt'];
+                break;
+            }
+        }
+        foreach ($results as $k => $v){
+            if ($v['dkdt'] > $up['etime']){
+                $up_time = '已打卡';
+                $up_clo  = $v['dkdt'];
+                break;
+            }
+        }
+        //data restru
+        $all_results = array(
+            array('上班', $on_time, $on_clo),
+            array('下班', $up_time, $up_clo),
+        );
+        $result['results'] = $all_results;
+        $this->returnSuccess('完成', $result);
     }
 
     //考勤统计 TODO 查看指定人员的考勤情况

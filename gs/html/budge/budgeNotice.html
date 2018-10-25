@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>预算预警</title>
+		<link rel="stylesheet" type="text/css" href="../css/public.css"/>
+	</head>
+	<body style="min-width: 930px;">
+		<div class="ContentBox">
+			<div class="Tables">
+				<div class="TablesHead">
+					<label>
+						<input type="text"class="FrameGroupInput radius searchname" placeholder="搜索"/>
+					</label>
+					<span class="Btn Btn-blue" id="searchNameId"><i class="icon-serch"></i> 查询</span>
+					<span class="Btn Btn-green TablesSerchReset"><i class="icon-reset"></i> 重置</span>
+					<span class="Btn l_refresh Btn-blue">刷新</span>
+				</div>
+				<div class="top20">
+					<table class="Table">
+						<thead>
+							<tr>
+								<th>预算名称</th>
+								<th>部门名称</th>
+								<th>预算时间</th>
+								<th>预算金额</th>
+								<th>实际使用金额</th>
+								<th>预警情况</th>
+							</tr>
+						</thead>
+						<tbody class="textCenter TabBg" id="dataList">
+						</tbody>
+					</table>
+				</div>
+				<div class="noMsg">
+					<div class="noMsgCont">
+						<img src="../images/noMsg.png"/>
+						<span>抱歉！暂时没有数据</span>
+					</div>
+				</div>
+				<div class="Pages textRight top20">
+					<ul class="PagesBox">
+					</ul>
+				</div>
+			</div>
+		</div>
+		<!-- 内容结束 -->
+	</body>
+	<script src="../js/jquery-1.11.0.js" type="text/javascript" charset="utf-8"></script>
+	<script src="../js/public.js" type="text/javascript" charset="utf-8"></script>
+	<!--日期插件-->
+	<script src="../js/jedate.js" type="text/javascript" charset="utf-8"></script>
+	<!--日期插件-->
+	<script src="../js/table.js" type="text/javascript" charset="utf-8"></script>
+	<script type="text/javascript">
+		$(()=>{
+			"use strict"
+			getPagesBox({
+				nowUrl:"app.php/budge/budgeNotice",
+				addList(data){
+					$(".noMsg").hide();
+					if(data.code!=0){
+						alert(data.msg);
+						return false;
+					}
+					var res=data.results;
+					if(!res)return false;
+					var html='';
+					//	{ "id": "id", "budge_name": "预算名称", "budge_status": "预算状态1、支出2、收入", "budge_money": "金额", "budge_prev": "事前控制：百分比数据", "budge_beyond": "超额控制：百分比数据", "budge_check": "审核控制：百分比数据", "budge_desc": "预算描述", "optid": "操作人id", "optname": "操作人", "optdt": "操作日期", "del": "是否删除1、删除0、未删除", "cid": "公司id", "did": "部门id", "dname": "部门名称", "budge_time": "预算时间", "realmoney": "实际使用金额", "de_notice": "部门预警"(当未超出时显示百分比，超出时显示预警) }
+					for(var {id,budge_name,budge_money,dname,budge_time,realmoney,budge_control} of res){
+						html+=`<tr class="${realmoney/budge_money>budge_control?"colorRed":""}">
+								<td>${budge_name}</td>
+								<td>${dname}</td>
+								<td>${budge_time}</td>
+								<td>${budge_money}</td>
+								<td>${realmoney}</td>
+								<td>${realmoney/budge_money>budge_control?"预算警报":"未达到预算"}</td>
+							</tr>`;
+					}
+					$("#dataList").html(html);
+					isDelTr("app.php/budge/budgeDel");
+				}
+			});
+		});
+	</script>
+</html>

@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>客户信息提醒</title>
+		<link rel="stylesheet" type="text/css" href="../css/public.css"/>
+	</head>
+	<body style="min-width: 930px;">
+		<div class="ContentBox">
+			<div class="Tables">
+				<div class="TablesHead">
+					<label>
+						<input type="text"class="FrameGroupInput radius searchname" placeholder="搜索"/>
+					</label>
+					<span class="Btn Btn-blue" id="searchNameId"><i class="icon-serch"></i> 查询</span>
+					<span class="Btn Btn-green TablesSerchReset"><i class="icon-reset"></i> 重置</span>
+					<span class="Btn l_refresh Btn-blue">刷新</span>
+				</div>
+				<div class="top20">
+					<table class="Table">
+						<thead>
+							<tr>
+								<th width="50">序号</th>
+								<th>合同签署日期</th>
+								<th>客户姓名</th>
+								<th>客户电话</th>
+								<th>地址</th>
+								<th>销售人员</th>
+								<th>操作</th>
+							</tr>
+						</thead>
+						<tbody class="textCenter TabBg" id="clientList"></tbody>
+					</table>
+				</div>
+				<div class="noMsg">
+					<div class="noMsgCont">
+						<img class="" src="../images/noMsg.png"/>
+						<span>抱歉！暂时没有数据</span>
+					</div>
+				</div>
+				<div class="Pages textRight top20">
+					<ul class="PagesBox">
+						<li class="PagesItem"><a >&lt;&lt; 首页</a></li>
+						<li class="PagesItem"><a >&lt;</a></li>
+						<li class="PagesItem"><a >1</a></li>
+						<li class="PagesItem active"><a >2</a></li>
+						<li class="PagesItem"><a >3</a></li>
+						<li class="PagesItem"><a >4</a></li>
+						<li class="PagesItem"><a >5</a></li>
+						<li class="PagesItem"><a >&gt;</a></li>
+						<li class="PagesItem"><a >末页 &gt;&gt;</a></li>
+					</ul>
+				</div>
+			</div>
+		</div>
+		<div class="Tan" id="xzjl" style="display:none;">
+			<div class="TanBox">
+				<div class="TanBoxTit">添加签约回访记录</span><span data-boxid="xzjl" class="close OtPop"></span></div>
+				<div class="TanBoxCont">
+					<div class="FrameTable">
+						<div class="FrameTableTitl">添加签约回访记录</div>
+						<form id="addCustRecord">
+							<table class="FrameTableCont">
+								<tr>
+									<td class="FrameGroupName" width="20%">回访人：</td>
+									<td class="" width="30%"><input class="FrameGroupInput" type="text" name="flowname" value="张悦" /></td>
+									<td class="FrameGroupName" width="20%">添加时间：</td>
+									<td class=""width="30%">
+										<input class="FrameGroupInput" type="text" name="addtime" id="" value="2018-12-11" />
+									</td>
+								</tr>
+								<tr>
+									<td class="FrameGroupName">客户情况描述：</td>
+									<td colspan="3">
+										<textarea name="explain" class="FrameGroupInput" >输入客户的跟进情况</textarea>
+									</td>
+								</tr>
+							</table>
+							<div class="TanBtn">
+								<span class="Btn Big Btn-green" id="addCustSub">确定</span>
+								<span class="Btn Big Btn-blue OtPop" data-boxid="xzjl">取消</span>
+							</div>
+						</form>
+					</div>
+				</div>
+			</div>
+		</div>
+	</body>
+	<script src="../js/jquery-1.11.0.js" type="text/javascript" charset="utf-8"></script>
+	<script src="../js/public.js" type="text/javascript" charset="utf-8"></script>
+	<!--日期插件-->
+	<script src="../js/jedate.js" type="text/javascript" charset="utf-8"></script>
+	<!--日期插件-->
+	<script src="../js/table.js" type="text/javascript" charset="utf-8"></script>
+	<script type="text/javascript">
+		$(function(){
+			
+			jeDate({
+				dateCell:"#DatStr",
+				format:"YYYY-MM-DD",
+				isinitVal:false,
+				isTime:false, //isClear:false,
+				minDate:"2014-09-19",
+				okfun:function(val){alert(val)}
+			})
+			jeDate({
+				dateCell:"#DatEnd",
+				format:"YYYY-MM-DD",
+				isinitVal:false,
+				isTime:false, //isClear:false,
+				minDate:"2014-09-19",
+				okfun:function(val){alert(val)}
+			})
+			getPagesBox({
+				nowUrl:"app.php/custinfocall/index",
+				addList(data){
+					var res=data.results,html='';
+					var source=data.source;
+					var statu=data.status;
+					var type=data.type;
+					for(var {id,noticetime,cust_name,phone,address,salename,flowid} of res){
+						html+=`<tr>
+								<td>${id}</td>
+								<td>${noticetime}</td>
+								<td>${cust_name}</td>
+								<td>${phone}</td>
+								<td>${address}</td>
+								<td>${salename||'靖靖'}</td>
+								<td>
+									<div class="colorBlu list-menu" style="display: inline-block;">
+										操作+
+										<ul class="menu">
+											<li class="menu-item colorGre  InPop" data-boxid="xzjl" data-aid="${id}">
+												<a href="#">新增记录</a>
+											</li>
+										</ul>
+									</div>
+								</td>
+							</tr>`;
+					}
+					$("#clientList").html(html);
+				}
+			});
+		});
+	</script>
+</html>

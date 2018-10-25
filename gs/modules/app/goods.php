@@ -44,6 +44,27 @@ class goods extends AppController
     }
     
     /**
+     * 商品和分类单选框接口
+     */
+    function cateForGoods()
+    {
+        $admin   = $this->islogin();
+        $model   = spClass('m_goods');
+        $m_cate  = spClass('m_goods_order_cate');
+        $cate = $m_cate->findAll('cid='.$admin['cid'].' and del=0');
+        foreach ($cate as $k => $v) {
+            $results[$k]['name'] = $v['catename'];
+            $results[$k]['children'] = $model->findAll('cid='.$admin['cid'].' and del=0 and cateid='.$v['id'].'', '', 'id,order_name');
+            foreach ($results[$k]['children'] as $_k => $_v){
+                $results[$k]['children'][$_k]['name'] = $results[$k]['children'][$_k]['order_name'];
+                unset($results[$k]['children'][$_k]['order_name']);
+            }
+        }
+        $result['results'] = $results;
+        $this->returnSuccess('成功', $result);
+    }
+    
+    /**
      * 删除商品
      */
     function delGoodsOrder()
@@ -80,16 +101,17 @@ class goods extends AppController
         
         $arg = array(
             'cateid'        => '商品分类',
-            'catename'      => '商品分类',
-            'order_name'    => '商品名称',
-            'stock_id'      => '库房',
-            'stock_name'    => '库房',
-            'order_spec'    => '规格',
-            'order_unit'    => '单位',
-            'order_num'     => '商品数量',
-            'order_explain' => '备注',
+            'order_name'    => '',  //商品名称
+            'order_spec'    => '',  //规格
+            'order_unit'    => '',  //单位
+            'order_num'     => '',  //商品数量
+            'order_explain' => '',  //备注
+            'updatetime'    => '',  //积压时间
         );
         $data = $this->receiveData($arg);
+        $cate_data = spClass('m_goods_order_cate')->find('id='.$data['cateid'].' and del=0 and cid='.$admin['cid'].'');
+        $this->emptyNotice($cate_data, '类别不存在或已删除');
+        $data['catename'] = $cate_data['catename'];
         
         if($id){
             $re = $model->find(array('id'=>$id,'del'=>0,'cid'=>$admin['cid']));

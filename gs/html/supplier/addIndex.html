@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>新增</title>
+    <link rel="stylesheet" href="../css/public.css">
+</head>
+<body>
+    <div class="Frame">
+        <div class="FrameTit"><span class="FrameTitName">新增</span><span class="Close"></span></div>
+        <div class="FrameBox">
+            <div class="FrameCont">
+                <div class="FrameTable">
+                    <div class="FrameTableTitl">新增供应商</div>
+                    <form id="addData">
+                        <table class="FrameTableCont">
+                            <tr>
+                                <td class="FrameGroupName">供应商名称：</td>
+                                <td>
+                                    <input type="text" name="company" class="FrameGroupInput" placeholder="输入名称">
+                                </td>
+                                <td class="FrameGroupName">供货商品类型：</td>
+                                <td>
+                                    <select class="cateNameList FrameGroupInput" name="goodstype" id="goodstype"></select>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="FrameGroupName">联系人：</td>
+                                <td>
+                                    <input type="text" class="FrameGroupInput" name="name" placeholder="输入名称">
+                                </td>
+                                <td class="FrameGroupName">联系方式：</td>
+                                <td>
+                                    <input type="text" class="FrameGroupInput" name="phone" placeholder="输入号码">
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="FrameGroupName">地区：</td>
+                                <td colspan="3">
+                                    <input type="text" name="address" class="FrameGroupInput" placeholder="输入地址">
+                                </td>
+                            </tr>                            
+                            <tr>
+                                <td class="FrameGroupName">是否有工商营业制造和其他合法证明	:</td>
+                                <td colspan="3">
+                                    <label>
+                                        <span class="radio">有</span>
+                                        <input name="hfzm" class="None" type="radio" autocomplete="off" value="1">
+                                    </label>
+                                    <label>
+                                        <span class="radio">没有</span>
+                                        <input class="None" name="hfzm" type="radio" value="2">
+                                    </label>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="FrameGroupName">产品价格和服务:</td>
+                                <td>
+                                    <label>
+                                        <span class="radio">有</span>
+                                        <input name="jgfw" class="None" type="radio" autocomplete="off" value="1">
+                                    </label>
+                                    <label>
+                                        <span class="radio">没有</span>
+                                        <input name="jgfw" class="None" type="radio" autocomplete="off" value="2">
+                                    </label>
+                                </td>
+                                <td class="FrameGroupName">产品相关资质:</td>
+                                <td>
+                                    <label>
+                                        <span class="radio">有</span>
+                                        <input class="None" name="xgzz" type="radio" value="1">
+                                    </label>
+                                    <label>
+                                        <span class="radio">没有</span>
+                                        <input class="None" name="xgzz" type="radio" value="2">
+                                    </label>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="FrameGroupName">质量情况:</td>
+                                <td>
+                                    <label>
+                                        <span class="radio">强</span>
+                                        <input class="None" name="zlqk" type="radio" value="1">
+                                    </label>
+                                    <label>
+                                        <span class="radio">一般</span>
+                                        <input class="None" name="zlqk" type="radio" value="2">
+                                    </label>
+                                    <label>
+                                        <span class="radio">弱</span>
+                                        <input class="None" name="zlqk" type="radio" value="3">
+                                    </label>
+                                </td>
+                                <td class="FrameGroupName">社会信誉是否良好:</td>
+                                <td>
+                                    <label>
+                                        <span class="radio">好</span>
+                                        <input name="shxy" class="None" type="radio" autocomplete="off" value="1">
+                                    </label>
+                                    <label>
+                                        <span class="radio">一般</span>
+                                        <input name="shxy" class="None" type="radio" autocomplete="off" value="2">
+                                    </label>
+                                    <label>
+                                        <span class="radio">差</span>
+                                        <input name="shxy" class="None" type="radio" autocomplete="off" value="3">
+                                    </label>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="FrameGroupName">备注：</td>
+                                <td colspan="3">
+                                    <textarea class="FrameGroupInput" name="explain">备注</textarea>
+                                </td>
+                            </tr>
+                        </table>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div class="FrameTableFoot">
+            <span class="Succ" id="addDataSub">提交</span>
+        </div>
+    </div>
+    <script src="../js/jquery-1.11.0.js"></script>
+    <script src="../js/public.js"></script>
+    <script src="../js/table.js"></script>
+    <script src="../js/jedate.js" type="text/javascript" charset="utf-8"></script>
+    <script src="../js/dataAdd.js"></script>
+    <script>
+        $(()=>{
+			addDataList("/app.php/supplier/addSupplier");
+        });
+    </script>
+</body>
+</html>

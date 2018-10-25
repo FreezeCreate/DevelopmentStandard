@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>新增</title>
+    <link rel="stylesheet" href="../css/public.css">
+    <style>
+        input.FrameGroupInput{
+            width:40px;
+        }
+        select.FrameGroupInput{
+            width:80px;
+        }
+        input.FrameGroupInput.l_number{
+            width:40px;
+        }
+        span.l_btn{
+            padding: 2px;
+            background: #dedfde;
+        }
+    </style>
+</head>
+<body>
+    <div class="Frame">
+        <div class="FrameTit"><span class="FrameTitName">新增</span><span class="Close"></span></div>
+        <div class="FrameBox">
+            <div class="FrameCont">
+                <div class="FrameTable">
+                    <div class="FrameTableTitl">退货</div>
+                    <form id="addData">
+                        <input type="hidden" value="" id="invoice_id" name="invoice_id">
+                        <table class="FrameTableCont textCenter top20" id="goodsData">
+                            <thead>
+                                <tr>
+                                    <td>商品名</td>
+                                    <td>所在库房</td>
+                                    <td>单位</td>
+                                    <td>采购单价/元</td>
+                                    <td>采购折扣率</td>
+                                    <td>采购折扣额/元</td>
+                                    <td>采购金额/元</td>
+                                    <td>采购备注</td>
+                                    <td>退货数量</td>
+                                    <td>退货备注</td>
+                                </tr>
+                            </thead>
+                            <tbody  id="goodsLst">
+                            </tbody>
+                        </table>
+                        <table class="FrameTableCont top20">
+                            <tr>
+                                <td>退货总金额</td>
+                                <td class="FrameTitName">
+                                    <span class="remoney">0</span>
+                                    <input type="hidden" class="FrameGroupInput" name="remoney" id="remoney">
+                                </td>                            
+                            </tr>
+                            <tr>
+                                <td class="FrameTitName">退货详情</td>
+                                <td colspan="3">
+                                    <textarea name="reinfo" class="FrameGroupInput"></textarea>
+                                </td>
+                            </tr>
+                        </table>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div class="FrameTableFoot">
+            <span class="Succ" id="addDataSub">提交</span>
+        </div>
+    </div>
+    <script src="../js/jquery-1.11.0.js"></script>
+    <script src="../js/public.js"></script>
+    <script src="../js/jedate.js" type="text/javascript" charset="utf-8"></script>
+    <script src="../js/dataAdd.js"></script>
+    <script>
+        $(()=>{
+            isDelTr();
+            $("#invoice_id").val(getRequest().id);
+            showDataList('/app.php/invoice/invoiceGoodsLst',function(data){
+                var res=data.results,g_html='';
+                if(res){
+                    for(var {id,goods_id,goods_name,goods_unit,room_name,goods_num,goods_price,discount,discountprice,buyprice,content} of res){
+                        g_html+=`<tr>
+                            <td>
+                                ${goods_name}
+                                <input type="hidden" class="FrameGroupInput listName" value="${id}" data-name="id">
+                            </td>
+                            <td>${room_name}</td>
+                            <td>${goods_unit}</td>
+                            <td class="buyprice">${goods_price}</td>
+                            <td>${discount}%</td>
+                            <td>${discountprice}</td>
+                            <td>${buyprice}</td>
+                            <td>${content}</td>
+                            <td class='goods_num'>
+                                <span class="Btn BgBlue Mit">-</span>
+                                <input type="text" class="FrameGroupInput l_number listName" data-name="goods_num" value="${goods_num}">
+                                <span class="Btn BgBlue Add">+</span>
+                            </td>
+                            <td>
+                                <input type="text" class="FrameGroupInput listName" data-name="content">
+                            </td>
+                            </tr>`;
+                    }
+                    $("#goodsLst").html(g_html);
+                    salcPrice();
+                    $('[data-name="goods_num"').on('input propertypechange',function(){                                        
+                        var that=$(this),price,num,remoney=0;
+                        var reg=/^[0-9]{1,9}$/;
+                        if(!reg.test(that.val()))that.val(0);
+                        salcPrice();
+                    });
+                    $("#goodsLst").on('click','.Mit',function(){
+                        var that=$(this);                        
+                        var val=that.next('input').val();
+                        if(val>0)val--;
+                        that.next().val(val);
+                        salcPrice();
+                    });
+                    $("#goodsLst").on('click','.Add',function(){
+                        var that=$(this);                        
+                        var val=that.prev('input').val();
+                        val++;
+                        that.prev().val(val);
+                        salcPrice();
+                    });
+                }
+            });
+            function salcPrice(){
+                var price=0;
+                $('#goodsLst tr').each(function(i,e){
+                    var that=$(e);                    
+                    price+=(that.children('.buyprice').html()*that.children('.goods_num').children('input').val());
+                });
+                $('#remoney').val(price).prev('.remoney').html(price);
+            }
+            $("#addDataSub").click(function(){
+                var data=getSubData('addData');
+                var list=[];
+                $("#goodsLst tr").each(function(i,e){
+                    list[i]=new Object();
+                    var that=$(e);
+                    that.children().children(".listName").each(function(k,v){
+                        var item=$(v);
+                        var thatName=item.data("name");
+                        list[i][thatName]=item.val();
+                    });
+                });
+                data.token=dataToken;
+                data.list=list;
+                $.ajax({
+                    type:"post",
+                    url:dataURL+'app.php/applyFill/saveRegoods',
+                    data,
+                    dataType:'json',
+                    success(data){
+                        alert(data.msg+',请刷新');
+                        parent.window.closHtml();
+                    },
+                    error(){
+                        alert("新增接口断开");
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>

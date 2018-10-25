@@ -18,10 +18,41 @@ class IndexController extends spController {
         //是否从地址栏直接填写token
 //         if (!strpos($_SERVER['HTTP_REFERER'], 'token')) $this->msg_json('非法调用');
         
-        if (!$_SESSION['admin'] && $this->a != 'login') {
-            header('Location:' . spUrl('main', 'login'));
+        if ($this->a == 'qrimg'){
+            continue;
+            if (!$_SESSION['admin'] && $this->a != 'login') {
+                header('Location:' . spUrl('main', 'login'));
+            }
         }
+        
         $this->page_con = array(); //默认的分页+条件 为空
+    }
+    
+    /**
+     * 发送消息提醒入库
+     */
+    function sendMsgNotice($mid, $tid, $summary, $type = 1)
+    {
+        $m_set      = spClass('m_flow_set');
+        $model      = spClass('m_flow_todos');
+        $m_admin    = spClass('m_admin');
+        $model_data = $m_set->find('id='.$mid.'');
+        $admin      = $m_admin->find(array('id' => $_SESSION['admin']['id']));
+        
+        $data = array(
+            'modelid'   => $mid,
+            'modelname' => $model_data['name'],
+            'table'     => $model_data['table'],
+            'tid'       => $tid,
+            'uid'       => $admin['id'],
+            'adddt'     => date('Y-m-d H:i:s'),
+            'title'     => $summary,
+            'type'      => $type,    //当为审核流程时type=1、为通知公告时type=2
+        );
+        $model->create($data);
+        
+        //jpush的两端提醒处理
+//         $this->jpushSendMsg($data['modelname'], $summary);
     }
 
     /**
@@ -96,6 +127,8 @@ class IndexController extends spController {
             $result['menu'] = $menu;
             return $result;
         } else {
+            //如果session不存在就清除cookie
+            setcookie('token',$_COOKIE['token'],time()-1,'/');
             $this->jump(spUrl('main', 'login'));
         }
     }
@@ -135,6 +168,8 @@ class IndexController extends spController {
                 }
             }
         } else {
+            //如果session不存在就清除cookie
+            setcookie('token',$_COOKIE['token'],time()-1,'/');
             $this->msg_json(0, '您尚未登录');
         }
     }
@@ -257,6 +292,37 @@ class IndexController extends spController {
             $data_log = array('table' => $data['table'], 'tid' => $data['tid'], 'status' => 1, 'statusname' => '添加', 'name' => '添加', 'courseid' => 0, 'optdt' => date('Y-m-d H:i:s'), 'explain' => '', 'ip' => Common::getIp(), 'checkname' => $admin['name'], 'checkid' => $admin['id'], 'mid' => $data['modelid']);
             spClass('m_flow_log')->create($data_log);
         }
+        
+        //jpush的两端提醒处理
+//         $this->jpushSendMsg($data['modelname'], $summary);
+        
+    }
+    
+    /**
+     * jpush的两端提醒处理
+     */
+    function jpushSendMsg($title, $content)
+    {
+        require 'jpush/autoload.php';
+        $client = new \JPush\Client($GLOBALS['jpush']['appKey'], $GLOBALS['jpush']['masterSecret']);
+        //Android
+        $client->push()
+               ->setPlatform('all')
+               ->addAlias('0x123')
+               ->addTag(array('0x123', '0x124'))
+               ->androidNotification($content, array(    //多条安卓 send
+                   'title' => $title,
+               ))
+               ->send();
+        //IOS
+        $client->push()
+               ->setPlatform('all')
+//                ->addAlias('0x123')
+//                ->addTag(array('0x123', '0x124'))
+               ->iosNotification($content, array(    //多条IOS send
+                   'title' => $title,
+               ))
+               ->send();
     }
     
     function findCheck($id, $mid) {

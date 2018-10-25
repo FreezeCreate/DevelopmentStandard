@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>审核人查看采购和库存信息</title>
+    <link rel="stylesheet" href="../css/public.css">
+</head>
+<body>
+    <div class="Frame">
+        <div class="FrameTit"><span class="FrameTitName">详情</span><span class="Close"></span></div>
+        <div class="FrameBox">
+            <div class="FrameCont">
+                <div class="FrameTable">
+                    <div class="FrameTableTitl">库存详情</div>
+                    <table class="FrameTableCont" id="dataRoom">
+                    </table>
+                    <p class="top20"></p>
+                    <div class="FrameTableTitl">最后一次采购详情</div>
+                    <table class="FrameTableCont" id="dataItem">
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="FrameTableFoot">
+                <span class="Succ BgGreen" id="addDataSub" style="display:none;">提交</span>
+        </div>
+    </div>
+    <script src="../js/jquery-1.11.0.js"></script>
+    <script src="../js/public.js"></script>
+    <script src="../js/jedate.js" type="text/javascript" charset="utf-8"></script>
+    <script src="../js/dataAdd.js"></script>
+    <script>
+        $(()=>{
+            showDataList('app.php/invoice/lastBuy',function(data){
+                var res=data.results,rHtml='';
+                var room=data.room,mHtml='';
+                if(res){
+                    rHtml=`<tr>
+                            <td class="FrameGroupName" >商品名称：</td>
+                            <td>${res.invoice_name}</td>
+                            <td class="FrameGroupName" >供应商公司：</td>
+                            <td>${res.buldcom}</td>
+                        </tr>
+                        <tr>
+                            <td class="FrameGroupName">制单人:</td>
+                            <td>${res.addname}</td>
+                            <td class="FrameGroupName">购货总金额:</td>
+                            <td>${res.totalmoney}</td>
+                        </tr>
+                        <tr>
+                            <td class="FrameGroupName">本次付款:</td>
+                            <td>${res.paymoney}</td>
+                            <td class="FrameGroupName">单价:</td>
+                            <td>${res.oneprice}</td>
+                        </tr>
+                        <tr>
+                            <td class="FrameGroupName">购买数量:</td>
+                            <td>${res.totalnum}</td>
+                            <td class="FrameGroupName">采购时间:</td>
+                            <td>${res.buydate}</td>
+                        </tr>
+                        <tr>
+                            <td class="FrameGroupName">是否付款:</td>
+                            <td>${res.statecode==0?"未付款":(res.statecode==1?"部分付款":"全部付款")}</td>
+                            <td class="FrameGroupName">销售人员:</td>
+                            <td>${res.salesid}</td>
+                        </tr>
+                        <tr>
+                            <td class="FrameGroupName">地址:</td>
+                            <td>${res.address}</td>
+                            <td class="FrameGroupName">手机:</td>
+                            <td>${res.phone}</td>
+                        </tr>
+                        <tr>
+                            <td class="FrameGroupName">扣款金额:</td>
+                            <td>${res.discount}</td>
+                            <td class="FrameGroupName">备注:</td>
+                            <td>${res.info}</td>
+                        </tr>`;
+                    $("#dataItem").html(rHtml);
+                }
+                if(room){
+                    mHtml=`<tr>
+                            <td class="FrameGroupName" >商品名称：</td>
+                            <td>${room.order_name}</td>
+                            <td class="FrameGroupName" >商品类别：</td>
+                            <td>${room.catename}</td>
+                        </tr>
+                        <tr>
+                            <td class="FrameGroupName">规格:</td>
+                            <td>${room.order_spec}</td>
+                            <td class="FrameGroupName">数量:</td>
+                            <td>${room.order_num}</td>
+                        </tr>
+                        <tr>
+                            <td class="FrameGroupName" >备注：</td>
+                            <td>${room.order_explain}</td>
+                            <td class="FrameGroupName" >积压时间：</td>
+                            <td>${room.updatetime}</td>
+                        </tr>
+                        <tr>
+                            <td class="FrameGroupName" >库房名称：</td>
+                            <td>${room.stock_name}</td>
+                            <td class="FrameGroupName" >是否删除：</td>
+                            <td>${room.del==1?"删除":"未删除"}</td>
+                        </tr>
+                        <tr>
+                            <td class="FrameGroupName">操作人:</td>
+                            <td>${room.optname}</td>
+                            <td class="FrameGroupName" >操作时间：</td>
+                            <td>${room.optdt}</td>
+                        </tr>`;
+                    //{ "id": "商品id", "cateid": "商品类别id", "catename": "商品类别", "order_name": "商品名称", "order_spec": "规格", "order_num": "数量", "order_explain": "备注", "optid": "操作人id", "optdt": "操作时间", "optname": "操作人", "cid": "公司id", "del": "是否删除1删除0未删除", "stock_id": "库房id", "stock_name": "库房名称", "updatetime": "积压时间" }
+                    $("#dataRoom").html(mHtml);
+                }
+            });					
+        });
+    </script>
+</body>
+</html>

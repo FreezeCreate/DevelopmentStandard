@@ -149,30 +149,37 @@ class salegoal extends AppController
         $id             = (int)htmlentities($this->spArgs('id'));
         //查看是否存在下级,存在则可以选择给别人制定目标
         $my_emp         = spClass('m_admin')->findAll('sid='.$admin['id']);
-        if (!empty($my_emp)){   //存在下级
-            $saleid     = '销售人员id';
-            $salename   = '销售姓名';
-            $saledname  = '所在部门';
-        }else {
-            $saleid     = '';
-            $salename   = '';
-            $saledname  = '';
-        }
+//         if (!empty($my_emp)){   //存在下级
+//             $saleid     = '销售人员id';
+//             $salename   = '销售姓名';
+//             $saledname  = '所在部门';
+//         }else {
+//             $saleid     = '';
+//             $salename   = '';
+//             $saledname  = '';
+//         }
         
         $arg = array(
-            'saleid'    => $saleid,
-            'salename'  => $salename,
+//             'saleid'    => $saleid,
+//             'salename'  => $salename,
+            'saleid'    => '',
+            'salename'  => '',
             'fid'       => '',
             'goaltitle' => '销售目标标题',
             'info'      => '',
             'goalstatus'=> '',
             'salenum'   => '销售单目标',
             'salemoney' => '销售金额目标',
-            'goaldt'    => '',
+            'goaldt'    => '制定时间',
         );
         $data = $this->receiveData($arg);
         
-        if (empty($my_emp)){    //没有下级则是自己为自己添加目标
+//         if (empty($my_emp)){    //没有下级则是自己为自己添加目标
+//             $data['saleid']    = $admin['id'];
+//             $data['salename']  = $admin['name'];
+//             $data['saledname'] = $admin['dname'];
+//         }
+        if (empty($data['saleid'])){
             $data['saleid']    = $admin['id'];
             $data['salename']  = $admin['name'];
             $data['saledname'] = $admin['dname'];
@@ -382,7 +389,9 @@ class salegoal extends AppController
             foreach ($all_goal as $gk => $gv){
                 $user_goal = $user_goal + $gv['salemoney'];
             }
-            $total_all['user'][]      = $sv;
+            $sv = $this->keepField($sv, 'salename');
+//             $total_all['user'][]      = $sv;
+            $total_all['user'][]      = $sv['salename']; //根据前端需求，返回数组格式的名称
             $total_all['user_fact'][] = (int)$user_fact;
             $total_all['user_goal'][] = (int)$user_goal;
             if ($user_goal - $user_fact < 0){

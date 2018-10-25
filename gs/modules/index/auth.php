@@ -124,6 +124,9 @@ class auth extends IndexController {
         }
     }
 
+    /**
+     * TODO 员工关系的提醒
+     */
     function personnel() {
         $result = $this->get_menu();
         $this->menu = $result['menu'];
@@ -133,6 +136,9 @@ class auth extends IndexController {
         $name = urldecode(trim(htmlspecialchars($this->spArgs('name'))));
         $m_admin = spClass('m_admin');
         $m_department = spClass('m_department');
+        //员工关系内容
+        $m_relation = spClass('m_relation');
+        
         $m_position = spClass('m_position');
         $con = 'del = 0 and cid = ' . $admin['cid'];
         $department = $m_department->findAll('pid = ' . $admin['cid'], 'sort asc');
@@ -149,6 +155,17 @@ class auth extends IndexController {
         }
         $this->dresults = $dresults;
         $results = $m_admin->spPager($this->spArgs('page', 1), PAGE_NUM)->findAll($con, 'number asc');
+        foreach ($results as $_k => $_v){
+            $re_data = $m_relation->find('`table` like "%admin%" and tid='.$_v['id'].' and UNIX_TIMESTAMP(noticetime)<'.(time() + 24*60*60).' and UNIX_TIMESTAMP(noticetime)>'.(time() - 24*60*60).'');
+            if (empty($re_data)){
+                $rela_data[] = [];
+                continue;
+            }else {
+                $rela_data[$re_data['tid']] = $re_data;
+                continue;
+            }
+        }
+        $this->re_data = $rela_data;
         $this->results = $results;
         $this->pager = $m_admin->spPager()->getPager();
         $this->page_con = $page_con;
@@ -281,7 +298,7 @@ class auth extends IndexController {
                 $data['password'] = md5(md5($password));
             }
             $admin = $this->get_ajax_menu('personnel', 'addUserinfo');
-            $re = $m_admin->find('username = "' . $data['username'] . '" or (number = "' . $data['number'] . '" and cid = '.$data['cid'].'"');
+            $re = $m_admin->find('username = "' . $data['username'] . '" or (number = "' . $data['number'] . '" and cid = '.$data['cid'].')');
             if ($re) {
                 $this->msg_json(0, '登录名或编号重复');
             } else {
@@ -394,7 +411,7 @@ class auth extends IndexController {
             } elseif (!$post['auth']) {
                 $this->msg_json(0, "至少选择一个权限！");
             } else {
-                $according = $m_role->find("name='" . $post['name'] . "'");
+                $according = $m_role->find("name='" . $post['name'] . "' and shopid = ".$admin['cid']);
                 if ($according) {
                     $this->msg_json(0, "已经存在该角色名称！");
                 } else {

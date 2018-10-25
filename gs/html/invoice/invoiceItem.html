@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>详情</title>
+    <link rel="stylesheet" href="../css/public.css">
+</head>
+<body>
+    <div class="Frame">
+        <div class="FrameTit"><span class="FrameTitName">详情</span><span class="Close"></span></div>
+        <div class="FrameBox">
+            <div class="FrameCont">
+                <div class="FrameTable">
+                    <div class="FrameTableTitl">详情</div>
+                    <table class="FrameTableCont" id="dataItem">
+                    </table>
+                    <p class="colorGre" style="margin-top:30px;margin-bottom:10px;">处理记录</p>
+                    <table class="FrameTableCont textCenter" id="log_res">
+                    </table>
+                    <form id="addData">
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div class="FrameTableFoot">
+                <span class="Succ BgGreen" id="addDataSub" style="display:none;">提交</span>
+        </div>
+    </div>
+    <script src="../js/jquery-1.11.0.js"></script>
+    <script src="../js/public.js"></script>
+    <script src="../js/jedate.js" type="text/javascript" charset="utf-8"></script>
+    <script src="../js/dataAdd.js"></script>
+    <script>
+        $(()=>{
+            showDataList('app.php/apply/Invoice',function(data){
+                var res=data,html;
+                html=`<tr>
+                        <td class="FrameGroupName" width="20%">供应商公司：</td>
+                        <td colspan='3'>${res.buldcom}</td>
+                    </tr>
+                    <tr>
+                        <td class="FrameGroupName">购货总金额</td>
+                        <td>${res.totalmoney}</td>
+                        <td class="FrameGroupName">本次付款</td>
+                        <td>${res.paymoney}</td>
+                    </tr>
+                    <tr>
+                        <td class="FrameGroupName">是否付款</td>
+                        <td>${res.statecode==0?"未付款":(res.statecode==1?"部分付款":"全部付款")}</td>
+                        <td class="FrameGroupName">采购时间</td>
+                        <td>${res.buydate}</td>
+                    </tr>
+                    <tr>
+                        <td class="FrameGroupName">备注</td>
+                        <td colspan='3'>${res.info}</td>
+                    </tr>`;
+                $("#dataItem").html(html);
+                var log_res=data.log,
+                    log_html=`<tr class="BgGreen">
+                            <td>序号</td>
+                            <td>操作人</td>
+                            <td>操作时间</td>
+                            <td>操作状态</td>
+                            <td>说明</td>
+                            <td>相关文件</td>
+                        </tr>`;
+                if(log_res){
+                    for(var {id,files,checkname,optdt,statusname,explain} of log_res){
+                        log_html+=`<tr>
+                            <td>${id}</td>
+                            <td>${checkname}</td>
+                            <td>${optdt}</td>
+                            <td>${statusname}</td>
+                            <td>${explain}</td>
+                            <td>${files|"无"}</td>
+                        </tr>`;
+                    }
+                    $("#log_res").html(log_html);
+                }
+            });					
+        });
+    </script>
+</body>
+</html>

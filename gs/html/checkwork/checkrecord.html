@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>日程列表</title>
+		<link rel="stylesheet" type="text/css" href="../css/public.css"/>
+	</head>
+	<body style="min-width: 930px;">
+		<div class="ContentBox">
+			<div class="Tables">
+				<div class="TablesHead">
+					<label>
+						<input type="text"class="FrameGroupInput radius searchname" placeholder="搜索"/>
+					</label>
+					<span class="Btn Btn-blue" id="searchNameId"><i class="icon-serch"></i> 查询</span>
+					<span class="Btn Btn-green TablesSerchReset"><i class="icon-reset"></i> 重置</span>
+					<span class="Btn l_refresh Btn-blue">刷新</span>
+				</div>
+				<div class="top20">
+					<table class="Table">
+						<thead>
+							<tr>
+								<th>序号</th>
+								<th>部门</th>
+								<th>姓名</th>
+								<th>打卡时间</th>
+								<th>打卡类型</th>
+								<th>打卡ip</th>
+							</tr>
+						</thead>
+						<tbody class="textCenter TabBg" id="dataList">
+						</tbody>
+					</table>
+				</div>
+				<div class="noMsg">
+					<div class="noMsgCont">
+						<img   src="../images/noMsg.png"/>
+						<span>抱歉！暂时没有数据</span>
+					</div>
+				</div>
+				<div class="Pages textRight top20">
+					<ul class="PagesBox">
+					</ul>
+				</div>
+			</div>
+		</div>
+		<!-- 内容结束 -->
+	</body>
+	<script src="../js/jquery-1.11.0.js" type="text/javascript" charset="utf-8"></script>
+	<script src="../js/public.js" type="text/javascript" charset="utf-8"></script>
+	<!--日期插件-->
+	<script src="../js/jedate.js" type="text/javascript" charset="utf-8"></script>
+	<!--日期插件-->
+	<script src="../js/table.js" type="text/javascript" charset="utf-8"></script>
+	<script type="text/javascript">
+		$(()=>{
+			"use strict"
+			jeDate({
+				dateCell:"#DatEnd",
+				format:"YYYY-MM-DD",
+				isinitVal:false,
+				isTime:false, //isClear:false,
+				minDate:"2014-09-19",
+				okfun:function(val){alert(val)}
+			})
+			getPagesBox({
+				nowUrl:"/app.php/checkwork/checkrecord",
+				addList(data){
+					$(".noMsg").hide();
+					if(data.code!=0){
+						console.error(data.msg);
+						return false;
+					}
+					var res=data.results,isAlert="待回访";
+					if(!res)return false;
+					var html='';
+					var i=0;
+					// { "id": "id", "uid": "用户id", "dkdt": "打卡时间", "optdt": "操作时间", "type": "打卡类型：1、考勤机2、手机定位3、手动添加4、异常添加5、数据导入6、接口导入", "address": "打卡地址", "lat": "维度", "lng": "经度", "accuracy": "精确范围", "ip": "ip地址", "explain": "说明", "images": "", "cid": "公司id", "dname": "部门", "name": "用户名称", }
+					for(var {id,dkdt,type,address,dname,ip,name} of res){
+						//	"type": "打卡类型：1、考勤机2、手机定位3、手动添加4、异常添加5、数据导入6、接口导入"
+						switch(type){
+							case '0':type='在线带卡';break
+							case '1':type='考勤机';break
+							case '2':type='手机定位';break
+							case '3':type='手动添加';break
+							case '4':type='异常添加';break
+							case '5':type='数据导入';break
+							case '6':type='接口导入';break
+							default:type='';
+						}
+						i++;
+						html+=`<tr>
+								<td>${i}</td>
+								<td>${name}</td>
+								<td>${dname}</td>
+								<td>${dkdt}</td>
+								<td>${type}</td>
+								<td>${ip}</td>
+							</tr>`;
+					}
+					$("#dataList").html(html);
+				}
+			});
+		});
+	</script>
+</html>

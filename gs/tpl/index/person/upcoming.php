@@ -64,6 +64,7 @@
 </body>
 </html>
 <script>
+    
     function del(id) {
         Confirm('确定删除？', function(e) {
             if (e) {

@@ -35,10 +35,9 @@ class custpaymon extends AppController
         $data = $this->receiveData($arg);
         
         $files = $this->spArgs('files');
-        if($files) $data['files'] = implode(',', $files);
+        if($files) $data['files'] = $files;
         $sum   = $model->findCount('paynumber like "%M'.date('Ymd').'%"');
         $sum   = $sum<9?'0'.($sum+1):($sum+1);
-        
         $user  = spClass('m_admin')->find('id='.$data['saleid']);
         
         if($id){
@@ -63,6 +62,7 @@ class custpaymon extends AppController
         }
         
         if($up){
+            $this->sendMsgNotice($admin, 48, $up, '【'.$data['paynumber'].'】付款单');
             $this->sendUpcoming($admin, 48, $up, '【'.$data['paynumber'].'】付款单');
             $this->returnSuccess('成功');
         } 
@@ -105,6 +105,7 @@ class custpaymon extends AppController
         }
         
         if($up){
+            $this->sendMsgNotice($admin, 51, $up, '【'.$data['catename'].'】报销单');
             $this->sendUpcoming($admin, 51, $up, '【'.$data['catename'].'】报销单');
             $this->returnSuccess('成功');
         }
@@ -154,20 +155,38 @@ class custpaymon extends AppController
         }
         
         if($up){
+            $this->sendMsgNotice($admin, 48, $up, '【'.$data['paynumber'].'】付款单');
             $this->sendUpcoming($admin, 48, $up, '【'.$data['paynumber'].'】付款单');
             $this->returnSuccess('成功');
         }
         $this->returnError('失败');
     }
     
+    function sqlRun()
+    {
+//         $data = [
+//             'title' => '例行检验参数',
+//             'control' => 'quality',
+//             'way' => 'dyctparm',
+//             'pid' => '7',
+//             'sort' => '100',
+            
+//         ];
+//         spClass('m_auth')->create($data);
+//         spClass('m_auth')->deleteByPk(416);
+//         spClass('m_auth')->deleteByPk(415);
+//         spClass('m_auth')->deleteByPk(392);
+//         spClass('m_admin')->runSql("");
+        
     
+    }
     
     /**
      * 付款记录列表
      */
     function custPayMonLst()
     {
-        $admin     = $this->islogin();
+        $admin      = $this->islogin();
         $searchname = urldecode(htmlspecialchars($this->spArgs('searchname')));    //客户名称
         
         $m_cust_pay = spClass('m_custpay_mon');
@@ -177,6 +196,16 @@ class custpaymon extends AppController
         if (!empty($searchname)) {
             $con .= ' and concat(paynumber,custname,contractname,getmoney,adddt) like "%' . $searchname . '%"';
             $page_con['searchname'] = $searchname;
+        }
+        
+        //开始时间和结束时间查询
+        $start      = htmlspecialchars($this->spArgs('start'));
+        $end        = htmlspecialchars($this->spArgs('end'));
+        if (!empty($start)){
+            $con .= ' and optdt>"'.$start.'"';
+        }
+        if (!empty($end)){
+            $con .= ' and optdt<"'.$end.'"';
         }
         
         $results = $m_cust_pay->spPager($this->spArgs('page', 1), PAGE_NUM)->findAll($con,'optdt desc,id desc');
@@ -244,13 +273,14 @@ class custpaymon extends AppController
             'paytype'      => '付款方式',
             'saleid'       => '付款人员',
             'salename'     => '付款人员',
-            'monstatus'    => '结清状态',   //1为结清；2为未结清
+//             'monstatus'    => '结清状态',   //1为结清；2为未结清
             'content'      => '',   //备注
 //             'checkstatus'  => '',   //1付款给供应商2其他报销
             'cateid'       => '用款分类',   //费用科目
         );
         $data = $this->receiveData($arg);
         $data['checkstatus'] = 2;   //1付款给供应商2其他报销
+        $data['monstatus']   = 1;   //默认其他支出已结清
         $files = $this->spArgs('files');
         if($files) $data['files'] = implode(',', $files);
         $sum   = $model->findCount('paynumber like "%M'.date('Ymd').'%"');
@@ -275,7 +305,7 @@ class custpaymon extends AppController
             $data['optid']   = $admin['id'];
             $data['optname'] = $admin['name'];
             $data['optdt']   = date('Y-m-d H:i:s');
-            $data['status']  = 1;
+            $data['status']  = 3;
             $up = $model->create($data);
         }
         if ($up) $this->returnSuccess('成功');
@@ -302,6 +332,16 @@ class custpaymon extends AppController
         if (!empty($searchname)) {
             $con .= ' and concat(paynumber,custname,contractname,getmoney,adddt) like "%' . $searchname . '%"';
             $page_con['searchname'] = $searchname;
+        }
+        
+        //开始时间和结束时间查询
+        $start      = htmlspecialchars($this->spArgs('start'));
+        $end        = htmlspecialchars($this->spArgs('end'));
+        if (!empty($start)){
+            $con .= ' and optdt>"'.$start.'"';
+        }
+        if (!empty($end)){
+            $con .= ' and optdt<"'.$end.'"';
         }
         
         $results = $m_cust_pay->spPager($this->spArgs('page', 1), PAGE_NUM)->findAll($con,'optdt desc,id desc');
@@ -359,12 +399,21 @@ class custpaymon extends AppController
         //where和分页where
         $con    = 'del = 0 and cid = ' . $admin['cid'].' and monstatus=2';
         if (!empty($searchname)) {
-            $con .= ' and concat(paynumber,custname,contractname,getmoney,adddt) like "%' . $searchname . '%"';
+            $con .= ' and concat(paynumber,custname,contractname,adddt) like "%' . $searchname . '%"';
             $page_con['searchname'] = $searchname;
         }
         if (!empty($searchdt)){
             $con .= ' and adddt like "%' . $searchdt . '%"';
             $page_con['searchdt'] = $searchdt;
+        }
+        //开始时间和结束时间查询
+        $start      = htmlspecialchars($this->spArgs('start'));
+        $end        = htmlspecialchars($this->spArgs('end'));
+        if (!empty($start)){
+            $con .= ' and optdt>"'.$start.'"';
+        }
+        if (!empty($end)){
+            $con .= ' and optdt<"'.$end.'"';
         }
         
         $results = $m_cust_pay->spPager($this->spArgs('page', 1), PAGE_NUM)->findAll($con,'optdt desc,id desc');

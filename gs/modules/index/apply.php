@@ -414,5 +414,61 @@ class apply extends IndexController {
         $result['children'] = spClass('m_sbxzjh_ch')->findAll('pid = ' . $result['id']);
         $this->result = $result;
     }
+    
+    /**
+     * 报销申请详情页面
+     */
+    function Expend()
+    {
+        $id    = (int) htmlentities($this->spArgs('id'));
+//         $url   = spUrl('app.php/keep', 'payMonInfo', array('id' => $id, 'mid' => $mid, 'token' => $token));
+        $url   = URL.'/html/service/payMonItem.html?id='.$id;
+        $this->jump($url);
+    }
+    
+    //contract_apply invoice inven custpay_mon device_desc kqinfo  TODO
+    function Contract_apply()
+    {
+        $id    = (int) htmlentities($this->spArgs('id'));
+        $url   = URL.'/html/custmang/applyContractItem.html?id='.$id;
+        $this->jump($url);
+    }
+    
+    function Invoice()
+    {
+        $id    = (int) htmlentities($this->spArgs('id'));
+        $url   = URL.'/html/applyFill/invoiceApplyItem.html?id='.$id;
+        //http://gscs.sem98.com/apply/Invoice?mid=44&id=13
+        //http://gscs.sem98.com/html/applyFill/invoiceApplyItem.html?id=13
+        $this->jump($url);
+    }
+    
+    function inven()
+    {
+        $id    = (int) htmlentities($this->spArgs('id'));
+        $url   = URL.'/html/inven/indexItem.html?id='.$id;
+        $this->jump($url);
+    }
+    
+    function Custpay_mon()
+    {
+        $id    = (int) htmlentities($this->spArgs('id'));
+        $url   = URL.'/html/custpaymon/custPayMonItem.html?id='.$id;
+        $this->jump($url);
+    }
+    
+    function Regoods()
+    {
+        $id    = (int) htmlentities($this->spArgs('id'));
+        $url   = URL.'/html/regoods/regoodsItem.html?id='.$id;
+        $this->jump($url);
+    }
+    
+    function kqinfo()
+    {
+        $id    = (int) htmlentities($this->spArgs('id'));
+        $url   = URL.'/html/checkwork/leavercordItem.html?id='.$id;
+        $this->jump($url);
+    }
 
 }

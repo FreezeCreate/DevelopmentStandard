@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>修改</title>
+    <link rel="stylesheet" href="../css/public.css">
+</head>
+<body>
+    <div class="Frame">
+        <div class="FrameTit"><span class="FrameTitName">新增回款记录</span><span class="Close"></span></div>
+        <div class="FrameBox">
+            <div class="FrameCont">
+                <div class="FrameTable">
+                    <div class="FrameTableTitl">新增其它收入记录</div>
+                    <form id="addCustRecord">
+                        <input type="hidden" name="checkstatus" value="2">
+                        <table class="FrameTableCont">
+                            <tr>
+                                <td class="FrameGroupName">回款金额：</td>
+                                <td>
+                                    <input type="text" class="FrameGroupInput" name="getmoney" placeholder="输入回款金额">
+                                </td>
+                                <td class="FrameGroupName"><span class="colorRed">*</span>回款日期：</td>
+                                <td>
+                                    <input type="text" class="FrameDatGroup" name="adddt" id="DatEnd" placeholder="点击选择时间">
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="FrameGroupName"><span class="colorRed">*</span>付款类型：</td>
+                                <td>
+                                    <select name="paytypeid" class="FrameGroupInput payTypeList"></select>
+                                </td>
+                                <td class="FrameGroupName">回款总额：</td>
+                                <td>
+                                    <input type="text" class="FrameGroupInput" name="payall" placeholder="输入回款总金额">
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="FrameGroupName"><span class="colorRed">*</span>销售人员：</td>
+                                <td>
+                                    <select name="salename" id="saleid"  class="FrameGroupInput saleNameList"></select>
+                                </td>
+                                <td class="FrameGroupName"><span class="colorRed">*</span>结清状态：</td>
+                                <td>
+                                    <select name="monstatus"  class="FrameGroupInput">
+                                        <option value="">--付款类型--</option>
+                                        <option value="2">未结清</option>
+                                        <option value="1">结清</option>
+                                    </select>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="FrameGroupName">文件：</td>
+                                <td colspan="3">
+                                    <input class="None addFileVal upfile fileToUpload" onchange="ajaxFileUpload()" type="file" name="files" id="files" value="" />
+                                    <span class="addFile" onclick="$('#files').click()">+添加文件</span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="FrameGroupName">说明：</td>
+                                <td colspan="3">
+                                    <textarea  class="FrameGroupInput" name="record"></textarea>
+                                </td>
+                            </tr>
+                        </table>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div class="FrameTableFoot">
+            <span class="Succ" id="addCustSub">提交</span>
+        </div>
+    </div>
+    <script src="../js/jquery-1.11.0.js"></script>
+    <script src="../js/public.js"></script>
+    <script src="../js/jedate.js" type="text/javascript" charset="utf-8"></script>
+    <script src="../js/dataAdd.js"></script>
+    <script src="../js/ajaxfileupload.js"></script>
+    <script>
+        $(()=>{
+        	showDataList("app.php/custmang/contractInfo",function(data){
+                var res=data.results;
+			    addCustRecord("app.php/custpay/saveCustPay");
+            });
+        });
+        
+            
+        function ajaxFileUpload() {
+            $.ajaxFileUpload({
+                url: dataURL+'/app.php/uplaod/uploadFile',
+                secureuri: false,
+                fileElementId: 'fileToUploadHead',
+                dataType: 'json',
+                data: {name: 'files', id: 'files'},
+                success: function(data, status) {
+                    if (data.status == 1) {
+                        $('#files').attr('name',data.id);
+                        $('#files').parent().append(data.filename);
+                    } else {
+                        console.error(data.msg);
+                    }
+                },
+                error: function(data, status, e) {
+                    console.error(e);
+                }
+            });
+            return false;
+        }
+    </script>
+</body>
+</html>

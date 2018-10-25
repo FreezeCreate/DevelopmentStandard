@@ -15,6 +15,8 @@ class person extends IndexController {
 
     function upcoming() {
         $result = $this->get_menu();
+        //拿到token
+        $this->token = $result['admin']['login'];
         $this->menu = $result['menu'];
         $admin = $result['admin'];
         $this->admin = $admin;

@@ -7,12 +7,17 @@
 define("PAGE_NUM", 30);
 
 $GLOBALS['SHOPNAME'] = '成都冠晟科技';
-$GLOBALS['SHOPURL'] = '';
+$GLOBALS['URL'] = 'http://gscs.sem98.com';
 //版本信息
 $GLOBALS['VERSION'] = array(
-    'num' => '1.1',
-    'android' => 'http://gscs.sem98.com/apk/1.1.apk',
+    'num' => '1.1.5',
+    'android' => 'http://gscs.sem98.com/apk/1.1.5.apk',
     'ios' => 'http://gscs.sem98.com/apk/1.0',
+);
+
+$GLOBALS['jpush'] = array(
+    'appKey' => '1c78348aad736d3c22afc740',
+    'masterSecret' => '44065bd1a70cb85c4f19a956',
 );
 
 //星期几
@@ -182,6 +187,14 @@ $GLOBALS['HOLIDAY'] = array(
     1 => '事假',
     2 => '病假',
     3 => '年假',
+);
+
+$GLOBALS['DYCT_TYPE'] = array(
+    1 => 'GGJ低压无功补偿柜检验记录',
+    2 => 'JP电容柜检验记录',
+    3 => 'XL-21检验记录',
+    4 => 'XM电气装配工序流程卡',
+    5 => 'XM检验记录',
 );
 
 

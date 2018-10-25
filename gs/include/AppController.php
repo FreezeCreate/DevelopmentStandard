@@ -38,6 +38,32 @@ class AppController extends spController {
     }
     
     /**
+     * 发送消息提醒入库
+     */
+    function sendMsgNotice($admin, $mid, $tid, $summary = '', $type = 1)
+    {
+        
+        $m_set      = spClass('m_flow_set');
+        $model      = spClass('m_flow_todos');
+        $model_data = $m_set->find('id='.$mid.'');
+        $data = array(
+            'modelid'   => $mid,
+            'modelname' => $model_data['name'],
+            'table'     => $model_data['table'],
+            'tid'       => $tid,
+            'uid'       => $admin['id'],
+            'adddt'     => date('Y-m-d H:i:s'),
+            'title'     => $summary,
+            'type'      => $type,    //当为审核流程时type=1、为通知公告时type=2
+        );
+        $model->create($data);
+        //jpush的两端提醒处理
+//         $this->jpushSendMsg($data['modelname'], $summary);
+        
+    }
+    
+    
+    /**
      * 保留字段,用于app端冗余字段的清除
      * @param unknown $arr
      * @param unknown $str
@@ -51,6 +77,29 @@ class AppController extends spController {
             if (array_key_exists($v, $arr)) $keep_arr[$v] = $arr[$v];
         }
         return $keep_arr;
+    }
+    
+    /**
+     * 设置数组为空的字符
+     * @param unknown $arr
+     * @param unknown $str
+     * @return unknown
+     */
+    function setEmptyStr($arr, $str)
+    {
+        foreach ($arr as $k => $v){
+            if (empty($v)) $arr[$k] = $str;
+        }
+        return $arr;
+    }
+    
+    /**
+     * 目录生成
+     * @param string $dir
+     */
+    function dirCreate($dir = 'setFerre')
+    {
+        if (!is_dir($dir)) mkdir($dir);
     }
     
     /**
@@ -77,6 +126,19 @@ class AppController extends spController {
     function emptyNotice($data, $notice_str)
     {
         if (empty($data)) $this->returnError($notice_str);
+    }
+    
+    /**
+     * 数组类的错误提示封装
+     * @param unknown $arr_data
+     * @param unknown $notice_str
+     */
+    function emptyArrNotice($arr_data, $notice_str)
+    {
+        $notice_str = explode(',', $notice_str);
+        foreach ($arr_data as $k => $v){
+            $this->emptyNotice($v, $notice_str[$k]);
+        }
     }
     
     /**
@@ -394,6 +456,37 @@ class AppController extends spController {
             $data_log = array('table' => $data['table'], 'tid' => $data['tid'], 'status' => 1, 'statusname' => '添加', 'name' => '添加', 'courseid' => 0, 'optdt' => date('Y-m-d H:i:s'), 'explain' => '', 'ip' => Common::getIp(), 'checkname' => $user['name'], 'checkid' => $user['id'], 'mid' => $data['modelid']);
             spClass('m_flow_log')->create($data_log);
         }
+        
+        //jpush的两端提醒处理
+//         $this->jpushSendMsg($data['modelname'], $summary);
+        
+    }
+    
+    /**
+     * jpush的两端提醒处理
+     */
+    function jpushSendMsg($title, $content)
+    {
+        require 'jpush/autoload.php';
+        $client = new \JPush\Client($GLOBALS['jpush']['appKey'], $GLOBALS['jpush']['masterSecret']);
+        //Android
+        $client->push()
+               ->setPlatform('all')
+               ->addAlias('0x123')
+               ->addTag(array('0x123', '0x124'))
+               ->androidNotification($content, array(    //多条安卓 send
+                   'title' => $title,
+               ))
+               ->send();
+        //IOS
+        $client->push()
+               ->setPlatform('all')
+               //                ->addAlias('0x123')
+               //                ->addTag(array('0x123', '0x124'))
+               ->iosNotification($content, array(    //多条IOS send
+                   'title' => $title,
+               ))
+               ->send();
     }
 
     function findCheck($id, $mid) {
@@ -407,10 +500,12 @@ class AppController extends spController {
         if (empty($set)) {
             $this->returnError('数据有误');
         }
-        $log = $m_flow_log->findAll(array('table' => $set['table'], 'tid' => $id), '', 'id,statusname,checkname,optdt,`explain`');
+//         $log = $m_flow_log->findAll(array('table' => $set['table'], 'tid' => $id), '', 'id,statusname,checkname,optdt,`explain`');
+        
+        $log = $m_flow_log->findAll(array('table' => $set['table'], 'tid' => $id), '', 'id,files,statusname,checkname,optdt,`explain`');
         foreach ($log as $k => $v) {
             if (!empty($v['files'])) {
-                $files = $m_file->findAll('id in (' . $v['files'] . ')', '', 'id,filename');
+                $files = $m_file->findAll('id in (' . $v['files'] . ')', '', 'id,filename,filepath');
                 $log[$k]['files'] = $files;
             } else {
                 $log[$k]['files'] = array();
@@ -757,11 +852,11 @@ class AppController extends spController {
         
     }
 
-    function islogin() {
+    function islogin($control,$way) {
         //省略index.php $control = $this->spArgs('c');
         if (empty($control)) $control = $this->c;
         if (empty($way)) $way = $this->a;
-
+        
         $m_admin = spClass("m_admin");
         $m_auth  = spClass('m_auth');
         $m_role  = spClass('m_role');
@@ -785,9 +880,7 @@ class AppController extends spController {
 //         }else {
         //已登陆
         $user = $m_admin->find('login = "' . $token . '"');
-        
-        if (empty($user))
-            $this->returnError('用户不存在');
+        if (empty($user)) $this->returnError('用户不存在');
 //         }
         //如果苦衷不存在token，则update新增token值
 //         if (empty($user['login'])) $this->setToken($user['username'], $user['password']);
@@ -795,13 +888,15 @@ class AppController extends spController {
         if ($user) {
             if ($user['id'] == 1) {
                 return $user;
-            } else {
+            } else if(empty ($thisauth)){
+                return $user;
+            }else {
                 $role = json_decode($user['role'], true);
                 foreach ($role as $k => $v) {
                     $re_role = $m_role->find("id = " . $v, '', 'promission');
                     //当前权限判断
                     if ($re_role) {
-                        $pro = json_decode($re_role['promission']);
+                        $pro = json_decode($re_role['promission'],true);
                         if (in_array($thisauth['id'], $pro)) {
                             return $user;
                         } else {
