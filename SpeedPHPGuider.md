@@ -21,6 +21,7 @@
 > 和其他框架的find方法相似，查找单条符合条件的数据
 > Tips：conditions的格式最好为数组格式，以免查询出错，如：`find(array('id' => $id));`而不是：`find('id='.$id.'');`
 
+
 * `findAll($conditions = null, $sort = null, $fields = null, $limit = null)`
 
 * `create($row)`
@@ -46,9 +47,10 @@
 
 * <font color=#6495ED>`dumpSql()` 常用,调试使用打印最后执行的sql语句</font>
 
+
 * `findCount($conditions = null)`
 > 计算符合条件的记录数量
 
+
 * `($conditions, $row)`
 > 修改数据，该函数将根据参数中设置的条件而更新表中数据$row为数组形式
-
