@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>新增</title>
+    <link rel="stylesheet" href="../css/public.css">
+    <style>
+        #goodsLst input.FrameGroupInput{
+            width:50px;
+        }
+        select.FrameGroupInput{
+            width:80px;
+        }
+        input.FrameGroupInput.l_number{
+            width:40px;
+        }
+    </style>
+</head>
+<body>
+    <div class="Frame">
+        <div class="FrameTit"><span class="FrameTitName">新增</span><span class="Close"></span></div>
+        <div class="FrameBox">
+            <div class="FrameCont">
+                <div class="FrameTable">
+                    <div class="FrameTableTitl">新增</div>
+                    <form id="addData">
+                        <table class="FrameTableCont textCenter" id="goodsData">
+                            <thead>
+                                <tr>
+                                    <td>
+                                        <a  class="colorBlu addTr" href="#">新增</a>
+                                    </td>
+                                    <td>商品</td>
+                                    <td>库房</td>
+                                    <td><span class="colorRed">*</span>入库数量</td>
+                                    <td>备注</td>
+                                </tr>
+                            </thead>
+                            <tbody  id="goodsLst">
+                                <tr>
+                                    <td>
+                                        <a class="colorRed delTr menu-item" href="#">删除</a>
+                                    </td>
+                                    <td>
+                                        <select data-name="goods_name" data-id="goods_id" class="FrameGroupInput invoiceNameList listName"></select>
+                                    </td>
+                                    <td>
+                                        <select data-list="room_id" class="FrameGroupInput stockNameList listName"></select>
+                                    </td>
+                                    <td>
+                                        <input type="text" class="FrameGroupInput l_number listName" data-list="goods_num" placeholder="数量">
+                                    </td>
+                                    <td>
+                                        <textarea data-list="content" class="FrameGroupInput listName"></textarea>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <table class="FrameTableCont top20">
+                            <tr>
+                                <td class="FrameTitName"><span class="colorRed">*</span>入库时间</td>
+                                <td colspan="3">
+                                    <input type="text" class="FrameDatGroup" id="dt" name="dt" placeholder="点击选择时间">
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="FrameTitName">备注</td>
+                                <td colspan="3">
+                                    <textarea name="content" class="FrameGroupInput"></textarea>
+                                </td>
+                            </tr>
+                        </table>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div class="FrameTableFoot">
+            <span class="Succ" id="addDataSub">提交</span>
+        </div>
+    </div>
+    <script src="../js/jquery-1.11.0.js"></script>
+    <script src="../js/public.js"></script>
+    <script src="../js/jedate.js" type="text/javascript" charset="utf-8"></script>
+    <script src="../js/dataAdd.js"></script>
+    <script>
+        jeDate({
+            dateCell:"#dt",
+            format:"YYYY-MM-DD hh:mm:ss",
+            // isinitVal:false,
+            isTime:true,
+            minDate:"1990-01-01",
+            okfun:function(val){alert(val)}
+        })
+        $(()=>{
+            isDelTr();
+            $(".addTr").click(function(){
+                var html=`<tr>
+                            <td>
+                                <a class="colorRed delTr menu-item" href="#">删除</a>
+                            </td>
+                            <td>
+                                <select data-name="goods_name" data-id="goods_id" class="FrameGroupInput invoiceNameList listName"></select>
+                            </td>
+                            <td>
+                                <select data-list="room_id" class="FrameGroupInput stockNameList listName"></select>
+                            </td>
+                            <td>
+                                <input type="text" class="FrameGroupInput l_number listName" data-list="goods_num" placeholder="数量">
+                            </td>
+                            <td>
+                                <textarea data-list="content" class="FrameGroupInput listName"></textarea>
+                            </td>
+                        </tr>`;
+                $("#goodsLst").append(html);
+                // 库房名称
+                $(".stockNameList").each(function(i,e){
+                    var that=$(e);
+                    showCommonList("app.php/stockroom/index",function(data){
+                        if(data.code==0){
+                            var res=data.results,html='';
+                            for(var {id,room_name} of res){
+                                html+=`<option   value="${id}">${room_name}</option>`;
+                            }
+                            that.html(html);
+                        }else{
+                            console.error("网络错误！");
+                        }
+                    });
+                });
+                showInvoiceName('.invoiceNameList');
+                salcPrice();
+            });
+            function salcPrice(){
+                $('[data-list="goods_num"]').on('input propertypechange',function(){                
+                    var that=$(this),price,num,total,dc,dc_price,totalmoney=0;
+                    var reg=/^\+?[1-9][0-9]{0,8}$/;
+                    if(!reg.test(that.val())){
+                        var val=that.val();
+                        that.val(val.slice(0,val.length-1));
+                        return false;
+                    }
+                });
+            }
+            salcPrice();
+            $("#addDataSub").click(function(){
+                var that=$(this);
+                that.hide().parent().append(`<div class="l_loading"></div>`);
+                var data=getSubData('addData');
+                var list=[];
+                $("#goodsLst tr").each(function(i,e){
+                    list[i]=new Object();
+                    var that=$(e);
+                    that.children().children(".listName").each(function(k,v){
+                        var item=$(v);
+                        var thatName=item.data("list");
+                        list[i][thatName]=item.val();
+                    });
+                });
+                data.token=dataToken;
+                data.list=list;
+                $.ajax({
+                    type:"post",
+                    url:dataURL+'app.php/warehouse/saveRuku',
+                    data,
+                    dataType:'json',
+                    success(data){
+                        if(data.code!=0){
+                            alert(data.msg);
+                            that.show().next().remove();
+                            return false;
+                        }
+                        alert(data.msg+',请刷新');
+                        parent.window.closHtml();
+                    },
+                    error(){
+                        alert("新增接口断开");
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>

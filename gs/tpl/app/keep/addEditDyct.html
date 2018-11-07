@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+    <title>Add inspection</title>
+    <link rel="stylesheet" type="text/css" href="../../source/vue/css/style.css">
+</head>
+<body>
+    <div id="app" class="app">
+    </div>
+    <button class="submit" id="submit">提交</button>
+    <script src="http://www.jq22.com/jquery/jquery-1.10.2.js"></script>
+    <script src="../../source/vue/js/public.js"></script>
+    <script>
+        $.ajax({
+            type : 'get',
+            url : dataURL + '/app.php/keep/checkoutInfo',
+            data : {token , id : getRequest().id},
+            dataType : 'json',
+            success : function(data){
+                if(data.code == 0){
+                    var res=data.results;
+                    var html='';
+                    if(!res || !res.length>0){
+                        html=`<div>数据为空<a href="javascript:history.go(-1);"></a></div>`;
+                        $(body).html(html);
+                        return false;
+                    }else{
+                        for(var {name,format,supplier,num,id} of res){
+                            html+=`<div class="container dataList">
+                                <div class="container-title">
+                                    <span class="container-left">货物名称</span>：
+                                    <span class="container-right">${name}</span>
+                                    <span class="container-left">型号名称</span>：
+                                    <span class="container-right">${format}</span>
+                                    <span class="container-left">供应商</span>：
+                                    <span class="container-right">${supplier}</span>
+                                    <span class="container-left">进货数量</span>：
+                                    <span class="container-right">${num}</span>
+                                </div>
+                                <div class="container-box">
+                                    <span class="container-left">抽检数量</span>：
+                                    <input type="number" name="checknum" class="container-right input">
+                                    <input type="hidden" name="id" value="${id}">
+                                </div>
+                                <div class="container-box">
+                                    <span class="container-left">包装</span>：
+                                    <input type="text" name="packing" class="container-right input" >
+                                </div>
+                                <div class="container-box">
+                                    <span class="container-left">外观检查</span>：
+                                    <input type="text" name="wgjc" class="container-right input">
+                                </div>
+                                <div class="container-box">
+                                    <span class="container-left">型号规格参数</span>：
+                                    <input type="text" name="formatparam" class="container-right input" >
+                                </div>
+                                <div class="container-box">
+                                    <span class="container-left">机械操作</span>：
+                                    <input type="text" name="machine" class="container-right input" >
+                                </div>
+                                <div class="container-box">
+                                    <span class="container-left">相关资料</span>：
+                                    <input type="text" name="aboutfile" class="container-right input" >
+                                </div>
+                                <div class="container-box">
+                                    <span class="container-left">网查记录</span>：
+                                    <input type="text" name="internetrecord" class="container-right input" >
+                                </div>
+                                <div class="container-box">
+                                    <span class="container-left">判断</span>：
+                                    <div class="container-right">
+                                        <label for="">
+                                            <a class="checkbox">合格</a>
+                                            <input type="radio" class="None" name="checkstatus" value="1">
+                                        </label>
+                                        <label for="">
+                                            <a class="checkbox">不合格</a>
+                                            <input type="radio" class="None" name="checkstatus" value="0">
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="container-box">
+                                    <span class="container-left">合格数量</span>：
+                                    <input type="number" name="finenum" class="container-right input" >
+                                </div>
+                            </div>`;
+                        }
+                    }
+                    $('#app').html(html||'没有数据');
+                }else{
+                    Toast(data.msg, 1500);
+                }
+            },
+            error : function(){
+                Toast('断开连接', 1500);
+            }
+        });
+        $(document).on('click','#submit',function(){
+            var data=new Object(),list=[],canGetData=true;
+            data.token=token;
+            $('.dataList').each((i,e)=>{
+                var that=$(e);
+                list[i]={};
+                if(canGetData){
+                    that.find('input:not([type="radio"])').each((k,v)=>{
+                        var _that=$(v);
+                        if(_that.val()!=''){
+                            list[i][_that.attr('name')]=_that.val();
+                        }else{
+                            // 当输入框为空的时候的操作
+                            Toast(_that.parent().children('.container-left').html() + '不能为空', 1500);
+                            canGetData=false;
+                            _that.click().addClass('danger').focus().blur();
+                            setTimeout(() => {
+                                _that.removeClass('danger');
+                            }, 2500);
+                            return false;
+                        }
+                    });
+                }
+                if(canGetData){
+                    that.find('input[type="radio"]').each((k,v)=>{
+                        var _that=$(v),c=0;
+                        var rName=_that.attr('name');
+                        $(`[name="${rName}"]`).each((x,y)=>{
+                            if($(y).prev().hasClass('active')){
+                                c++;
+                            }
+                        });
+                        if(_that.prev().hasClass('active')){
+                            list[i][rName]=_that.val();
+                        }
+                        if(c!=1){
+                            // 当没有勾选判断的时候的操作
+                            // _that.prev().click();
+                            Toast('请判断'+_that.closest('.container-box').children('.container-left').html() + '不能为空', 1500);
+                            canGetData=false;
+                            return false;
+                        }
+                    });
+                }
+            });
+            data.list=list;
+            if(canGetData){
+                Toast('正在提交...', 1500);
+                $.ajax({
+                    type: 'post',
+                    url: dataURL+'/app.php/keep/saveCheckLog',
+                    data,
+                    dataType:'json',
+                    success:function(data){
+                        if (data.code == 0) {
+                            Toast('成功', 1500);
+                            if (window.AndroidJs&&window.AndroidJs.showDialog) {
+                                AndroidJs.showDialog(data.msg);
+                            } else {
+                                test('0');
+                            }
+                        } else {
+                            if (window.AndroidJs&&window.AndroidJs.showToast) {
+                                AndroidJs.showToast(data.msg);
+                            } else {
+                                test('1');
+                            }
+                        }
+                    },
+                    error:function(error){
+                        Toast('请求失败', 1500);
+                        console.error(error);
+                        if (window.AndroidJs&&window.AndroidJs.showToast) {
+                            AndroidJs.showToast(error||'网络连接断开');
+                        } else {
+                            test('1');
+                        }
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+</html>

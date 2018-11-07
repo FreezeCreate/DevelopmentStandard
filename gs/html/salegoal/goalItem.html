@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>详情</title>
+    <link rel="stylesheet" href="../css/public.css">
+    <style>
+        #goal_res{
+            user-select: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="Frame">
+        <div class="FrameTit"><span class="FrameTitName">详情</span><span class="Close"></span></div>
+        <div class="FrameBox">
+            <div class="FrameCont">
+                <div class="FrameTable">
+                    <div class="FrameTableTitl">销售情况</div>
+                    <table class="FrameTableCont textCenter" id="goal_res">
+                        <tr style="height:50px;">
+                            <td>目标金额</td>
+                            <td>销售金额</td>
+                            <td>未完成金额</td>
+                        </tr>
+                    </table>
+                    <div class="FrameTableTitl">详情</div>
+                    <table class="FrameTableCont" id="dataItem">
+                    </table>
+                    <p class="colorGre" style="margin-top:30px;margin-bottom:10px;">历史销售记录</p>
+                    <table class="FrameTableCont textCenter" id="c_res"></table>
+                </div>
+            </div>
+        </div>
+        <div class="FrameTableFoot">
+        </div>
+    </div>
+    <script src="../js/jquery-1.11.0.js"></script>
+    <script src="../js/public.js"></script>
+    <script src="../js/jedate.js" type="text/javascript" charset="utf-8"></script>
+    <script src="../js/dataAdd.js"></script>
+    <script>
+        $(()=>{
+            showDataList("app.php/salegoal/goalInfo",function(data){
+                //goal_mon,per,sum,well_mon
+                $("#goal_res").append(`<tr style="height:50px;">
+                    <td  class="BgBlue">${data.goal_mon}</td>
+                    <td  class="BgGreen">${data.sum}</td>
+                    <td  class="BgDanger">${data.well_mon<0?"完成":data.well_mon}</td>
+                    </tr>`);
+                var res=data.results,html='';
+                html+=`<tr>
+                            <td class="FrameGroupName">销售人员:</td>
+                            <td>${res.salename}</td>
+                            <td class="FrameGroupName">销售部门:</td>
+                            <td>${res.saledname}</td>
+                        </tr>
+                        <tr>
+                            <td class="FrameGroupName">目标金额:</td>
+                            <td>${res.salemoney}</td>
+                            <td class="FrameGroupName">目标数量:</td>
+                            <td>${res.salenum}</td>
+                        </tr>
+                        <tr>
+                            <td class="FrameGroupName">目标标题:</td>
+                            <td>${res.goaltitle}</td>
+                            <td class="FrameGroupName">目标状态:</td>
+                            <td>${data.well_mon<0?"完成":'剩余任务（'+data.well_mon+'）'}</td>
+                        </tr>
+                        <tr>
+                            <td class="FrameGroupName">操作人:</td>
+                            <td>${res.optname}</td>
+                            <td class="FrameGroupName">操作时间:</td>
+                            <td>${res.optdt}</td>
+                        </tr>
+                        <tr>
+                            <td class="FrameGroupName">详情:</td>
+                            <td colspan="3">${res.info}</td>
+                        </tr>`;
+                $("#dataItem").html(html);
+                var contract=data.contract,cHtml=`<tr class="BgGreen">
+                                <td>编号</td>
+                                <td>销售人</td>
+                                <td>合同名</td>
+                                <td>开始时间</td>
+                                <td>结束时间</td>
+                                <td>签约时间</td>
+                                <td>目标金额</td>
+                            </tr>`;
+                if(contract){
+                    for(var {number,salename,name,adddt,enddt,money,startdt} of contract){
+                        cHtml+=`<tr>
+                                <td>${number}</td>
+                                <td>${salename}</td>
+                                <td>${name}</td>
+                                <td>${startdt}</td>
+                                <td>${enddt}</td>
+                                <td>${adddt}</td>
+                                <td>${money}</td>
+                            </tr>`;
+                    }
+                    /*adddt:"2018-09-15 10:27:03"cid:"1"cname:""content:"什么内容"custid:"10"del:"0"enddt:"2018-09-12"explain:""files:""id:"37"money:"50.00"month:"00"name"新的合同申请"number:"C2018091501"oid:"0"optdt:"2018-09-15 10:27:03"optid:"1"optname:"超级管理员"phone:"1008611"saleid:"1"salename:"admin"signdt:"0000-00-00"startdt:"2018-09-12"status:"1"*/
+                    $("#c_res").html(cHtml);
+                }           
+            });
+        });
+    </script>
+</body>
+</html>

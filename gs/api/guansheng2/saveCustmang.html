@@ -1,0 +1,257 @@
+
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title></title>
+        <link rel="stylesheet" type="text/css" href="../../source/api/public.css"/>
+        <style>
+            td { border: 1px solid #ccc;}
+            .BgGray.textCenter { text-align: left !important; background: #fff !important; font-size: 18px; line-height: 40px; font-weight: 700;}
+        </style>
+    </head>
+    <body>
+        <div style="width: 900px;margin: 50px auto;">
+            <table class="table border">
+                <thead>
+                    <tr>
+                        <td colspan="5" class="textCenter BgGreen">新增客户管理</td>
+                    </tr>
+                </thead>
+                <tbody class="hover">
+                    <tr>
+                        <td colspan="5" class="BgGray textCenter">请求格式</td>
+                    </tr>
+                    <tr>
+                        <td>URL</td><td colspan="4">/app.php/custmang/saveCustmang?token=用户token</td>
+                    </tr>
+                    <tr>
+                        <td>HTTP请求方式</td><td colspan="4">JSON</td>
+                    </tr>
+                    <tr>
+                        <td>是否登录验证</td><td colspan="4">POST</td>
+                    </tr>
+                    <tr>
+                        <td colspan="5" class="BgGray textCenter">参数说明</td>
+                    </tr>
+                    <tr class="BgGray">
+                        <td>字段名</td>
+                        <td >参数名</td>
+                        <td>必填</td>
+                        <td >参数类型</td>
+                        <td >说明</td>
+                    </tr>
+                    <tr>
+                        <td>客户从业类型</td>
+                        <td>type</td>
+                        <td>是</td>
+                        <td>int</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>客户名称</td>
+                        <td>cust_name</td>
+                        <td>是</td>
+                        <td>string</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>客户所在部门</td>
+                        <td>custdname</td>
+                        <td>否</td>
+                        <td>string</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>年龄</td>
+                        <td>age</td>
+                        <td>是</td>
+                        <td>int</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>性别</td>
+                        <td>sex</td>
+                        <td>是</td>
+                        <td>string</td>
+                        <td></td>
+                    </tr>
+                                        <tr>
+                        <td>客户所在公司</td>
+                        <td>custcname</td>
+                        <td>是</td>
+                        <td>string</td>
+                        <td></td>
+                    </tr>
+                                        <tr>
+                        <td>客户手机</td>
+                        <td>phone</td>
+                        <td>是</td>
+                        <td>string</td>
+                        <td></td>
+                    </tr>
+                                        <tr>
+                        <td>客户电话</td>
+                        <td>telephone</td>
+                        <td>否</td>
+                        <td>string</td>
+                        <td></td>
+                    </tr>
+                                        <tr>
+                        <td>客户来源</td>
+                        <td>source</td>
+                        <td>是</td>
+                        <td>string</td>
+                        <td></td>
+                    </tr>
+                                        <tr>
+                        <td>邮箱</td>
+                        <td>email</td>
+                        <td>否</td>
+                        <td>string</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>地址</td>
+                        <td>address</td>
+                        <td>否</td>
+                        <td>string</td>
+                        <td></td>
+                    </tr>
+                                        <tr>
+                        <td>回访时间</td>
+                        <td>retime</td>
+                        <td>是</td>
+                        <td>date</td>
+                        <td></td>
+                    </tr>
+                                        <tr>
+                        <td>提醒时间</td>
+                        <td>noticetime</td>
+                        <td>是</td>
+                        <td>date</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>提醒内容</td>
+                        <td>noticecontent</td>
+                        <td>否</td>
+                        <td>string</td>
+                        <td></td>
+                    </tr>
+                                        <tr>
+                        <td>客户生日</td>
+                        <td>birth</td>
+                        <td>否</td>
+                        <td>date</td>
+                        <td></td>
+                    </tr>
+                                        <tr>
+                        <td>客户性格</td>
+                        <td>charact</td>
+                        <td>否</td>
+                        <td>string</td>
+                        <td></td>
+                    </tr>
+                                        <tr>
+                        <td>客户评价</td>
+                        <td>comment</td>
+                        <td>否</td>
+                        <td>string</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>客户预期</td>
+                        <td>forecast</td>
+                        <td>否</td>
+                        <td>string</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>目标</td>
+                        <td>goal</td>
+                        <td>否</td>
+                        <td>string</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>客户受教育程度</td>
+                        <td>edu</td>
+                        <td>否</td>
+                        <td>string</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>客户备注</td>
+                        <td>info</td>
+                        <td>否</td>
+                        <td>string</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>跟进人员</td>
+                        <td>saleid</td>
+                        <td>否</td>
+                        <td>string</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>跟进状态</td>
+                        <td>flowid</td>
+                        <td>否</td>
+                        <td>string</td>
+                        <td>1:未跟进2:正在跟进3:签约成功(默认为1)</td>
+                    </tr>
+                    <tr>
+                        <td colspan="5" class="BgGray textCenter">正常返回结果</td>
+                    </tr>
+                    <tr class="BgGray">
+                        <td>字段名</td>
+                        <td >变量名</td>
+                        <td>必填</td>
+                        <td>类型</td>
+                        <td >说明</td>
+                    </tr>
+                    <tr>
+                        <td>返回信息</td>
+                        <td >msg</td>
+                        <td>是</td>
+                        <td>string</td>
+                        <td >成功</td>
+                    </tr>
+                    <tr>
+                        <td>返回状态码</td>
+                        <td >code</td>
+                        <td>是</td>
+                        <td>int</td>
+                        <td >0</td>
+                    </tr>
+                    <tr>
+                        <td colspan="5" class="BgGray textCenter">错误返回结果</td>
+                    </tr>
+                    <tr class="BgGray">
+                        <td>字段名</td>
+                        <td >变量名</td>
+                        <td>必填</td>
+                        <td>类型</td>
+                        <td >说明</td>
+                    </tr>
+                    <tr>
+                        <td>返回信息</td>
+                        <td >msg</td>
+                        <td>是</td>
+                        <td>string</td>
+                        <td >失败</td>
+                    </tr>
+                    <tr>
+                        <td>返回状态码</td>
+                        <td >code</td>
+                        <td>是</td>
+                        <td>int</td>
+                        <td >1</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </body>
+</html>

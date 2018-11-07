@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>修改</title>
+    <link rel="stylesheet" href="../css/public.css">
+</head>
+<body>
+    <div class="Frame">
+        <div class="FrameTit"><span class="FrameTitName">新增回访记录</span><span class="Close"></span></div>
+        <div class="FrameBox">
+            <div class="FrameCont">
+                <div class="FrameTable">
+                    <div class="FrameTableTitl">新增回访记录</div>
+                    <form id="addCustRecord">
+                        <table class="FrameTableCont">
+                            <tr>
+                                <td class="FrameGroupName" width="20%">回访人：</td>
+                                <td>
+                                    <input class="FrameGroupInput" type="text" name="flowname" placeholder="输入回访人名称" />
+                                </td>
+                                <td class="FrameGroupName" width="20%">添加时间：</td>
+                                <td>
+                                    <input class="FrameDatGroup" type="text" name="addtime" id="addtime" placeholder="点击选择时间"/>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="FrameGroupName">客户情况描述：</td>
+                                <td colspan="3">
+                                    <textarea name="explain" class="FrameGroupInput" ></textarea>
+                                </td>
+                            </tr>
+                        </table>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div class="FrameTableFoot">
+            <span class="Succ" id="addCustSub">提交</span>
+        </div>
+    </div>
+    <script src="../js/jquery-1.11.0.js"></script>
+    <script src="../js/public.js"></script>
+    <script src="../js/jedate.js" type="text/javascript" charset="utf-8"></script>
+    <script src="../js/dataAdd.js"></script>
+    <script>
+        jeDate({
+            dateCell:"#addtime",
+            format:"YYYY-MM-DD",
+            isinitVal:false,
+            isTime:false, //isClear:false,
+            minDate:"2014-09-19",
+            okfun:function(val){alert(val)}
+        })
+        $(function(){
+            $("#addCustSub").click(function(){
+                var that=$(this);
+                that.parent().html("<i class='l_loading'></i>");
+                var data=getSubData('addCustRecord');
+                data.token=dataToken;
+                data.id= getRequest().id;
+                $.ajax({
+                    type:"post",
+                    url:dataURL+'app.php/custmang/addCustRecord',
+                    dataType:"json",
+                    data: data,
+                    success: function(data){
+                        Alert(data.msg+"请刷新页面！");
+                        parent.window.closHtml();
+                    },
+                    error: function(){
+                        console.error("网络错误");
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>

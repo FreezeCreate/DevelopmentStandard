@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>详情</title>
+    <link rel="stylesheet" href="../css/public.css">
+</head>
+<body>
+    <div class="Frame">
+        <div class="FrameTit"><span class="FrameTitName">详情</span><span class="Close"></span></div>
+        <div class="FrameBox">
+            <div class="FrameCont">
+                <div class="FrameTable">
+                    <div class="FrameTableTitl">详情</div>
+                    <table class="FrameTableCont" id="dataItem">
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="FrameTableFoot">
+        </div>
+    </div>
+    <script src="../js/jquery-1.11.0.js"></script>
+    <script src="../js/public.js"></script>
+    <script src="../js/jedate.js" type="text/javascript" charset="utf-8"></script>
+    <script src="../js/dataAdd.js"></script>
+    <script>
+        $(function(){
+            showDataList("app.php/devicedesc/deviceDescInfo",function(data){
+                if(data.code!=0){
+                    console.error(data.msg);
+                    return false;
+                }
+                var res=data.results,html='';
+                var type=res.type;
+                switch(type){
+                    case '1':type="检查报告";break
+                    case '2':type="修理报告";break
+                    case '3':type="更新计划";break
+                    case '4':type="日常工作检修汇报";break
+                    default :type="未定义";
+                }
+                html='<tr>'+
+                        '<td class="FrameGroupName">报告名称：</td>'+
+                        '<td colspan="3">'+res.descname+'</td>'+
+                    '</tr>'+
+                    '<tr>'+
+                        '<td class="FrameGroupName">固资设备报告类型：</td>'+
+                        '<td>'+type+'</td>'+
+                        '<td class="FrameGroupName">审核状态：</td>'+
+                        '<td>'+(res.status==1?'提交':(res.status==3?'审核通过':'驳回'))+'</td>'+
+                    '</tr>'+
+                    '<tr>'+
+                        '<td class="FrameGroupName">固资设备名称：</td>'+
+                        '<td>'+res.devicename+'</td>'+
+                        '<td class="FrameGroupName">固资设备类型：</td>'+
+                        '<td>'+res.devicecatename+'</td>'+
+                    '</tr>'+
+                    '<tr>'+
+                        '<td class="FrameGroupName">内容：</td>'+
+                        '<td colspan="3">'+res.content+'</td>'+
+                    '</tr>';
+                $("#dataItem").html(html);
+            });        
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>新增</title>
+    <link rel="stylesheet" href="../css/public.css">
+</head>
+<body>
+    <div class="Frame">
+        <div class="FrameTit"><span class="FrameTitName">新增</span><span class="Close"></span></div>
+        <div class="FrameBox">
+            <div class="FrameCont">
+                <div class="FrameTable">
+                    <div class="FrameTableTitl">新增合同申请</div>
+                    <form id="addData">
+                        <input type="hidden" name="custid" id="custid">
+                        <table class="FrameTableCont">
+                            <tr>								
+                                <td class="FrameGroupName" width="20%"><span class="colorRed">*</span>合同名称：</td>
+                                <td width="30%">
+                                    <input type="text" class="FrameGroupInput" name="contractname" placeholder="输入合同名称">
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="FrameGroupName"><span class="colorRed">*</span>简介：</td>
+                                <td>
+                                    <input type="text" name="contractdesc" class="FrameGroupInput" placeholder="合同描述">
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="FrameGroupName"><span class="colorRed">*</span>申请时间：</td>
+                                <td>
+                                    <input type="text" name="applydt" class="FrameDatGroup" id="DatEnd" placeholder="点击选择时间">
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="FrameGroupName"><span class="colorRed">*</span>建议：</td>
+                                <td>
+                                    <textarea name="suggest" class="FrameGroupInput"></textarea>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="FrameGroupName"><span class="colorRed">*</span>内容：</td>
+                                <td colspan="3">
+                                    <textarea name="contractcontent" class="FrameGroupInput"></textarea>
+                                </td>
+                            </tr>
+                        </table>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div class="FrameTableFoot">
+            <span class="Succ" id="addDataSub">提交</span>
+        </div>
+    </div>
+    <script src="../js/jquery-1.11.0.js"></script>
+    <script src="../js/public.js"></script>
+    <script src="../js/jedate.js" type="text/javascript" charset="utf-8"></script>
+    <script src="../js/dataAdd.js"></script>
+    <script>
+        jeDate({
+            dateCell:"#DatEnd",
+            format:"YYYY-MM-DD hh:mm:ss",
+            // isinitVal:false,
+            isTime:true,
+            minDate:"1990-01-01",
+            okfun:function(val){alert(val)}
+        })
+        $(function(){
+            $('#custid').val(getRequest().id);
+            addDataList("app.php/custmang/saveContractApply");				
+        });
+    </script>
+</body>
+</html>

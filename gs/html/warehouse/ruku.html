@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>入库列表</title>
+		<link rel="stylesheet" type="text/css" href="../css/public.css"/>
+	</head>
+	<body style="min-width: 930px;">
+		<div class="ContentBox">
+			<div class="Tables">
+				<div class="TablesHead">
+					<label>
+						<input type="text"class="FrameGroupInput radius searchname" placeholder="搜索"/>
+					</label>
+					<span class="Btn Btn-blue" id="searchNameId"><i class="icon-serch"></i> 查询</span>
+					<span class="Btn Btn-green TablesSerchReset"><i class="icon-reset"></i> 重置</span>
+					<span class="Btn l_refresh Btn-blue">刷新</span>
+					<span class="Btn Btn-blue float-right NewPop" data-url="warehouse/addRuku.html" data-title="入库新增"><i class="icon-add"></i>新增</span>
+				</div>
+				<div class="top20">
+					<table class="Table" style='display: none;'>
+						<thead class="BgGray">
+							<tr>
+								<td>序号</td>
+								<td>商品名</td>
+								<td>单位</td>
+								<td>数量</td>
+								<td>所在库房</td>
+								<td>采购单价/元</td>
+								<td>备注</td>
+								<td>操作</td>
+							</tr>
+						</thead>
+						<tbody id="showTable"></tbody>
+					</table>
+					<table class="Table top20">
+						<thead>
+							<tr>
+								<th>编号</th>
+								<th>入库时间</th>
+								<th>操作人</th>
+								<th>操作时间</th>
+								<th>备注</th>
+								<th>操作</th>
+							</tr>
+						</thead>
+						<tbody class="textCenter TabBg" id="dataList">
+						</tbody>
+					</table>
+				</div>
+				<div class="noMsg">
+					<div class="noMsgCont">
+						<img   src="../images/noMsg.png"/>
+						<span>抱歉！暂时没有数据</span>
+					</div>
+				</div>
+				<div class="Pages textRight top20">
+					<ul class="PagesBox"></ul>
+				</div>
+			</div>
+		</div>
+		<!-- 内容结束 -->
+	</body>
+	<script src="../js/jquery-1.11.0.js" type="text/javascript" charset="utf-8"></script>
+	<script src="../js/public.js" type="text/javascript" charset="utf-8"></script>
+	<!--日期插件-->
+	<script src="../js/jedate.js" type="text/javascript" charset="utf-8"></script>
+	<!--日期插件-->
+	<script src="../js/table.js" type="text/javascript" charset="utf-8"></script>
+	<script src="../js/updateWare.js"></script>
+	<script type="text/javascript">
+		$(()=>{
+			"use strict"
+			getPagesBox({
+				nowUrl:"app.php/warehouse/ruku",
+				addList(data){
+					$(".noMsg").hide();
+					if(data.code!=0){
+						console.error(data.msg);
+						return false;
+					}
+					var res=data.results,sta=data.status;
+					if(!res)return false;
+					var html='';
+					for(var {id,dt,optname,optdt,numbers,content} of res){
+						html+=`<tr class="showTable" data-id="${id}">
+								<td>${numbers}</td>
+								<td>${dt}</td>
+								<td>${optname}</td>
+								<td>${optdt}</td>
+								<td>${content}</td>
+								<td>
+									<div class="colorBlu list-menu" style="display: inline-block;">
+										操作+
+										<ul class="menu">
+											<li data-url="warehouse/rukuItem.html?id=${id}" class="colorBlu menu-item NewPop" data-title="入库详情">
+												<a href="#">详情</a>
+											</li>
+											<li class="colorRed delTr menu-item" data-cid="${id}">
+												<a href="#">删除</a>
+											</li>
+										</ul>
+									</div>
+								</td>
+							</tr>`;
+					}
+					$("#dataList").html(html);
+					$('.showTable td').click(function(){
+						var that=$(this);
+						if(!that.children().hasClass('list-menu')){
+							$("#showTable").parent().hide().before(`<div class="l_loading"></div>`);
+							var id=that.parent().data('id');
+							$.ajax({
+								type:'get',
+								url:dataURL+'/app.php/warehouse/rukuGoodsLst',
+								dataType:'json',
+								data:{token:dataToken,id},
+								success(data){
+									$("#showTable").parent().prev().remove();
+									var res=data.results,g_html='';
+									if(res){
+										var i=0;
+										for(var {id,goods_id,status,goods_name,goods_unit,room_name,goods_num,goods_price,content} of res){
+											i++;
+											g_html+=`<tr>
+												<td>${i}<input type="hidden" value="${status}" name="status">
+													<input type="hidden" value="${id}" name="id">
+												</td>
+												<td>${goods_name}</td>
+												<td><input type="text" class="FrameGroupInput" value="${goods_unit}" name="goods_unit"></td>
+												<td><input type="number" class="FrameGroupInput" value="${goods_num}" name="goods_num"></td>
+												<td>${room_name}</td>
+												<td>${goods_price}</td>
+												<td><input type="text" class="FrameGroupInput" value="${content}" name="content"></td>
+												<td>
+													<a href="#" class="updHouSub">更新</a>
+												</td>
+												</tr>`;
+										}
+										$("#showTable").html(g_html).parent().show();
+									}
+								}
+							});
+						}
+					});
+					isDelTr("app.php/stockroom/delStockRoom");
+				}
+			});
+		});
+	</script>
+</html>

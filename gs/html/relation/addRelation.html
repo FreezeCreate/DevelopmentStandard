@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>新增</title>
+    <link rel="stylesheet" href="../css/public.css">
+</head>
+<body>
+    <div class="Frame">
+        <div class="FrameTit"><span class="FrameTitName">新增</span><span class="Close"></span></div>
+        <div class="FrameBox">
+            <div class="FrameCont">
+                <div class="FrameTable">
+                    <div class="FrameTableTitl">新增</div>
+                    <form id="addData">
+                        <table class="FrameTableCont">
+                            <tr>
+                                <td class="FrameGroupName"><span class="colorRed">*</span>员工名称：</td>
+                                <td>
+                                    <select name="username" id="tid" class="FrameGroupInput saleNameList"></select>
+                                </td>
+                                <td class="FrameGroupName"><span class="colorRed">*</span>标题：</td>
+                                <td>
+                                    <input type="text" name="title" class="FrameGroupInput" placeholder="输入标题">
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="FrameGroupName" ><span class="colorRed">*</span>提醒日期：</td>
+                                <td>
+                                    <input type="text" name="noticetime" id="noticetime" class="FrameDatGroup" placeholder="点击选择日期">
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="FrameGroupName"><span class="colorRed">*</span>内容：</td>
+                                <td colspan="3">
+                                    <textarea class=" FrameGroupInput" name="redesc"></textarea>
+                                </td>
+                            </tr>
+                        </table>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div class="FrameTableFoot">
+            <span class="Succ" id="addDataSub">提交</span>
+        </div>
+    </div>
+    <script src="../js/jquery-1.11.0.js"></script>
+    <script src="../js/public.js"></script>
+    <script src="../js/jedate.js" type="text/javascript" charset="utf-8"></script>
+    <script src="../js/dataAdd.js"></script>
+    <script>
+        $(()=>{		
+            jeDate({
+                dateCell:"#noticetime",
+                format:"YYYY-MM-DD hh:mm:ss",
+                // isinitVal:false,
+                isTime:true,
+                minDate:"1990-01-01",
+                okfun:function(val){alert(val)}
+            })
+			addDataList("/app.php/relation/saveRelation");
+        });
+    </script>
+</body>
+</html>

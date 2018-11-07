@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>新增</title>
+    <link rel="stylesheet" href="../css/public.css">
+</head>
+<body>
+    <div class="Frame">
+        <div class="FrameTit"><span class="FrameTitName">新增</span><span class="Close"></span></div>
+        <div class="FrameBox">
+            <div class="FrameCont">
+                <div class="FrameTable">
+                    <div class="FrameTableTitl">新增</div>
+                    <form id="addData">
+                        <table class="FrameTableCont">
+                            <tr>
+                                <td class="FrameGroupName"><span class="colorRed">*</span>付款金额：</td>
+                                <td>                                   
+                                    <input type="text" class="FrameGroupInput" name="paymoney" placeholder="输入金额">
+                                </td>
+                                <td class="FrameGroupName"><span class="colorRed">*</span>用款类别：</td>
+                                <td>
+                                    <select name="cateid" class="FrameGroupInput paycNameList"></select>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="FrameGroupName"><span class="colorRed">*</span>添加时间：</td>
+                                <td colspan="3">
+                                    <input type="text" class="FrameDatGroup" name="adddt" placeholder="点击选择时间" id="DatStr">
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="FrameGroupName">说明：</td>
+                                <td colspan="3" style="min-height:50px;">
+                                    <textarea name="content" id="content" class="FrameGroupInput"></textarea>
+                                </td>
+                            </tr>
+                        </table>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div class="FrameTableFoot">
+            <span class="Succ" id="addDataSub">提交</span>
+        </div>
+    </div>
+    <script src="../js/jquery-1.11.0.js"></script>
+    <script src="../js/public.js"></script>
+    <script src="../js/jedate.js" type="text/javascript" charset="utf-8"></script>
+    <script src="../js/dataAdd.js"></script>
+    <script>
+        $(()=>{
+            jeDate({
+                dateCell:"#DatStr",
+                format:"YYYY-MM-DD hh:mm:ss",
+                isinitVal:false,
+                isTime:true, //isClear:false,
+                minDate:"2014-09-19",
+                okfun:function(val){alert(val)}
+            })
+			addDataList("/app.php/custpaymon/saveCustPayMonApp");
+        });
+    </script>
+</body>
+</html>

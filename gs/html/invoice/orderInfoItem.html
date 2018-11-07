@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>详情</title>
+    <link rel="stylesheet" href="../css/public.css">
+    <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
+</head>
+<body>
+    <div class="Frame">
+        <div class="FrameTit"><span class="FrameTitName">详情</span><span class="Close"></span></div>
+        <div class="FrameBox">
+            <div class="FrameCont">
+                <div class="FrameTable">
+                    <div class="FrameTableTitl">详情</div>
+                    <table class="FrameTableCont" id="dataItem">
+                    </table>
+                    <p class="colorGre" style="margin-top:30px;margin-bottom:10px;">采购记录</p>
+                    <table class="FrameTableCont textCenter" id="od_res">
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="FrameTableFoot"></div>
+    </div>
+    <script src="../js/jquery-1.11.0.js"></script>
+    <script src="../js/public.js"></script>
+    <script src="../js/jedate.js" type="text/javascript" charset="utf-8"></script>
+    <script src="../js/dataAdd.js"></script>
+    <script type="text/babel">
+        $(()=>{
+            showDataList('app.php/invoice/orderInfo',function(data){
+                var res=data.results,html='';
+                if(res){
+                    html=`<tr>
+                            <td class="FrameGroupName" width="20%">商品名称：</td>
+                            <td>${res.order_name}</td>
+                            <td class="FrameGroupName" width="20%">商品类别：</td>
+                            <td>${res.catename}</td>
+                        </tr>
+                        <tr>
+                            <td class="FrameGroupName">商品规格</td>
+                            <td>${res.order_spec}</td>
+                            <td class="FrameGroupName">商品单位</td>
+                            <td>${res.order_unit}</td>
+                        </tr>
+                        <tr>
+                            <td class="FrameGroupName">挤压周期/天</td>
+                            <td>${res.updatetime}</td>
+                            <td class="FrameGroupName">最后一次出库时间</td>
+                            <td>${res.nextchuku}</td>
+                        </tr>
+                        <tr>
+                            <td class="FrameGroupName">操作人</td>
+                            <td>${res.optname}</td>
+                            <td class="FrameGroupName">操作时间</td>
+                            <td>${res.optdt}</td>
+                        </tr>
+                        <tr>
+                            <td class="FrameGroupName">备注</td>
+                            <td colspan="3">${res.order_explain}</td>
+                        </tr>`;
+                    $("#dataItem").html(html);
+                }
+                var od_res=data.od_result;
+                if(od_res){
+                    var od_html=`<tr class="BgGreen">
+                            <td>序号</td>
+                            <td>商品名称</td>
+                            <td>商品规格</td>
+                            <td>商品单价</td>
+                            <td>商品数量</td>
+                            <td>购买折扣</td>
+                            <td>价格</td>
+                            <td>库房名称</td>
+                        </tr>`,i=0;
+                    for(var i in od_res){
+                        /*buyprice:"5940000"cid:"1"content:"什么备注啊"del:"0"discount:"1"discountprice:"60000"goods_id:"3"goods_name:"电线"goods_num:"3000"goods_price:"2000"goods_unit:"s"id:"2"invoice_id:"2"optdt:"2018-10-15 11:49:24"optid:"1"optname:"超级管理员"room_id:"8"room_name:"新库房1"status:"1"*/
+                        od_html+=`<tr>
+                            <td>${i+1}</td>
+                            <td>${od_res[i].goods_name}</td>
+                            <td>${od_res[i].goods_unit}</td>
+                            <td>${od_res[i].goods_price}</td>
+                            <td>${od_res[i].goods_num}</td>
+                            <td>${od_res[i].discountprice}</td>
+                            <td>${od_res[i].buyprice}</td>
+                            <td>${od_res[i].room_name}</td>
+                        </tr>`;
+                    }
+                    $("#od_res").html(od_html);
+                }
+            });					
+        });
+    </script>
+</body>
+</html>

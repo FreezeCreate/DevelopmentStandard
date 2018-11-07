@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>成都冠晟平台</title>
+        <link rel="stylesheet" type="text/css" href="css/public.css"/>
+        <link rel="icon" src="/images/shouoye_29.icon">
+        <style>
+            .userhead{display: none;}
+        </style>
+        <script src="js/jquery-1.11.0.js" type="text/javascript" charset="utf-8"></script>
+        <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
+    </head>
+    <body style="min-width:1500px;">
+        <!--头部开始-->
+        <div class="Header noChoice">
+            <div class="HeaderLogo" id="headerLogo">
+                <img class="HeaderLogoImg None" src="images/logo.png" alt="" />
+                <span class="HeaderLogoName"></span>
+            </div>
+            <div class="HeaderTitle">
+                <ul class="HeaderNavMenu HeaderNavMenuUser">
+                    <li class="NavMenuItem" data-oid="0">
+                        <a href="#">
+                            <img src="images/title/title_0.png" alt="101" class="MenuItemImg">
+                            <span class="MenuItemTex">生产管理</span>
+                        </a>
+                    </li>
+                    <li class="NavMenuItem" data-oid="1">
+                        <a href="#">
+                            <img src="images/title/title_1.png" alt="101" class="MenuItemImg">
+                            <span class="MenuItemTex">销售管理</span>
+                        </a>
+                    </li>
+                    <li class="NavMenuItem" data-oid="2">
+                        <a href="#">
+                            <img src="images/title/title_2.png" alt="101" class="MenuItemImg">
+                            <span class="MenuItemTex">仓库管理</span>
+                        </a>
+                    </li>
+                    <li class="NavMenuItem" data-oid="3">
+                        <a href="#">
+                            <img src="images/title/title_3.png" alt="101" class="MenuItemImg">
+                            <span class="MenuItemTex">财务管理</span>
+                        </a>
+                    </li>
+                    <li class="NavMenuItem" data-oid="4">
+                        <a href="#">
+                            <img src="images/title/title_4.png" alt="101" class="MenuItemImg">
+                            <span class="MenuItemTex">售后服务管理</span>
+                        </a>
+                    </li>
+                    <li class="NavMenuItem" data-oid="5">
+                        <a href="#">
+                            <img src="images/title/title_5.png" alt="101" class="MenuItemImg">
+                            <span class="MenuItemTex">企业办公管理</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+            <div class="HeaderNav">
+                <ul class="HeaderNavMenu ">
+                    <li class="NavMenuItem">
+                        <span class="MenuItemTex" id="newDate">2018-05-08 星期二</span>
+                    </li>
+                    <li class="NavMenuItem hdnav NewHtml" data-url="" data-clas="a_259" data-name="待办事项" id="upcoming">
+                        <a>
+                            <img class="MenuItemImg" src="images/shouye_11.png" />
+                            <span class="MenuItemTex">待办事项（<i style="color: #e4ff00;" id="note">0</i>）</span>
+                        </a>
+                    </li>
+                    <li class="NavMenuItem hdnav User">
+                        <div>
+                            <img class="MenuItemImg User userhead" src="" />
+                            <span class="MenuItemTex username"></span>
+                            <div class="UserMenu">
+                                <span class="UserMenuTop"></span>
+                                <ul>
+                                    <li class="UserMenuItem InPop" data-BoxId="xgzl">
+                                        <a>
+                                            <img class="UserMenuItemImg" src="images/shouye_25.png" alt="" />
+                                            <span class="UserMenuItemTex">查看资料</span>
+                                        </a>
+                                    </li>
+                                    <li class="UserMenuItem InPop" data-BoxId="xgmm">
+                                        <a>
+                                            <img class="UserMenuItemImg" src="images/shouye_29.png" alt="" />
+                                            <span class="UserMenuItemTex">修改密码</span>
+                                        </a>
+                                    </li>
+                                    <li class="UserMenuItem">
+                                        <a  id="exit">
+                                            <img class="UserMenuItemImg" src="images/shouye_31.png" alt="" />
+                                            <span class="UserMenuItemTex">退出登录</span>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+            <div style="clear: both;"></div>
+        </div>
+        <!--头部结束-->
+
+        <!--Body开始-->
+        <div class="Body">
+            <!--导航开始-->
+            <div class="LeftMenu noChoice">
+                <div class="LeftMenuHead UserMenuItem InPop" data-BoxId="xgzl">
+                    <img src="" class="userhead"/>
+                    <div class="userNames">
+                        <p class="username"></p>
+                        <p class="isadmin">管理员</p>
+                    </div>
+                </div>
+                <div class="LeftMenuBox">
+                    <ul id="LeftMenuBox">
+                        <li>
+                            <a class="MenuItem active on NewHtml a_01" data-url="home.html" data-clas="a_01" data-img="images/shouye_39.png" data-name="首页" data-url="home.html">
+                                <i class="firstImg home_1"></i>
+                                <span class="firstText">首页</span>
+                            </a>
+                        </li>
+                        <li class="l_loading"></li>
+                    </ul>
+                </div>
+            </div>
+            <!--导航结束-->
+
+            <!--内容开始-->
+            <div class="Content">
+                <div class="ContentTitl noChoice">
+                    <ul class="ContentTitlNav">
+                        <li class="ContentTitlNavItem active a_01" data-clas="a_01">
+                            <a>
+                                <span class="ContentTitlNavItemText">首页</span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+                <div class="ContentCont">
+                    <iframe class="html active a_01" src="home.html" name="a_01"></iframe>
+                </div>
+            </div>
+            <!--内容结束-->
+        </div>
+        <!--Body结束-->		
+        <div class="Tan " id="xgzl">
+            <div class="TanBox ">
+                <div class="TanBoxTit">修改资料 <span class="close OtPop" data-BoxId="xgzl"></span></div>
+                <div class="TanBoxCont">
+                    <div class="FrameTable">
+                        <div class="FrameTableTitl">修改资料</div>
+                        <form id="addData">
+                            <table class="FrameTableCont"></table>
+                            <div class="TanBtn">
+                                <span class="Btn Big Btn-green" id="addDataSub">修改</span>
+                                <span class="Btn Big Btn-blue OtPop" data-BoxId="xgzl">取消</span>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="Tan " id="xgmm">
+            <div class="TanBox ">
+                <div class="TanBoxTit">修改密码 <span class="close OtPop" data-BoxId="xgmm"></span></div>
+                <div class="TanBoxCont">
+                    <div class="FrameTable">
+                        <div class="FrameTableTitl">修改密码</div>
+                        <table class="FrameTableCont" id="updPwd">
+                            <tr>
+                                <td class="FrameGroupName">旧密码 ：</td>
+                                <td><input class="FrameGroupInput Lang" type="password" name="password" value="" /></td>
+                            </tr>
+                            <tr>
+                                <td class="FrameGroupName">新密码 ：</td>
+                                <td><input class="FrameGroupInput Lang" type="password" name="new_password" value="" /></td>
+                            </tr>
+                            <tr>
+                                <td class="FrameGroupName">确认密码 ：</td>
+                                <td><input class="FrameGroupInput Lang" type="password" name="confirm_password" value="" /></td>
+                            </tr>
+                        </table>
+                        <div class="TanBtn">
+                            <span class="Btn Big Btn-green" id="updPwdSub">确定</span>
+                            <span class="Btn Big Btn-blue OtPop" data-BoxId="xgmm">取消</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </body>
+    <!-- <script src="js/port.js"></script> -->
+    <script src="js/public.js" type="text/javascript" charset="utf-8"></script>
+    <script src="js/table.js" type="text/javascript" charset="utf-8"></script>
+    <script src="js/ajaxfileupload.js"></script>
+    <script src="js/jedate.js"></script>
+    <script src="js/index.js"></script>
+</html>

@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>详情</title>
+    <link rel="stylesheet" href="../css/public.css">
+</head>
+<body>
+    <div class="Frame">
+        <div class="FrameTit"><span class="FrameTitName">详情</span><span class="Close"></span></div>
+        <div class="FrameBox">
+            <div class="FrameCont">
+                <div class="FrameTable">
+                    <div class="FrameTableTitl">详情</div>
+                    <table class="FrameTableCont" id="dataItem">
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="FrameTableFoot">
+                <span class="Succ BgGreen" id="addDataSub" style="display:none;">提交</span>
+        </div>
+    </div>
+    <script src="../js/jquery-1.11.0.js"></script>
+    <script src="../js/public.js"></script>
+    <script src="../js/jedate.js" type="text/javascript" charset="utf-8"></script>
+    <script src="../js/dataAdd.js"></script>
+    <script>
+        $(()=>{
+            showDataList('/app.php/salarystand/salaryStandInfo',function(data){
+                var res=data.results,html='';
+                //{ "id": "id", "depid": "部门id", "depname": "部门", "admid": "用户id", "admname": "用户名称", "salary": "金额标准", "stdesc": "描述", "optid": "操作人id", "optname": "操作人", "optdt": "操作时间", "cid": "公司id", "del": "是否删除1、删除0、未删除" }
+                html=`<tr>
+                        <td class="FrameGroupName"  >部门：</td>
+                        <td>${res.depname}</td>
+                        <td class="FrameGroupName"  >用户名称：</td>
+                        <td>${res.admname}</td>
+                    </tr>
+                    <tr>
+                        <td class="FrameGroupName">金额标准：</td>
+                        <td colspan="3">${res.salary}</td>
+                    </tr>
+                    <tr>
+                        <td class="FrameGroupName">操作人</td>
+                        <td>${res.optname}</td>
+                        <td class="FrameGroupName">操作时间</td>
+                        <td>${res.optdt}</td>
+                    </tr>
+                    <tr>
+                        <td class="FrameGroupName">描述：</td>
+                        <td colspan="3">${res.stdesc}</td>
+                    </tr>`;
+                $("#dataItem").html(html);                
+            });					
+        });
+    </script>
+</body>
+</html>

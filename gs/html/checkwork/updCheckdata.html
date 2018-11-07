@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>编辑</title>
+    <link rel="stylesheet" href="../css/public.css">
+</head>
+<body>
+    <div class="Frame">
+        <div class="FrameTit"><span class="FrameTitName">编辑</span><span class="Close"></span></div>
+        <div class="FrameBox">
+            <div class="FrameCont">
+                <div class="FrameTable">
+                    <div class="FrameTableTitl" id="name">编辑</div>
+                    <form id="addData">
+                        <input type="hidden" id="id" name="id">
+                        <table class="FrameTableCont">
+                            <tr>
+                                <td class="FrameGroupName">开始时间：</td>
+                                <td>
+                                    <input type="time" class="FrameGroupInput" name="stime" id="stime">
+                                </td>
+                                <td class="FrameGroupName">结束时间：</td>
+                                <td>
+                                    <input type="time" class="FrameGroupInput" name="etime" id="etime">
+                                </td>      
+                            </tr>
+                        </table>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div class="FrameTableFoot">
+            <span class="Succ" id="addDataSub">提交</span>
+        </div>
+    </div>
+    <script src="../js/jquery-1.11.0.js"></script>
+    <script src="../js/public.js"></script>
+    <script>
+        $(function(){
+            showDataList('/app.php/checkwork/bjwork',function(data){
+                var res=data.results,html='';
+                $("#name").html(res.name);
+                $("#id").val(res.id);
+                var stime=res.stime,etime=res.etime;
+                if(stime.length<8){
+                    stime='0'+stime;
+                }
+                if(etime.length<8){
+                    etime='0'+etime;
+                }
+                $("#stime").val(stime);
+                $("#etime").val(etime);
+			    addDataList("/app.php/checkwork/updateBjwork");
+            });
+        });
+    </script>
+</body>
+</html>

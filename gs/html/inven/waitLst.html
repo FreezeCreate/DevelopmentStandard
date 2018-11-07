@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>库存盘点</title>
+		<link rel="stylesheet" type="text/css" href="../css/public.css"/>
+	</head>
+	<body style="min-width: 930px;">
+		<div class="ContentBox">
+			<div class="Tables">
+				<div class="TablesHead">
+					<label>
+						<input type="text"class="FrameGroupInput radius searchname" placeholder="搜索"/>
+					</label>
+					<span class="Btn Btn-blue" id="searchNameId"><i class="icon-serch"></i> 查询</span>
+					<span class="Btn Btn-green TablesSerchReset"><i class="icon-reset"></i> 重置</span>
+					<span class="Btn l_refresh Btn-blue">刷新</span>
+				</div>
+				<div class="top20">
+					<table class="Table">
+						<thead>
+							<tr>
+								<th>商品名称</th>
+								<th>商品类型</th>
+								<th>商品规格</th>
+								<th>商品单位</th>
+								<th>挤压时间</th>
+								<th>最近一次出库时间</th>
+							</tr>
+						</thead>
+						<tbody class="textCenter TabBg" id="dataList">
+						</tbody>
+					</table>
+				</div>
+				<div class="noMsg">
+					<div class="noMsgCont">
+						<img   src="../images/noMsg.png"/>
+						<span>抱歉！暂时没有数据</span>
+					</div>
+				</div>
+				<div class="Pages textRight top20">
+					<ul class="PagesBox">
+					</ul>
+				</div>
+			</div>
+		</div>
+		<!-- 内容结束 -->
+	</body>
+	<script src="../js/jquery-1.11.0.js" type="text/javascript" charset="utf-8"></script>
+	<script src="../js/public.js" type="text/javascript" charset="utf-8"></script>
+	<!--日期插件-->
+	<script src="../js/jedate.js" type="text/javascript" charset="utf-8"></script>
+	<!--日期插件-->
+	<script src="../js/table.js" type="text/javascript" charset="utf-8"></script>
+	<script type="text/javascript">
+		$(function(){
+			"use strict"
+			getPagesBox({
+				nowUrl:"app.php/inven/waitLst",
+				addList: function(data){
+					$(".noMsg").hide();
+					if(data.code!=0){
+						console.error(data.msg);
+						return false;
+					}
+					var res=data.results,sta=data.status;
+					if(!res)return false;
+					var html='';
+					for(var i in res){//{id,order_name,catename,marketprice,nextchuku,order_spec,order_unit,updatetime}
+						/*catename:"制造业商品"cid:"1"del:"0"id:"4"marketprice:"0"nextchuku:"2018-07-09 00:00:00"optdt:"2018-10-17 19:41:09"optid:"1"optname:"超级管理员"order_explain:"收到"order_name:"机械设备"order_spec:"件"order_unit:"mm"updatetime:"40"*/
+						html+='<tr>'+
+								'<td>'+res[i].order_name+'</td>'+
+								'<td>'+res[i].catename+'</td>'+
+								'<td>'+res[i].order_spec+'</td>'+
+								'<td>'+res[i].order_unit+'</td>'+
+								'<td>'+res[i].updatetime+'</td>'+
+								'<td>'+res[i].nextchuku+'</td>'+
+							'</tr>';
+					}
+					$("#dataList").html(html);
+					isDelTr("app.php/inven/delInven");
+				}
+			});
+		});
+	</script>
+</html>

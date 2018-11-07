@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>详情</title>
+    <link rel="stylesheet" href="../css/public.css">
+    <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
+</head>
+<body>
+    <div class="Frame">
+        <div class="FrameTit"><span class="FrameTitName">详情</span><span class="Close"></span></div>
+        <div class="FrameBox">
+            <div class="FrameCont">
+                <div class="FrameTable">
+                    <div class="FrameTableTitl">详情</div>
+                    <table class="FrameTableCont" id="dataItem">
+                    </table>
+                    <p class="colorGre" style="display: none;margin-top:30px;margin-bottom:10px;">历史签约记录</p>
+                    <table class="FrameTableCont textCenter" id="t_res">
+                    </table>
+                    <p class="colorGre" style="margin-top:30px;margin-bottom:10px;display: none;">历史回访记录</p>
+                    <table class="FrameTableCont textCenter" id="c_res">
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="FrameTableFoot">
+        </div>
+    </div>
+    <script src="../js/jquery-1.11.0.js"></script>
+    <script src="../js/public.js"></script>
+    <script src="../js/jedate.js" type="text/javascript" charset="utf-8"></script>
+    <script src="../js/dataAdd.js"></script>
+    <script type="text/babel">
+        $(function(){
+        	showDataList('app.php/custmang/flowcust',function(data){
+                var f_res=data.f_result;
+                var c_res=data.c_result;
+                var t_res=data.t_result;
+                if(!f_res)return false;
+                $.ajax({
+                    type: 'get',
+                    url: dataURL + '/app.php/main/data',
+                    dataType: 'json',
+                    data: {type : 'CUST_LAIYUAN'},
+                    success: function(data) {
+                        var res = data.data, html = '';
+                        for (var i in res) {
+                            if(res[i].id==f_res.source){
+                                $('#source').html(res[i].name);
+                            }
+                        }
+                    },
+                    error: function() {
+                        alert("类型接口错误");
+                    }
+                });
+                var itemhtml='';
+                if(f_res){
+                    itemhtml=`<tr>
+                            <td class="FrameGroupName">客户名称：</td>
+                            <td>${f_res.cust_name}</td>
+                            <td class="FrameGroupName">来源：</td>
+                            <td id="source">无</td>
+                        </tr>
+                        <tr>
+                            <td class="FrameGroupName">客户单位：</td>
+                            <td>${f_res.custcname}</td>
+                            <td class="FrameGroupName">客户类型：</td>
+                            <td>${f_res.cust_cate}</td>
+                        </tr>
+                        <tr>
+                            <td class="FrameGroupName">客户所在部门：</td>
+                            <td>${f_res.custdname}</td>
+                            <td class="FrameGroupName">联系手机：</td>
+                            <td>${f_res.phone}</td>
+                        </tr>
+                        <tr>
+                            <td class="FrameGroupName">联系电话：</td>
+                            <td>${f_res.telephone}</td>
+                            <td class="FrameGroupName">邮箱：</td>
+                            <td>${f_res.email}</td>
+                        </tr>
+                        <tr>
+                            <td class="FrameGroupName">客户性别：</td>
+                            <td>${f_res.sex}</td>
+                            <td class="FrameGroupName">年龄：</td>
+                            <td>${f_res.age}</td>
+                        </tr>
+                        <tr>
+                            <td class="FrameGroupName">提醒时间：</td>
+                            <td colspan="3">${f_res.noticetime}</td>
+                        </tr>
+                        <tr>
+                            <td class="FrameGroupName">地址：</td>
+                            <td colspan="3">${f_res.address}</td>
+                        </tr>
+                        <tr>
+                            <td class="FrameGroupName">预测：</td>
+                            <td colspan="3">${f_res.forecast}</td>
+                        </tr>;
+                        <tr>
+                            <td class="FrameGroupName">备注：</td>
+                            <td colspan="3">${f_res.info}</td>
+                        </tr>`;
+                }
+                $("#dataItem").html(itemhtml).removeClass("l_loading");
+                if(t_res.length>0){               
+                    var tHtml=`<tr class="BgGreen">
+								<td>合同编号</td>
+								<td>合同名</td>
+								<td>合同内容</td>
+								<td>合同添加时间</td>
+								<td>合同开始时间</td>
+								<td>合同结束时间</td>
+								<td>销售人员</td>
+							</tr>`;
+                    for(var i in t_res){
+                        tHtml+=`<tr>
+                                <td>${t_res[i].number}</td>
+                                <td>${t_res[i].name}</td>
+                                <td>${t_res[i].content}</td>
+                                <td>${t_res[i].adddt}</td>
+                                <td>${t_res[i].startdt}</td>
+                                <td>${t_res[i].enddt}</td>
+                                <td>${t_res[i].salename}</td>
+                            </tr>`;
+                    }
+                    $("#t_res").html(tHtml).prev().show();
+                }
+                if(c_res.length>0){
+                    var cHtml=`<tr class="BgGreen">
+                            <td>回访人</td>
+                            <td>回访时间</td>
+                            <td>回访情况</td>
+                        </tr>`;
+                    for(var i in c_res){
+                        cHtml+=`<tr style="height:45px;">
+                            <td>${f_res.cust_name}</td>
+                            <td>${c_res[i].addtime}</td>
+                            <td>${c_res[i].explain}</td>
+                        </tr>`;
+                    }
+                    $("#c_res").html(cHtml).prev().show();
+                }
+            });				
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>设备报告</title>
+		<link rel="stylesheet" type="text/css" href="../css/public.css"/>
+	</head>
+	<body style="min-width: 930px;">
+		<div class="ContentBox">
+			<div class="Tables">
+				<div class="TablesHead">
+					<label>
+						<input type="text"class="FrameGroupInput radius searchname" placeholder="搜索"/>
+					</label>
+					<span class="Btn Btn-blue" id="searchNameId"><i class="icon-serch"></i> 查询</span>
+					<span class="Btn Btn-green TablesSerchReset"><i class="icon-reset"></i> 重置</span>
+					<span class="Btn l_refresh Btn-blue">刷新</span>
+					<span class="Btn Btn-blue float-right NewPop" data-url="devicedesc/addIndex.html" data-title="新增固资设备报告"><i class="icon-add"></i>新增</span>
+				</div>
+				<div class="top20">
+					<table class="Table">
+						<thead>
+							<tr>
+								<th>固资设备名称</th>
+								<th>固资设备类型名称</th>
+								<th>固资设备报告类型</th>
+								<th>描述</th>
+								<th>操作</th>
+							</tr>
+						</thead>
+						<tbody class="textCenter TabBg" id="dataList">
+						</tbody>
+					</table>
+				</div>
+				<div class="noMsg">
+					<div class="noMsgCont">
+						<img   src="../images/noMsg.png"/>
+						<span>抱歉！暂时没有数据</span>
+					</div>
+				</div>
+				<div class="Pages textRight top20">
+					<ul class="PagesBox">
+					</ul>
+				</div>
+			</div>
+		</div>
+		<!-- 内容结束 -->
+	</body>
+	<script src="../js/jquery-1.11.0.js" type="text/javascript" charset="utf-8"></script>
+	<script src="../js/public.js" type="text/javascript" charset="utf-8"></script>
+	<!--日期插件-->
+	<script src="../js/jedate.js" type="text/javascript" charset="utf-8"></script>
+	<!--日期插件-->
+	<script src="../js/table.js" type="text/javascript" charset="utf-8"></script>
+	<script type="text/javascript">
+		$(function(){
+			"use strict"
+			getPagesBox({
+				nowUrl:"app.php/devicedesc/index",
+				addList:function(data){
+					$(".noMsg").hide();
+					if(data.code!=0){
+						console.error(data.msg);
+						return false;
+					}
+					var res=data.results,isAlert="待回访";
+					if(!res)return false;
+					var html='';	
+					//{ "id": "id", "type": "固资设备报告类型：1、检查报告2、修理报告3、更新计划4、日常工作检修汇报", "status": "审核状态：1、提交2、驳回3、审核通过" "optid": "操作人id", "optdt": "操作时间", "optname": "操作人", "cid": "公司id", "del": "是否删除1、删除2、未删除", "deviceid": "固资设备id", "devicename": "固资设备名称", "devicecateid": "固资设备类型id", "devicecatename": "固资设备类型名称", "descname": "描述", "content": "内容" }
+					for(var k in res){//{id,type,status,devicename,devicecatename,descname}
+						var type=res[k].type;
+						var id=res[k].id;
+						switch(type){
+							case '1':type="检查报告";break
+							case '2':type="修理报告";break
+							case '3':type="更新计划";break
+							case '4':type="日常工作检修汇报";break
+							default :type="未定义";
+						}
+						html+='<tr>'+
+								'<td>'+res[k].devicename+'</td>'+
+								'<td>'+res[k].devicecatename+'</td>'+
+								'<td>'+type+'</td>'+
+								'<td>'+res[k].descname+'</td>'+
+								'<td>'+
+									'<div class="colorBlu list-menu" style="display: inline-block;">操作+'+
+										'<ul class="menu">'+
+											'<li data-url="devicedesc/indexItem.html?id='+id+'" class="colorBlu menu-item NewPop" data-title="固资设备报告详情">'+
+												'<a href="#">详情</a>'+
+											'</li>'+
+											'<li class="colorRed delTr menu-item" data-cid="'+id+'">'+
+												'<a href="#">删除</a>'+
+											'</li>'+
+										'</ul>'+
+									'</div>'+
+								'</td>'+
+							'</tr>';
+					}
+					$("#dataList").html(html);
+					isDelTr("app.php/goodsordercate/delGoodsOrderCate");
+				}
+			});
+		});
+	</script>
+</html>

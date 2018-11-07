@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>采购单申请</title>
+		<link rel="stylesheet" type="text/css" href="../css/public.css"/>
+	</head>
+	<body style="min-width: 930px;">
+		<div class="ContentBox">
+			<div class="Tables">
+				<div class="TablesHead">
+					<label>
+						<input type="text"class="FrameGroupInput radius searchname" placeholder="搜索"/>
+					</label>
+					<span class="Btn Btn-blue" id="searchNameId"><i class="icon-serch"></i> 查询</span>
+					<span class="Btn Btn-green TablesSerchReset"><i class="icon-reset"></i> 重置</span>
+					<span class="Btn l_refresh Btn-blue">刷新</span>
+					<span id="addInvoiceApply" style='display: none;' class="Btn Btn-blue float-right NewPop" data-url="applyFill/addInvoiceApply.html" data-title="新增采购单"><i class="icon-add"></i>新增</span>
+				</div>
+				<div class="top20">
+					<table class="Table None" style='display: none;'>
+						<thead class="BgGray">
+							<tr>
+								<td>序号</td>
+								<td>商品名</td>
+								<td>单位</td>
+								<td>数量</td>
+								<td>所在库房</td>
+								<td>采购单价/元</td>
+								<td>采购折扣率</td>
+								<td>采购折扣额/元</td>
+								<td>采购金额/元</td>
+								<td>备注</td>
+								<td>操作</td>
+							</tr>
+						</thead>
+						<tbody id="showTable"></tbody>
+					</table>
+					<table class="Table top20">
+						<thead>
+							<tr>
+								<th>编号</th>
+								<th>供应商公司</th>			
+								<th>购货总金额</th>
+								<th>本次付款</th>
+								<th>采购时间</th>
+								<th>操作</th>
+							</tr>
+						</thead>
+						<tbody class="textCenter TabBg" id="dataList">
+						</tbody>
+					</table>
+				</div>
+				<div class="noMsg">
+					<div class="noMsgCont">
+						<img   src="../images/noMsg.png"/>
+						<span>抱歉！暂时没有数据</span>
+					</div>
+				</div>
+				<div class="Pages textRight top20">
+					<ul class="PagesBox">
+					</ul>
+				</div>
+			</div>
+		</div>
+		<!-- 内容结束 -->
+	</body>
+	<script src="../js/jquery-1.11.0.js" type="text/javascript" charset="utf-8"></script>
+	<script src="../js/public.js" type="text/javascript" charset="utf-8"></script>
+	<!--日期插件-->
+	<script src="../js/jedate.js" type="text/javascript" charset="utf-8"></script>
+	<!--日期插件-->
+	<script src="../js/table.js" type="text/javascript" charset="utf-8"></script>
+	<script src="../js/updateWare.js"></script>
+	<script type="text/javascript">
+		jeDate({
+			dateCell:"#DatEnd",
+			format:"YYYY-MM-DD",
+			isinitVal:false,
+			isTime:false, //isClear:false,
+			minDate:"2014-09-19",
+			okfun:function(val){alert(val)}
+		})
+		$(function(){
+			"use strict"
+            showCommonList('/app.php/invoice/orderLsts',function(data){
+                if(data.code==0){
+					$('#addInvoiceApply').show();
+                    var res=data.results,o_html='';
+                    for(var {oid,name} of res){
+                        o_html+='<option value="'+oid+'">'+name+'</option>';
+                    }
+                    $('.orderLsts').html(o_html);
+                }else{
+					$('#addInvoiceApply').remove();
+                    parent.window.closHtml();
+                }
+            });
+			getPagesBox({
+				nowUrl:"app.php/invoice/invoiceApply",
+				addList: function(data){
+					$(".noMsg").hide();
+					if(data.code!=0){
+						alert(data.msg);
+						return false;
+					}
+					var res=data.results,isAlert="待回访";
+					if(!res)return false;
+					var html='';
+					for(var k in res){
+						html+='<tr class="showTable" data-id="'+res[k].id+'">'+
+								'<td>'+res[k].billnum+'</td>'+
+								'<td>'+res[k].buldcom+'</td>'+
+								'<td>'+res[k].totalmoney+'</td>'+
+								'<td>'+res[k].paymoney+'</td>'+
+								'<td>'+res[k].buydate+'</td>'+
+								'<td>'+
+									'<div class="colorBlu list-menu" style="display: inline-block;">操作+'+
+										'<ul class="menu">'+
+											'<li data-url="applyFill/invoiceApplyItem.html?id='+res[k].id+'" class="colorBlu menu-item NewPop" data-title="采购申请详情">'+
+												'<a href="#">详情</a>'+
+											'</li>'+
+											'<li class="colorRed delTr menu-item" data-cid="'+res[k].id+'">'+
+												'<a href="#">删除</a>'+
+											'</li>'+
+										'</ul>'+
+									'</div>'+
+								'</td>'+
+							'</tr>';
+					}
+					$("#dataList").html(html);
+					$('.showTable td').click(function(){
+						var that=$(this);
+						if(!that.children().hasClass('list-menu')){
+        					$('html,body').animate({'scrollTop': '0px'}, 300)
+							$("#showTable").parent().hide().before('<div class="l_loading"></div>');
+							var id=that.parent().data('id');
+							$.ajax({
+								type:'get',
+								url:dataURL+'/app.php/invoice/invoiceGoodsLst',
+								dataType:'json',
+								data:{token:dataToken,id},
+								success(data){
+									$("#showTable").parent().prev().remove();
+									var res=data.results,g_html='';
+									if(res){
+										var i=0;
+										for(var k in res){
+											i++;
+											g_html+='<tr>'+
+												'<td>'+i+'<input type="hidden" value="1" name="status">'+
+													'<input type="hidden" value="'+res[k].id+'" name="id">'+
+												'</td>'+
+												'<td>'+res[k].goods_name+'</td>'+
+												'<td><input type="text" class="FrameGroupInput" value="'+res[k].goods_unit+'" name="goods_unit"></td>'+
+												'<td><input type="number" class="FrameGroupInput" value="'+res[k].goods_num+'" name="goods_num"></td>'+
+												'<td>'+res[k].room_name+'</td>'+
+												'<td>'+res[k].goods_price+'</td>'+
+												'<td>'+res[k].discount+'%</td>'+
+												'<td>'+res[k].discountprice+'</td>'+
+												'<td>'+res[k].buyprice+'</td>'+
+												'<td><input type="text" class="FrameGroupInput" value="'+(res[k].content||'')+'" name="content"></td>'+
+												'<td>'+
+													'<a href="#" class="updInvSub">更新</a>'+
+												'</td>'+
+												'</tr>';
+										}
+										$("#showTable").html(g_html).parent().show();
+									}
+								}
+							});
+						}
+					});
+					isDelTr("app.php/invoice/delInvoice");
+				}
+			});
+		});
+	</script>
+</html>

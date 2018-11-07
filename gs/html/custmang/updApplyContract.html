@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>修改</title>
+    <link rel="stylesheet" href="../css/public.css">
+</head>
+<body>
+    <div class="Frame">
+        <div class="FrameTit"><span class="FrameTitName">修改</span><span class="Close"></span></div>
+        <div class="FrameBox">
+            <div class="FrameCont">
+                <div class="FrameTable">
+                    <div class="FrameTableTitl">修改</div>
+                    <form id="addData">
+                        <input type="hidden" value id="id" name="id">
+                        <table class="FrameTableCont" id="dataItem">
+                        </table>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div class="FrameTableFoot">
+            <span class="Succ" id="addDataSub">提交</span>
+        </div>
+    </div>
+    <script src="../js/jquery-1.11.0.js"></script>
+    <script src="../js/public.js"></script>
+    <script src="../js/jedate.js" type="text/javascript" charset="utf-8"></script>
+    <script src="../js/dataAdd.js"></script>
+    <script>
+        jeDate({
+            dateCell:"#applydt",
+            format:"YYYY-MM-DD hh:mm:ss",
+            // isinitVal:false,
+            isTime:true,
+            minDate:"1990-01-01",
+            okfun:function(val){alert(val)}
+        })
+        $(function(){
+        	showDataList('app.php/custmang/applyContractInfo',function(data){
+                if(data){
+                    $("#id").val(data.id);
+                    var cust_name=getRequest().cust_name;
+                    var itemhtml='';
+                    itemhtml='<tr>'+
+                            '<td class="FrameGroupName" >合同名称：</td>'+
+                            '<td colspan="3">'+
+                                '<input type="hidden" class="FrameGroupInput" name="custid" value="'+data.custid+'">'+
+                                '<input type="text" class="FrameGroupInput" name="contractname" value="'+data.contractname+'">'+
+                            '</td>'+
+                        '</tr>'+
+                        '<tr>'+
+                            '<td class="FrameGroupName">申请时间：</td>'+
+                            '<td colspan="3">'+
+                                '<input type="text" id="applydt" name="applydt" class="FrameDatGroup" value="'+data.applydt+'">'+
+                            '</td>'+
+                        '</tr>'+
+                        '<tr>'+
+                            '<td class="FrameGroupName">建议：</td>'+
+                            '<td colspan="3">'+
+                                '<textarea name="suggest" class="FrameGroupInput">'+data.suggest+'</textarea>'+
+                            '</td>'+
+                        '</tr>'+
+                        '<tr>'+
+                            '<td class="FrameGroupName">内容：</td>'+
+                            '<td colspan="3">'+
+                                '<textarea name="contractcontent" class="FrameGroupInput">'+data.contractcontent+'</textarea>'+
+                            '</td>'+
+                        '</tr>'+
+                        '<tr>'+
+                            '<td class="FrameGroupName">描述：</td>'+
+                            '<td colspan="3">'+
+                                '<textarea name="contractdesc" class="FrameGroupInput">'+data.contractdesc+'</textarea>'+
+                            '</td>'+
+                        '</tr>';
+                    $("#dataItem").html(itemhtml).removeClass("l_loading");
+                };
+                addDataList("app.php/custmang/saveContractApply");
+            });
+        });
+    </script>
+</body>
+</html>

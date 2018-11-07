@@ -1,0 +1,163 @@
+
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title></title>
+        <link rel="stylesheet" type="text/css" href="../../source/api/public.css"/>
+        <style>
+            td { border: 1px solid #ccc;}
+            .BgGray.textCenter { text-align: left !important; background: #fff !important; font-size: 18px; line-height: 40px; font-weight: 700;}
+        </style>
+    </head>
+    <body>
+        <div style="width: 900px;margin: 50px auto;">
+            <table class="table border">
+                <thead>
+                    <tr>
+                        <td colspan="5" class="textCenter BgGreen">付款类型列表</td>
+                    </tr>
+                </thead>
+                <tbody class="hover">
+                    <tr>
+                        <td colspan="5" class="BgGray textCenter">请求格式</td>
+                    </tr>
+                    <tr>
+                        <td>URL</td><td colspan="4">/app.php/main/payType?token=用户token</td>
+                    </tr>
+                    <tr>
+                        <td>HTTP请求方式</td><td colspan="4">GET</td>
+                    </tr>
+                    <tr>
+                        <td>是否登录验证</td><td colspan="4">是</td>
+                    </tr>
+                    <tr>
+                        <td colspan="5" class="BgGray textCenter">参数说明</td>
+                    </tr>
+                    <tr class="BgGray">
+                        <td>字段名</td>
+                        <td >参数名</td>
+                        <td>必填</td>
+                        <td >参数类型</td>
+                        <td >说明</td>
+                    </tr>
+                    <tr>
+                        <td>token</td>
+                        <td>token</td>
+                        <td>是</td>
+                        <td>string</td>
+                        <td></td>
+                    </tr>
+                                        <tr>
+                        <td>分页</td>
+                        <td>page</td>
+                        <td>是</td>
+                        <td>int</td>
+                        <td></td>
+                    </tr>
+                                        <tr>
+                        <td>搜索</td>
+                        <td>searchname</td>
+                        <td>否</td>
+                        <td>string</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>合同生效状态</td>
+                        <td>distance</td>
+                        <td>否</td>
+                        <td>int</td>
+                        <td>1、未生效2、生效中3、已过期</td>
+                    </tr>
+                    <tr>
+                        <td colspan="5" class="BgGray textCenter">正常返回结果</td>
+                    </tr>
+                    <tr class="BgGray">
+                        <td>字段名</td>
+                        <td >变量名</td>
+                        <td>必填</td>
+                        <td>类型</td>
+                        <td >说明</td>
+                    </tr>
+                    <tr>
+                        <td>返回信息</td>
+                        <td >msg</td>
+                        <td>是</td>
+                        <td>string</td>
+                        <td >成功</td>
+                    </tr>
+                    <tr>
+                        <td>返回状态码</td>
+                        <td >code</td>
+                        <td>是</td>
+                        <td>int</td>
+                        <td >0</td>
+                    </tr>
+                    <tr>
+                        <td>列表信息</td>
+                        <td >results</td>
+                        <td>是</td>
+                        <td>object</td>
+                        <td >
+                        {
+            "id": "id",
+            "name": "付款类型名称",
+            "number": "编号",
+            "status": "状态",
+            "amount": "",
+            "date": "添加时间",
+            "type": "类型1、现金2、其他",
+            "del": "是否删除1、是2、否"
+        }
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>合同总金额</td>
+                        <td >sum_all</td>
+                        <td>是</td>
+                        <td>int</td>
+                        <td ></td>
+                    </tr>
+                    <tr>
+                        <td>合同总付款金额</td>
+                        <td >sum_pay</td>
+                        <td>是</td>
+                        <td>int</td>
+                        <td ></td>
+                    </tr>
+                    <tr>
+                        <td>合同未付金额</td>
+                        <td >sum_not</td>
+                        <td>是</td>
+                        <td>int</td>
+                        <td ></td>
+                    </tr>
+                    <tr>
+                        <td colspan="5" class="BgGray textCenter">错误返回结果</td>
+                    </tr>
+                    <tr class="BgGray">
+                        <td>字段名</td>
+                        <td >变量名</td>
+                        <td>必填</td>
+                        <td>类型</td>
+                        <td >说明</td>
+                    </tr>
+                    <tr>
+                        <td>返回信息</td>
+                        <td >msg</td>
+                        <td>是</td>
+                        <td>string</td>
+                        <td >失败</td>
+                    </tr>
+                    <tr>
+                        <td>返回状态码</td>
+                        <td >code</td>
+                        <td>是</td>
+                        <td>int</td>
+                        <td >1</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </body>
+</html>

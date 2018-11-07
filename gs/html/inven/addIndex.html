@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>新增</title>
+    <link rel="stylesheet" href="../css/public.css">
+</head>
+<body>
+    <div class="Frame">
+        <div class="FrameTit"><span class="FrameTitName">新增</span><span class="Close"></span></div>
+        <div class="FrameBox">
+            <div class="FrameCont">
+                <div class="FrameTable">
+                    <div class="FrameTableTitl">新增库存盘点</div>
+                    <form id="addData">
+                        <table class="FrameTableCont textCenter">
+                            <thead>
+                                <tr style="height: 50px;">
+                                    <th>商品</th>
+                                    <th>库房</th>
+                                    <th>库存数量</th>
+                                    <th style="width:80px;">盘点数量</th>
+                                    <th style="width:100px;">盈亏</th>
+                                </tr>
+                            </thead>
+                            <tbody id="dataList">
+                            </tbody>
+                        </table>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div class="FrameTableFoot">
+            <span class="Succ" id="addDataSub">提交</span>
+        </div>
+    </div>
+    <script src="../js/jquery-1.11.0.js"></script>
+    <script src="../js/public.js"></script>
+    <script src="../js/jedate.js" type="text/javascript" charset="utf-8"></script>
+    <script src="../js/dataAdd.js"></script>
+    <script>
+        $(function(){
+            showDataList('/app.php/inven/invenGoodsLst',function(data){
+                var res=data.results,html='';
+                if(!res.length>0){
+                    alert('库房没有商品');
+                    parent.window.closHtml();
+                    return false;
+                }
+                /*{ "id": "库存id", "cateid": "商品类别id", "order_name": "商品", "order_num": "库存数量", "optid": "操作人id", "optdt": "操作时间", "optname": "操作人", "cid": "公司id", "del": "是否删除1、删除0、未删除", "stock_id": "库房id", "stock_name": "库房名称", "goods_id": "商品id" }*/
+                for(var i in res){//{order_name,order_num,stock_name,id}
+                    html+='<tr>'+
+                        '<td>'+res[i].order_name+'<input type="hidden" class="listName" value="'+res[i].id+'" data-name="id"/></td>'+
+                        '<td>'+res[i].stock_name+'</td>'+
+                        '<td>'+(res[i].order_num||0)+'</td>'+
+                        '<td><input type="text" class="FrameGroupInput listName room_num" data-name="room_num"/></td>'+
+                        '<td class="porfit_num"></td>'+
+                        '</tr>';
+                }
+                $('#dataList').html(html);
+                $('.room_num').on('input propertypechange',function(){
+                    var that=$(this);
+                    var room_num=that.val();
+                    var reg=/^\+?[1-9][0-9]{0,8}$/;
+                    if(!reg.test(room_num)){
+                        that.val(room_num.slice(0,room_num.length-1));
+                        return false;
+                    }
+                    var order_name=that.parent().prev().html();
+                    that.parent().next().html(room_num-order_name);
+                });
+            });
+            $('#addDataSub').click(function(){
+                var that=$(this);
+                var list=[],data=new Object();
+                that.hide().parent().append('<div class="l_loading"></div>');
+                $("#dataList tr").each(function(i,e){
+                    list[i]=new Object();
+                    var that=$(e);
+                    that.children().children(".listName").each(function(k,v){
+                        var item=$(v);
+                        var thatName=item.data("name");
+                        list[i][thatName]=item.val();
+                    });
+                });
+                data.list=list;
+                data.token=dataToken;
+                $.ajax({
+                    type:'post',
+                    url:dataURL+'/app.php/inven/saveInvenLst',
+                    dataType:'json',
+                    data: data,
+                    success: function(data){
+                        if(data.code!=0){
+                            Alert(data.msg);
+                            that.show().next().remove();
+                            return false;
+                        }
+                        Alert(data.msg+',请刷新');
+                        parent.window.closHtml();
+                    },
+                    error: function(){
+                        console.error("网络错误");
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>

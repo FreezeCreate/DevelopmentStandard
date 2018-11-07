@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>已签合同</title>
+		<link rel="stylesheet" type="text/css" href="../css/public.css"/>
+	</head>
+	<body style="min-width: 930px;">
+		<div class="ContentBox">
+			<div class="Tables">
+				<div class="TablesHead">
+					<ul class="TablesHeadNav" id="distance">
+						<li class="TablesHeadItem active" data-id="0">
+							<a href="#">全部</a>
+						</li>
+						<li class="TablesHeadItem" data-id="1">
+							<a href="#">未生效</a>
+						</li>
+						<li class="TablesHeadItem" data-id="2">
+							<a href="#">生效中</a>
+						</li>
+						<li class="TablesHeadItem" data-id="3">
+							<a href="#">已过期</a>
+						</li>
+					</ul>
+					<label>
+						<input type="text"class="FrameGroupInput radius searchname" placeholder="搜索名称"/>
+					</label>
+					<span class="Btn Btn-blue" id="searchNameId"><i class="icon-serch"></i> 查询</span>
+					<span class="Btn Btn-green TablesSerchReset"><i class="icon-reset"></i> 重置</span>
+					<span class="Btn l_refresh Btn-blue">刷新</span>
+				</div>
+				<div class="newLabel" style="margin-top:20px;">
+					<label class="labelItem labelGreen">合同总金额：<span class="child-1">0元</span></label>
+					<label class="labelItem labelBlue">合同实收金额：<span class="child-2">0元</span></label>
+					<label class="labelItem labelRed">合同未收金额：<span class="child-3">0元</span></label>
+				</div>
+				<div class="top20">
+					<table class="Table">
+						<thead>
+							<tr>
+								<th width="80">合同编号</th>
+								<th>合同名称</th>
+								<th>所属销售</th>
+								<th>合同总金额</th>
+								<th>签订时间</th>
+								<th>生效时间</th>
+								<th>结束时间</th>
+								<th>合同状态</th>
+								<th>操作</th>
+							</tr>
+						</thead>
+						<tbody class="textCenter TabBg" id="dataList">
+						</tbody>
+					</table>
+				</div>
+				<div class="noMsg">
+					<div class="noMsgCont">
+						<img src="../images/noMsg.png"/>
+						<span>抱歉！暂时没有数据</span>
+					</div>
+				</div>
+				<div class="Pages textRight top20">
+					<ul class="PagesBox">
+					</ul>
+				</div>
+			</div>
+		</div>
+		<!-- 内容结束 -->
+	</body>
+	<script src="../js/jquery-1.11.0.js" type="text/javascript" charset="utf-8"></script>
+	<script src="../js/public.js" type="text/javascript" charset="utf-8"></script>
+	<!--日期插件-->
+	<script src="../js/jedate.js" type="text/javascript" charset="utf-8"></script>
+	<!--日期插件-->
+	<script src="../js/table.js" type="text/javascript" charset="utf-8"></script>
+	<script type="text/javascript">
+		jeDate({
+			dateCell:"#DatEnd",
+			format:"YYYY-MM-DD",
+			isinitVal:false,
+			isTime:false, //isClear:false,
+			minDate:"2014-09-19",
+			okfun:function(val){alert(val)}
+		})
+		$(function(){
+			getPagesBox({
+				nowUrl:"app.php/custmang/contractLst",
+				addList: function(data){
+					var res=data.results,html='',i=0;
+					$(".newLabel .child-1").html(data.sum_all);
+					$(".newLabel .child-2").html(data.sum_pay);
+					$(".newLabel .child-3").html(data.sum_not);
+					isDelTr("app.php/custmang/delContract");					
+					for(var k in res){//{id,number,name,salename,money,factmoney,nothave,signdt,startdt,enddt,content,status}
+						i++;
+						var id=res[k].id;
+						html+='<tr>'+
+							'<td>'+i+'</td>'+
+							'<td>'+res[k].name+'</td>'+
+							'<td>'+res[k].salename+'</td>'+
+							'<td>'+res[k].money+'</td>'+
+							'<td>'+(res[k].signdt||'未填写')+'</td>'+
+							'<td>'+res[k].startdt+'</td>'+
+							'<td>'+res[k].enddt+'</td>'+
+							'<td>'+(res[k].status=="1"?"提交":(res[k].status=="2"?"驳回":"通过"))+'</td>'+
+							'<td>'+
+								'<div class="colorBlu list-menu">操作+'+
+									'<ul class="menu">'+
+										'<li class="menu-item colorGre NewPop" data-url="custmang/addCustPay.html?id='+id+'" data-title="合同回款">'+
+											'<a href="#">回款处理</a>'+
+										'</li>'+
+										'<li data-url="custmang/contractItem.html?id='+id+'" class="colorBlu menu-item NewPop" data-title="合同详情">'+
+											'<a href="#">查看详情</a>'+
+										'</li>'+
+									'</ul>'+
+								'</div>'+
+							'</td>'+
+						'</tr>';
+					}
+					$("#dataList").html(html);
+				}
+			});
+		});
+	</script>
+</html>

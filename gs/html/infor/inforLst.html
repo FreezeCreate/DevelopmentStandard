@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>通知公告</title>
+		<link rel="stylesheet" type="text/css" href="../css/public.css"/>
+	</head>
+	<body style="min-width: 930px;">
+		<h1>搁置</h1>
+		<div class="ContentBox">
+			<div class="Tables">
+				<div class="TablesHead">
+					<label>
+						<input type="text"class="FrameGroupInput radius searchname" placeholder="搜索"/>
+					</label>
+					<span class="Btn Btn-blue" id="searchNameId"><i class="icon-serch"></i> 查询</span>
+					<span class="Btn Btn-green TablesSerchReset"><i class="icon-reset"></i> 重置</span>
+					<span class="Btn l_refresh Btn-blue">刷新</span>
+					<span class="Btn Btn-blue float-right NewPop" data-url="infor/addInfor.html" data-title="新增公告"><i class="icon-add"></i>新增</span>
+				</div>
+				<div class="top20">
+					<table class="Table">
+						<thead>
+							<tr>
+								<th>序号</th>
+								<th>公告标题</th>
+								<th>接收人</th>
+								<th>添加时间</th>
+								<th>操作</th>
+							</tr>
+						</thead>
+						<tbody class="textCenter TabBg" id="dataList">
+						</tbody>
+					</table>
+				</div>
+				<div class="noMsg">
+					<div class="noMsgCont">
+						<img src="../images/noMsg.png"/>
+						<span>抱歉！暂时没有数据</span>
+					</div>
+				</div>
+				<div class="Pages textRight top20">
+					<ul class="PagesBox">
+					</ul>
+				</div>
+			</div>
+		</div>
+		<!-- 内容结束 -->
+	</body>
+	<script src="../js/jquery-1.11.0.js" type="text/javascript" charset="utf-8"></script>
+	<script src="../js/public.js" type="text/javascript" charset="utf-8"></script>
+	<!--日期插件-->
+	<script src="../js/jedate.js" type="text/javascript" charset="utf-8"></script>
+	<!--日期插件-->
+	<script src="../js/table.js" type="text/javascript" charset="utf-8"></script>
+	<script type="text/javascript">
+		$(function(){
+			"use strict"
+			getPagesBox({
+				nowUrl:"/app.php/infor/inforLst",
+				addList: function(data){
+					$(".noMsg").hide();
+					if(data.code!=0){
+						console.error(data.msg);
+						return false;
+					}
+					var res=data.results;
+					if(!res)return false;
+					var html='';
+					for(var i in res){
+						var id=res[i].id;
+						html+='<tr>'+
+								'<td>'+(i+1)+'</td>'+
+								'<td>'+res[i].title+'</td>'+
+								'<td>'+res[i].recename||'全体人员'+'</td>'+
+								'<td>'+res[i].adddt+'</td>'+
+								'<td>'+
+									'<div class="colorBlu list-menu" style="display: inline-block;">操作+'+
+										'<ul class="menu">'+
+											'<li data-url="infor/inforItem.html?id='+id+'" class="colorBlu menu-item NewPop" data-title="公告详情">'+
+												'<a href="#">详情</a>'+
+											'</li>'+
+											'<li data-url="infor/updInfor.html?id='+id+'" class="colorBlu menu-item NewPop" data-title="修改公告信息">'+
+												'<a href="#">修改</a>'+
+											'</li>'+
+											'<li class="colorRed delTr menu-item" data-cid="'+id+'">'+
+												'<a href="#">删除</a>'+
+											'</li>'+
+										'</ul>'+
+									'</div>'+
+								'</td>'+
+							'</tr>';
+					}
+					$("#dataList").html(html);
+					isDelTr("/app.php/infor/delInfor");
+				}
+			});
+		});
+	</script>
+</html>

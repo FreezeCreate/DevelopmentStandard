@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>库房列表</title>
+		<link rel="stylesheet" type="text/css" href="../css/public.css"/>
+	</head>
+	<body style="min-width: 930px;">
+		<div class="ContentBox">
+			<div class="Tables">
+				<div class="TablesHead">
+					<label>
+						<input type="text"class="FrameGroupInput radius searchname" placeholder="搜索"/>
+					</label>
+					<span class="Btn Btn-blue" id="searchNameId"><i class="icon-serch"></i> 查询</span>
+					<span class="Btn Btn-green TablesSerchReset"><i class="icon-reset"></i> 重置</span>
+					<span class="Btn l_refresh Btn-blue">刷新</span>
+					<span class="Btn Btn-blue float-right NewPop" data-url="stockroom/addIndex.html" data-title="新增库房"><i class="icon-add"></i>新增</span>
+				</div>
+				<div class="top20">
+					<table class="Table">
+						<thead>
+							<tr>
+								<th>库房名</th>
+								<th>库房描述</th>
+								<th>操作</th>
+							</tr>
+						</thead>
+						<tbody class="textCenter TabBg" id="dataList">
+						</tbody>
+					</table>
+				</div>
+				<div class="noMsg">
+					<div class="noMsgCont">
+						<img   src="../images/noMsg.png"/>
+						<span>抱歉！暂时没有数据</span>
+					</div>
+				</div>
+				<div class="Pages textRight top20">
+					<ul class="PagesBox">
+					</ul>
+				</div>
+			</div>
+		</div>
+		<!-- 内容结束 -->
+	</body>
+	<script src="../js/jquery-1.11.0.js" type="text/javascript" charset="utf-8"></script>
+	<script src="../js/public.js" type="text/javascript" charset="utf-8"></script>
+	<!--日期插件-->
+	<script src="../js/jedate.js" type="text/javascript" charset="utf-8"></script>
+	<!--日期插件-->
+	<script src="../js/table.js" type="text/javascript" charset="utf-8"></script>
+	<script type="text/javascript">
+		$(()=>{
+			"use strict"
+			jeDate({
+				dateCell:"#DatStr",
+				format:"YYYY-MM-DD",
+				isinitVal:false,
+				isTime:false, //isClear:false,
+				minDate:"2014-09-19",
+				okfun:function(val){alert(val)}
+			})
+			jeDate({
+				dateCell:"#DatEnd",
+				format:"YYYY-MM-DD",
+				isinitVal:false,
+				isTime:false, //isClear:false,
+				minDate:"2014-09-19",
+				okfun:function(val){alert(val)}
+			})
+			getPagesBox({
+				nowUrl:"app.php/stockroom/index",
+				addList(data){
+					$(".noMsg").hide();
+					if(data.code!=0){
+						console.error(data.msg);
+						return false;
+					}
+					var res=data.results,isAlert="待回访";
+					if(!res)return false;
+					var html='';
+					//{ "id": "id", "room_name": "库房名称", "room_desc": "库房描述", "optid": "操作人id", "optname": "操作人", "optdt": "操作时间", "cid": "公司id", "del": "是否删除1、删除0、未删除" }
+					for(var {id,room_name,room_desc,optname,optdt,del} of res){
+						html+=`<tr>
+								<td>${room_name}</td>
+								<td>${room_desc}</td>
+								<td>
+									<div class="colorBlu list-menu" style="display: inline-block;">
+										操作+
+										<ul class="menu">
+											<li data-url="stockroom/indexItem.html?id=${id}" class="colorBlu menu-item NewPop" data-title="库房详情">
+												<a href="#">详情</a>
+											</li>
+											<li data-url="inven/addIndex.html?id=${id}" class="colorBlu menu-item NewPop" data-title="库房盘点">
+												<a href="#">盘点</a>
+											</li>
+											<li class="colorRed delTr menu-item" data-cid="${id}">
+												<a href="#">删除</a>
+											</li>
+										</ul>
+									</div>
+								</td>
+							</tr>`;
+					}
+					$("#dataList").html(html);
+					isDelTr("app.php/stockroom/delStockRoom");
+				}
+			});
+		});
+	</script>
+</html>

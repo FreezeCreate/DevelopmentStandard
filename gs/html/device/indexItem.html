@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>详情</title>
+    <link rel="stylesheet" href="../css/public.css">
+</head>
+<body>
+    <div class="Frame">
+        <div class="FrameTit"><span class="FrameTitName">详情</span><span class="Close"></span></div>
+        <div class="FrameBox">
+            <div class="FrameCont">
+                <div class="FrameTable">
+                    <div class="FrameTableTitl">详情</div>
+                    <table class="FrameTableCont" id="dataItem">
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="FrameTableFoot">
+            <span class="Succ BgGreen" id="addDataSub" style="display:none;">提交</span>
+        </div>
+    </div>
+    <script src="../js/jquery-1.11.0.js"></script>
+    <script src="../js/public.js"></script>
+    <script src="../js/jedate.js" type="text/javascript" charset="utf-8"></script>
+    <script src="../js/dataAdd.js"></script>
+    <script>
+        $(function(){
+            showDataList("app.php/device/deviceInfo",function(data){
+                if(data.code!=0){
+                    console.error(data.msg);
+                    return false;
+                }
+                var res=data.results,html='';
+                //{ "id": "id", "device_name": "固资设备名", "device_cateid": "固资设备分类id", "device_info": "详细信息", "device_lie": "是否闲置1、是2、否", "device_lie_date": "闲置日期：从多久开始", "optid": "操作人id", "optdt": "操作时间", "optname": "操作人", "cid": "公司id", "del": "是否删除1、删除0、未删除", "device_catename": "设备分类名称" }
+                html='<tr>'+
+                        '<td class="FrameGroupName">固资设备名称：</td>'+
+                        '<td>'+res.device_name+'</td>'+
+                        '<td class="FrameGroupName">设备分类名称：</td>'+
+                        '<td>'+res.device_catename+'</td>'+
+                    '</tr>'+
+                    '<tr>'+
+                        '<td class="FrameGroupName">是否闲置：</td>'+
+                        '<td>'+(res.device_lie==1?"是":"否")+'</td>'+
+                        '<td class="FrameGroupName">闲置日期：</td>'+
+                        '<td>'+(res.device_lie_date)+'</td>'+
+                    '</tr>'+
+                    '<tr>'+
+                        '<td class="FrameGroupName">操作人：</td>'+
+                        '<td>'+res.optname+'</td>'+
+                        '<td class="FrameGroupName">操作时间：</td>'+
+                        '<td>'+res.optdt+'</td>'+
+                    '</tr>'+
+                    '<tr>'+
+                        '<td class="FrameGroupName">固资设备详情：</td>'+
+                        '<td colspan="3">'+res.device_info+'</td>'+
+                    '</tr>';
+                $("#dataItem").html(html);
+            });        
+        });
+    </script>
+</body>
+</html>

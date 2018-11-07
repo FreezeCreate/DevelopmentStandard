@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>通知</title>
+    
+    <!-- 引入 jQuery Mobile 样式 -->
+    <link rel="stylesheet" href="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.css">
+    
+    <!-- 引入 jQuery 库 -->
+    <script src="http://code.jquery.com/jquery-1.11.3.min.js"></script>
+    
+    <!-- 引入 jQuery Mobile 库 -->
+    <script src="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js"></script>
+    <style>
+    </style>
+</head>
+<body>
+    <div data-role="page" id="pageone">
+        <div data-role="header">
+            <a class="ui-btn ui-icon-home ui-btn-icon-left">返回上一级</a>
+            <h1>代办通知</h1>
+            <a class="ui-btn ui-btn-icon-left">筛选</a>
+        </div>
+        
+        <div data-role="main" class="ui-content">
+            <div data-role="navbar">
+                <ul>
+                    <li><a href="#" class="ui-btn-active">待处理</a></li>
+                    <li><a href="#">已处理</a></li>
+                </ul>
+            </div>
+            <ul data-role="listview" data-inset="true">
+                <li><a href="">
+                    <div>
+                        <h1>什么什么公告</h1>
+                        <p>2018年8月17日16:42:39</p>
+                        <div>什么什么内容</div>
+                    </div>
+                </a></li>
+                <li><a href="#">
+                    <div>
+                        <h1 >什么什么公告</h1>
+                        <p>2018年8月17日16:42:39</p>
+                        <div>什么什么内容</div>
+                    </div>
+                </a></li>
+            </ul>
+        </div>
+        
+        <!-- <div data-role="footer">
+            <h1>底部文本</h1>
+        </div> -->
+    </div>
+    <script src="../js/jquery-1.11.0.js"></script>
+</body>
+</html>

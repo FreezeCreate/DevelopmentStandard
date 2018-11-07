@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>所有销售目标</title>
+		<link rel="stylesheet" type="text/css" href="../css/public.css"/>
+	</head>
+	<body style="min-width: 930px;">
+		<div class="ContentBox">
+			<div class="Tables">
+				<div class="TablesHead">
+					<label>
+						<input type="text"class="FrameGroupInput radius searchname" placeholder="搜索"/>
+					</label>
+					<span class="Btn Btn-blue" id="searchNameId"><i class="icon-serch"></i> 查询</span>
+					<span class="Btn Btn-green TablesSerchReset"><i class="icon-reset"></i> 重置</span>
+					<span class="Btn l_refresh Btn-blue">刷新</span>
+					<span class="Btn Btn-blue float-right NewPop" data-url="salegoal/addGoalAdmin.html" data-title="新增销售目标"><i class="icon-add"></i>新增</span>
+				</div>
+				<div class="top20">
+					<table class="Table">
+						<thead>
+							<tr>
+								<th>序号</th>
+								<th>销售人员</th>
+								<th>销售人员部门</th>
+								<th>制定日期</th>
+								<th>目标标题</th>
+								<th>完成进度</th>
+								<th>操作</th>
+							</tr>
+						</thead>
+						<tbody class="textCenter TabBg" id="dataList">
+						</tbody>
+					</table>
+				</div>
+				<div class="noMsg">
+					<div class="noMsgCont">
+						<img class="" src="../images/noMsg.png"/>
+						<span>抱歉！暂时没有数据</span>
+					</div>
+				</div>
+			</div>
+		</div>
+		<!-- 内容结束 -->
+		<div class="Tan" id="ckxq" style="display:none;">
+			<div class="TanBox">
+				<div class="TanBoxTit">我的合同申请详情
+					<span data-boxid="ckxq" class="close OtPop"></span>
+				</div>
+				<div class="TanBoxCont">
+					<div class="FrameTable">
+						<div class="FrameTableTitl">申请详情展示</div>
+						<table class="FrameTableCont" id="dataItem"></table>
+					</div>
+				</div>
+			</div>
+		</div>
+	</body>
+	<script src="../js/jquery-1.11.0.js" type="text/javascript" charset="utf-8"></script>
+	<script src="../js/public.js" type="text/javascript" charset="utf-8"></script>
+	<!--日期插件-->
+	<script src="../js/jedate.js" type="text/javascript" charset="utf-8"></script>
+	<!--日期插件-->
+	<script src="../js/table.js" type="text/javascript" charset="utf-8"></script>
+	<script type="text/javascript">
+		jeDate({
+			dateCell:"#DatEnd",
+			format:"YYYY-MM-DD",
+			isinitVal:false,
+			isTime:false, //isClear:false,
+			minDate:"2014-09-19",
+			okfun:function(val){alert(val)}
+		})
+		$(()=>{
+			getPagesBox({
+				nowUrl:"/app.php/salegoal/goalLstAdmin",
+				addList(data){
+					var res=data.results,html='',i=0;
+					for(var {id,salename,saledname,goaldt,goaltitle,per} of res){
+						i++;
+						html+=`<tr>
+								<td>${i}</td>
+								<td>${salename}</td>
+								<td>${saledname}</td>
+								<td>${goaldt}</td>
+								<td>${goaltitle}</td>
+								<td>
+									<div class="progress">
+										<div class="rate" w="${per*100}"></div>
+										<span class="rate-font">0%</span>
+									</div>
+								</td>
+								<td>									
+									<div class="colorBlu list-menu" style="display: inline-block;">
+										操作+
+										<ul class="menu">
+											<li data-url="salegoal/goalItem.html?id=${id}" data-title="销售目标详情" class="colorBlu menu-item NewPop">
+												<a href="#">详情</a>
+											</li>
+										</ul>
+									</div>
+								</td>
+							</tr>`;
+					}
+					$("#dataList").html(html);
+					getProgress();
+				}
+			});
+		});
+	</script>
+</html>

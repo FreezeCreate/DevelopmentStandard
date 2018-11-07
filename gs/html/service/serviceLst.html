@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>设备维修单</title>
+		<link rel="stylesheet" type="text/css" href="../css/public.css"/>
+	</head>
+	<body style="min-width: 930px;">
+		<div class="ContentBox">
+			<div class="Tables">
+				<div class="TablesHead">
+					<label>
+						<input type="text"class="FrameGroupInput radius searchname" placeholder="搜索"/>
+					</label>
+					<span class="Btn Btn-blue" id="searchNameId"><i class="icon-serch"></i> 查询</span>
+					<span class="Btn Btn-green TablesSerchReset"><i class="icon-reset"></i> 重置</span>
+					<span class="Btn l_refresh Btn-blue">刷新</span>
+					<span class="Btn Btn-blue float-right NewPop" data-url="service/addService.html" data-title="新增维修单"><i class="icon-add"></i>新增</span>
+				</div>
+				<div class="top20">
+					<table class="Table">
+						<thead>
+							<tr>
+								<th>序号</th>
+								<th>设备名</th>
+								<th>维修/保养类型</th>
+								<th>维修/保养状态</th>
+								<th>负责工程师</th>
+								<th>处理时间</th>
+								<th>操作</th>
+							</tr>
+						</thead>
+						<tbody class="textCenter TabBg" id="dataList">
+						</tbody>
+					</table>
+				</div>
+				<div class="noMsg">
+					<div class="noMsgCont">
+						<img src="../images/noMsg.png"/>
+						<span>抱歉！暂时没有数据</span>
+					</div>
+				</div>
+				<div class="Pages textRight top20">
+					<ul class="PagesBox">
+					</ul>
+				</div>
+			</div>
+		</div>
+		<!-- 内容结束 -->
+	</body>
+	<script src="../js/jquery-1.11.0.js" type="text/javascript" charset="utf-8"></script>
+	<script src="../js/public.js" type="text/javascript" charset="utf-8"></script>
+	<!--日期插件-->
+	<script src="../js/jedate.js" type="text/javascript" charset="utf-8"></script>
+	<!--日期插件-->
+	<script src="../js/table.js" type="text/javascript" charset="utf-8"></script>
+	<script type="text/javascript">
+		$(()=>{
+			"use strict"
+			getPagesBox({
+				nowUrl:"/app.php/service/serviceLst",
+				addList(data){
+					$(".noMsg").hide();
+					if(data.code!=0){
+						console.error(data.msg);
+						return false;
+					}
+					var res=data.results;
+					if(!res)return false;
+					var html='',i=0;
+					for(var {id,type,explain,status,workname,handletime,equip_name} of res){
+						//{ "id": "维修单id", "eid": "设备id", "type": "维修类型：维修、保养", "explain": "备注详情", "status": "维修/保养状态：0、未分配人员1、已分配人员但未处理2、已处理", "workid": "负责工程师id", "workname": "负责工程师名称", "optid": "操作人id", "optname": "操作人", "optdt": "操作时间", "del": "是否删除1、删除0、未删除", "handletime": "处理时间", "see": "是否查看1、查看0、未查看" }
+						i++;
+						html+=`<tr>
+								<td>${i}</td>
+								<td>${equip_name}</td>
+								<td>${type}</td>
+								<td>${status==0?"未分配人员":(status==2?"已处理":"已分配人员但未处理")}</td>
+								<td>${workname}</td>
+								<td>${handletime}</td>
+								<td>
+									<div class="colorBlu list-menu" style="display: inline-block;">
+										操作+
+										<ul class="menu">
+											<li data-url="service/serviceItem.html?id=${id}" class="colorBlu menu-item NewPop" data-title="维修单详情">
+												<a href="#">详情</a>
+											</li>
+											<li data-url="service/updService.html?id=${id}" class="colorBlu menu-item NewPop" data-title="修改维修单信息">
+												<a href="#">修改</a>
+											</li>
+											<li class="colorRed delTr menu-item" data-cid="${id}">
+												<a href="#">删除</a>
+											</li>
+										</ul>
+									</div>
+								</td>
+							</tr>`;
+					}
+					$("#dataList").html(html);
+					isDelTr("/app.php/service/delService");
+				}
+			});
+		});
+	</script>
+</html>

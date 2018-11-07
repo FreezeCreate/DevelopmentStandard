@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>详情</title>
+    <link rel="stylesheet" href="../css/public.css">
+</head>
+<body>
+    <div class="Frame">
+        <div class="FrameTit"><span class="FrameTitName">详情</span><span class="Close"></span></div>
+        <div class="FrameBox">
+            <div class="FrameCont">
+                <div class="FrameTable">
+                    <div class="FrameTableTitl">详情</div>
+                    <table class="FrameTableCont" id="dataItem">
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="FrameTableFoot">
+            <span class="Succ BgGreen" id="addDataSub" style="display:none;">提交</span>
+        </div>
+    </div>
+    <script src="../js/jquery-1.11.0.js"></script>
+    <script src="../js/public.js"></script>
+    <script src="../js/jedate.js" type="text/javascript" charset="utf-8"></script>
+    <script src="../js/dataAdd.js"></script>
+    <script>
+        $(function(){
+            showDataList("app.php/budge/budgeInfo",function(data){
+                if(data.code!=0){
+                    alert(data.msg);
+                    return false;
+                }
+                var res=data.results,html='';
+                //	{ "id": "id", "budge_name": "预算名称", "budge_status": "预算状态1、支出2、收入", "budge_money": "金额", "budge_prev": "事前控制：百分比数据", "budge_beyond": "超额控制：百分比数据", "budge_check": "审核控制：百分比数据", "budge_desc": "预算描述", "optid": "操作人id", "optname": "操作人", "optdt": "操作日期", "del": "是否删除1、删除0、未删除", "cid": "公司id", "did": "部门id", "dname": "部门名称", "budge_time": "预算时间" }
+                html='<tr>'+
+                        '<td class="FrameGroupName">预算名称：</td>'+
+                        '<td colspan="3">'+res.budge_name+'</td>'+
+                    '</tr>'+
+                    '<tr>'+
+                        '<td class="FrameGroupName">预算金额：</td>'+
+                        '<td>'+res.budge_money+'</td>'+
+                        '<td class="FrameGroupName">预算控制：</td>'+
+                        '<td>'+res.budge_control+'</td>'+
+                    '</tr>'+
+                    '<tr>'+
+                        '<td class="FrameGroupName">所属部门：</td>'+
+                        '<td>'+res.dname+'</td>'+
+                        '<td class="FrameGroupName">预算月份：</td>'+
+                        '<td>'+res.budge_time+'</td>'+
+                    '</tr>'+
+                    '<tr>'+
+                        '<td class="FrameGroupName">操作人：</td>'+
+                        '<td>'+res.optname+'</td>'+
+                        '<td class="FrameGroupName">操作时间：</td>'+
+                        '<td>'+res.optdt+'</td>'+
+                    '</tr>'+
+                    '<tr>'+
+                        '<td class="FrameGroupName">预算描述：</td>'+
+                        '<td colspan="3" style="min-height:50px;">'+res.budge_desc+'</td>'+
+                    '</tr>';
+                $("#dataItem").html(html);
+            });        
+        });
+    </script>
+</body>
+</html>

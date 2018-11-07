@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>详情</title>
+    <link rel="stylesheet" href="../css/public.css">
+</head>
+<body>
+    <div class="Frame">
+        <div class="FrameTit"><span class="FrameTitName">详情</span><span class="Close"></span></div>
+        <div class="FrameBox">
+            <div class="FrameCont">
+                <div class="FrameTable">
+                    <div class="FrameTableTitl">详情</div>
+                    <table class="FrameTableCont" id="dataItem">
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="FrameTableFoot">
+            <span class="Succ BgGreen" id="addDataSub" style="display:none;">提交</span>
+        </div>
+    </div>
+    <script src="../js/jquery-1.11.0.js"></script>
+    <script src="../js/public.js"></script>
+    <script src="../js/jedate.js" type="text/javascript" charset="utf-8"></script>
+    <script src="../js/dataAdd.js"></script>
+    <script>
+        $(()=>{
+            showDataList("app.php/paycate/payCateInfo",function(data){
+                if(data.code!=0){
+                    console.error(data.msg);
+                    return false;
+                }
+                var res=data.results,html='';
+                //	{ "id": "id", "catename": "分类名称", "catedesc": "描述", "order": "排序", "optid": "操作人id", "optname": "操作人", "optdt": "操作时间", "cid": "公司id" "del": "是否删除1、删除0、未删除", "paydname": "分类部门", "paydid": "部门id", "quota": "预算" }
+                html=`<tr>
+                        <td class="FrameGroupName">分类名称：</td>
+                        <td>${res.catename}</td>
+                        <td class="FrameGroupName">描述：</td>
+                        <td>${res.catedesc}</td>
+                    </tr>
+                    <tr>
+                        <td class="FrameGroupName">排序：</td>
+                        <td>${res.order}</td>
+                        <td class="FrameGroupName">分类部门：</td>
+                        <td>${res.paydname}</td>
+                    </tr>
+                    <tr>
+                        <td class="FrameGroupName">操作人：</td>
+                        <td>${res.optname}</td>
+                        <td class="FrameGroupName">操作时间：</td>
+                        <td>${res.optdt}</td>
+                    </tr>
+                    <tr>
+                        <td class="FrameGroupName">预算：</td>
+                        <td colspan="3">${res.quota}</td>
+                    </tr>`;
+                $("#dataItem").html(html);
+            });        
+        });
+    </script>
+</body>
+</html>

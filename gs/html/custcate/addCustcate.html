@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>新增</title>
+    <link rel="stylesheet" href="../css/public.css">
+</head>
+<body>
+    <div class="Frame">
+        <div class="FrameTit"><span class="FrameTitName">新增</span><span class="Close"></span></div>
+        <div class="FrameBox">
+            <div class="FrameCont">
+                <div class="FrameTable">
+                    <div class="FrameTableTitl">新增</div>
+                    <form id="addData">
+                        <table class="FrameTableCont">
+                            <tr>
+                                <td class="FrameGroupName"><span class="colorRed">*</span>客户类型：</td>
+                                <td>
+                                    <input type="text" name="catename" class=" FrameGroupInput" placeholder="输入客户类型">
+                                </td>
+                                <td class="FrameGroupName">分类描述：</td>
+                                <td>
+                                    <input type="text" name="catedesc" class=" FrameGroupInput" placeholder="填写描述信息">
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="FrameGroupName">有效性分析：</td>
+                                <td colspan="3">
+                                    <textarea name="cateability" class=" FrameGroupInput"></textarea>
+                                </td>
+                            </tr>
+                        </table>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div class="FrameTableFoot">
+            <span class="Succ" id="addDataSub">提交</span>
+        </div>
+    </div>
+    <script src="../js/jquery-1.11.0.js"></script>
+    <script src="../js/public.js"></script>
+    <script src="../js/jedate.js" type="text/javascript" charset="utf-8"></script>
+    <script src="../js/dataAdd.js"></script>
+    <script>
+        $(function(){		
+			addDataList("app.php/custcate/saveCustCate");
+        });
+    </script>
+</body>
+</html>

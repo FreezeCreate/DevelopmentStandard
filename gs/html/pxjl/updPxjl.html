@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>修改</title>
+    <link rel="stylesheet" href="../css/public.css">
+</head>
+<body>
+    <div class="Frame">
+        <div class="FrameTit"><span class="FrameTitName">修改</span><span class="Close"></span></div>
+        <div class="FrameBox">
+            <div class="FrameCont">
+                <div class="FrameTable">
+                    <div class="FrameTableTitl">修改</div>
+                    <form id="addData">
+                        <input type="hidden" id="id" name="id">
+                        <table class="FrameTableCont" id="dataItem">
+                        </table>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div class="FrameTableFoot">
+            <span class="Succ" id="addDataSub">提交</span>
+        </div>
+    </div>
+    <script src="../js/jquery-1.11.0.js"></script>
+    <script src="../js/public.js"></script>
+    <script src="../js/jedate.js" type="text/javascript" charset="utf-8"></script>
+    <script src="../js/dataAdd.js"></script>
+    <script>
+        $(()=>{       
+			jeDate({
+				dateCell:".FrameDatGroup",
+				format:"YYYY-MM-DD hh:mm:ss",
+				isinitVal:false,
+				isTime:false, //isClear:false,
+				minDate:"2014-09-19",
+				okfun:function(val){alert(val)}
+			})
+        	showDataList('/app.php/pxjl/pxjlInfo',function(data){
+                var res=data.results;
+                $("#id").val(res.id);
+                if(res){
+                    var itemhtml='';
+                    itemhtml=`<tr>
+                                <td class="FrameGroupName"  >部门名称：</td>
+                                <td>
+                                    <select name="depid" class="FrameGroupInput departmentList"></select>
+                                </td>
+                                <td class="FrameGroupName"  >会议记录人：</td>
+                                <td>
+                                    <select name="username" id="userid" class="FrameGroupInput saleNameList"></select>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="FrameGroupName">标题：</td>
+                                <td colspan="3">
+                                    <input type="text" name="title" value="光子生电" class=" FrameGroupInput">
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="FrameGroupName"  >培训开始日期：</td>
+                                <td>
+                                    <input type="text" name="date" value="2018-02-02 20:00:00" class="FrameDatGroup DatEnd">
+                                </td>
+                                <td class="FrameGroupName">培训结束日期：</td>
+                                <td>
+                                    <input type="text" name="enddate" value="2018-10-02 21:00:00" class="FrameDatGroup DatEnd">
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="FrameGroupName">讲师：</td>
+                                <td>
+                                    <input type="text" name="lector" value="罗进讲师" class="FrameGroupInput">
+                                </td>
+                                <td class="FrameGroupName">主题：</td>
+                                <td>
+                                    <input type="text" name="theme" value="光是一种粒子" class="FrameGroupInput">
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="FrameGroupName">总结：</td>
+                                <td colspan="3">
+                                    <textarea class="FrameGroupInput" name="zongjie">家妹儿讲得好</textarea>
+                                </td>
+                            </tr>`;
+                    $("#dataItem").html(itemhtml).removeClass("l_loading");
+                    // 部门名称加载
+                    $(".departmentList").each(function(i,e){
+                        var that=$(e);
+                        showCommonList("app.php/main/departmentLst",function(data){
+                            if(data.code==0){
+                                var res=data.results,html;
+                                for(var {id,name} of res){
+                                    html+=`<option   value="${id}">${name}</option>`;
+                                }
+                                that.html(html);
+                            }else{
+                                console.error("网络错误！");
+                            }
+                        });
+                    });
+                    // 销售名加载
+                    showSaleName(".saleNameList");
+                };
+                addDataList("/app.php/pxjl/savePxjl");
+            });
+        });
+    </script>
+</body>
+</html>

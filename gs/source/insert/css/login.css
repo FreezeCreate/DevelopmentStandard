@@ -1,0 +1,14 @@
+
+.Login{position: fixed;width: 100%;height: 100%;top: 0;left: 0;background: url(../images/login_bg.jpg) no-repeat;background-size: 100% 100%;}
+.loginTit{text-align: center;margin-bottom: 40px;}
+.loginCont{padding: 40px;background-color: #63809e;border-radius: 20px;overflow: hidden;color: #d2d2d2;margin-bottom: 40px;
+-moz-box-shadow:0px 0px 5px #727c85;/*firefox*/ 
+-webkit-box-shadow:0px 0px 5px #727c85;/*webkit*/ 
+box-shadow:0px 0px 5px #727c85;/*opera或ie9*/ 
+}
+.loginContLeft{float: left;}
+.loginGroup{padding: 20px;}
+.loginRember{overflow: hidden;width: 250px;margin-left: 80px;}
+.loginGroupName{font-size: 17px;display: inline-block;width: 60px;text-align: right;min-height: 12px;}
+.loginGroupVal{height: 40px;width: 210px;font-size: 17px; background-color: #fff;color: #3f3f3f;border: none;border-radius: 20px;outline: none;padding: 0 20px;}
+.loginContRight{padding: 25px 50px;float: left;}

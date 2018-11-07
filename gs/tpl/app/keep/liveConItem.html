@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Knowledge base details</title>
+    <link rel="stylesheet" href="../../source/vue/css/liveCon.css">
+</head>
+<body>
+    <!-- <div class="header">
+        <a class="header-container header-left" href="home.html">后退</a>
+        <a class="header-container header-title">知识库详情</a>
+    </div> -->
+    <div class="box" id="dataItem">
+    </div>
+    <script src="../../source/vue/js/jquery-1.10.1.min.js"></script>
+    <script src="../../source/vue/js/public.js"></script>
+    <script>
+        var id=getRequest().id;
+        $.ajax({
+            type : 'get',
+            url : dataURL + '/app.php/service/liveConInfo',
+            data : { token , id},
+            dataType : 'json',
+            success : data=>{
+                if(data.code==0){
+                    $('#dataItem').html(`<div class="box-header">${data.live_title}</div>
+                        <div class="box-container">${data.live_desc}</div>`);
+                }
+            },
+            error : ()=>{
+                alert('网络错误');
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>跟进客户</title>
+		<link rel="stylesheet" type="text/css" href="../css/public.css"/>
+	</head>
+	<body style="min-width: 930px;">
+		<div class="ContentBox">
+			<div class="Tables">
+				<div class="TablesHead">
+					<label>
+						<input type="text"class="FrameGroupInput radius searchname" name=""  value="" placeholder="搜索名称"/>
+					</label>
+					<span class="Btn Btn-blue" id="searchNameId"><i class="icon-serch"></i> 查询</span>
+					<span class="Btn Btn-green TablesSerchReset"><i class="icon-reset"></i> 重置</span>
+					<span class="Btn l_refresh Btn-blue">刷新</span>
+				</div>
+				<div class="top20">
+					<table class="Table">
+						<thead>
+							<tr>
+								<th>序号</th>
+								<th>客户名称</th>
+								<th>客户从业类型</th>
+								<th>客户电话</th>
+								<th>地址</th>
+								<th>销售人</th>
+								<th>添加时间</th>
+								<th>操作</th>
+							</tr>
+						</thead>
+						<tbody class="textCenter TabBg" id="dataList">
+						</tbody>
+					</table>
+				</div>
+				<div class="noMsg">
+					<div class="noMsgCont">
+						<img class="" src="../images/noMsg.png"/>
+						<span>抱歉！暂时没有数据</span>
+					</div>
+				</div>
+				<div class="Pages textRight top20">
+					<ul class="PagesBox">
+					</ul>
+				</div>
+			</div>
+		</div>
+		<!-- 内容结束 -->
+	</body>
+	<script src="../js/jquery-1.11.0.js" type="text/javascript" charset="utf-8"></script>
+	<script src="../js/public.js" type="text/javascript" charset="utf-8"></script>
+	<!--日期插件-->
+	<script src="../js/jedate.js" type="text/javascript" charset="utf-8"></script>
+	<!--日期插件-->
+	<script src="../js/table.js" type="text/javascript" charset="utf-8"></script>
+	<script type="text/javascript">
+		$(function(){
+			getPagesBox({
+				nowUrl:"app.php/allcust/allFlowUser",
+				addList: function(data){
+					$(".noMsg").hide();
+					if(data.code!=0){
+						alert(data.msg);
+						return false;
+					}
+					var res=data.results;
+					if(!res)return false;
+					var html='',i=0;
+					for(var k in res){
+						i++;//
+						html+='<tr>'+
+								'<td class="'+(res[k].noticecontent != ''?"l_clock":"") +'" data-content="'+res[k].noticecontent+'">'+i+'</td>'+
+								'<td>'+(res[k].cust_name||'未填写')+'</td>'+
+								'<td>'+(res[k].cust_cate||'无')+'</td>'+
+								'<td>'+res[k].phone+'</td>'+
+								'<td>'+res[k].address+'</td>'+
+								'<td>'+(res[k].salename||'无')+'</td>'+
+								'<td>'+(res[k].record_addtime||'空')+'</td>'+
+								'<td>'+
+									'<div class="colorBlu list-menu" style="display: inline-block;">'+
+										'操作+'+
+										'<ul class="menu">'+
+											'<li data-url="custmang/userItem.html?id='+res[k].id+'" data-title="跟进客户详情" class="colorBlu menu-item NewPop">'+
+												'<a href="#">详情</a>'+
+											'</li>'+
+											'<li data-url="custmang/updUser.html?id='+res[k].id+'" data-title="修改客户信息" class="colorBlu menu-item NewPop">'+
+												'<a href="#">修改</a>'+
+											'</li>'+
+											'<li class="menu-item colorGre  NewPop" data-url="custmang/addCustRecord.html?id='+res[k].id+'" data-title="跟进记录">'+
+												'<a href="#">跟进</a>'+
+											'</li>'+
+											'<li data-url="custmang/addApplyContract.html?id='+res[k].id+'" data-title="新增合同申请" class="colorBlu menu-item NewPop">'+
+												'<a href="#">新增合同申请</a>'+
+											'</li>'+
+										'</ul>'+
+									'</div>'+
+								'</td>'+
+							'</tr>';
+					}
+					$("#dataList").html(html);
+					addCustRecord();
+					isDelTr("app.php/custmang/delCustmang");
+				}
+			});
+		});
+	</script>
+</html>

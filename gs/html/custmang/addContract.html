@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>完善合同信息</title>
+    <link rel="stylesheet" href="../css/public.css">
+</head>
+<body>
+    <div class="Frame">
+        <div class="FrameTit"><span class="FrameTitName">完善合同信息</span><span class="Close"></span></div>
+        <div class="FrameBox">
+            <div class="FrameCont">
+                <div class="FrameTable">
+                    <div class="FrameTableTitl">完善合同信息</div>
+                    <table class="FrameTableCont" id="dataItem">
+                    </table>
+                    <form id="addData">
+                        <input type="hidden" id="apply_id" name="apply_id">
+                        <table class="FrameTableCont">
+                        <br>
+                            <tr>
+                                <td class="FrameGroupName"><span class="colorRed">*</span>合同金额：</td>
+                                <td>
+                                    <input type="number" name="money" class="FrameGroupInput" placeholder='输入合同金额'>
+                                </td>
+                                <td class="FrameGroupName"  >订单：</td>
+                                <td>
+                                    <select name="oid" id="oid" class="FrameGroupInput"></select>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="FrameGroupName">生效日期：</td>
+                                <td>
+                                    <input type="text" name="startdt" class="FrameDatGroup" id="DatStr" placeholder="点击选择时间"/>
+                                </td>
+                                <td class="FrameGroupName">签约日期：</td>
+                                <td>
+                                    <input type="text" name="signdt" class="FrameDatGroup" id="DatEnd" placeholder="点击选择时间"/>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="FrameGroupName"  >截止日期：</td>
+                                <td>
+                                    <input type="text" name="enddt" class="FrameDatGroup" id="DatEnd" placeholder="点击选择时间">
+                                </td>
+                                <td class="FrameGroupName"  >手机号：</td>
+                                <td>
+                                    <input type="text" name="phone" class="FrameGroupInput" placeholder="输入手机号"/>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="FrameGroupName">相关文件 ：</td>
+                                <td>
+                                    <input type="hidden" id="files" name="files">
+                                    <input class="None fileToUpload" onchange="ajaxFileUpload()" type="file" name="file" id="file"/>
+                                    <span class="addFile" onclick="$('#file').click()">+添加文件</span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="FrameGroupName"  >说明：</td>
+                                <td   colspan="3">
+                                    <textarea name="explain" class="FrameGroupInput" id="DatEnd"></textarea>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="FrameGroupName">合同内容：</td>
+                                <td colspan="3">
+                                    <textarea name="content" class="FrameGroupInput"></textarea>
+                                </td>
+                            </tr>
+                        </table>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div class="FrameTableFoot">
+            <span class="Succ" id="addDataSubCont">提交</span>
+        </div>
+    </div>
+    <script src="../js/jquery-1.11.0.js"></script>
+    <script src="../js/public.js"></script>
+    <script src="../js/jedate.js" type="text/javascript" charset="utf-8"></script>
+    <script src="../js/dataAdd.js"></script>
+    <script src="../js/ajaxfileupload.js"></script>
+    <script>
+    $(function(){
+        showCommonList('/app.php/custmang/orderLsts',function(data){
+            var res=data.results,html='';
+            if(res && res.length>0){
+                for(var i in res){
+                    html+='<option value="'+res[i].id+'">'+res[i].name+'</option>';
+                }
+            }
+            $('#oid').html(html);
+        });
+        showDataList('app.php/custmang/applyContractInfo',function(data){
+            var res=data,html;
+            if(res){
+                html='<tr>'+
+                        '<td class="FrameGroupName">合同申请名称：</td>'+
+                        '<td colspan="3">'+res.contractname+'</td>'+
+                    '</tr>'+
+                    '<tr>'+
+                        '<td class="FrameGroupName">客户名称：</td>'+
+                        '<td >'+res.custname+'</td>'+
+                        '<td class="FrameGroupName">完成情况：</td>'+
+                        '<td>'+res.st+'</td>'+
+                    '</tr>'+
+                    '<tr>'+
+                        '<td class="FrameGroupName">操作人姓名：</td>'+
+                        '<td >'+res.optname+'</td>'+
+                        '<td class="FrameGroupName">操作时间：</td>'+
+                        '<td>'+res.optdt+'</td>'+
+                    '</tr>'+
+                    '<tr>'+
+                        '<td class="FrameGroupName">描述：</td>'+
+                        '<td colspan="3">'+res.contractdesc+'</td>'+
+                    '</tr>'+
+                    '<tr>'+
+                        '<td class="FrameGroupName">意见：</td>'+
+                        '<td colspan="3">'+res.suggest+'</td>'+
+                    '</tr>'+
+                    '<tr>'+
+                        '<td class="FrameGroupName">内容：</td>'+
+                        '<td colspan="3">'+res.contractcontent+'</td>'+
+                    '</tr>';
+                $("#dataItem").html(html);
+            }
+        });		
+    });
+        $(function(){
+            $('#apply_id').val(getRequest().id);
+            $(document).on('click','#addDataSubCont',function(){
+                var that = $(this);
+                that.hide().parent().append("<i class='l_loading'></i>");
+                var data = getSubData('addData');
+                data.token = dataToken;
+                $.ajax({
+                    type:'post',
+                    url:dataURL+'app.php/custmang/saveContract',
+                    data: data,
+                    dataType:'json',
+                    success:function(data){
+                        if (data.code != 0) {
+                            alert(data.msg);
+                            that.show().next().remove();
+                            return false;
+                        }
+                        parent.window.closHtml();
+                        location.reload();
+                        alert(data.msg + ",请再次刷新。");
+                    },
+                    error:function(){
+                        console.error('网络错误');
+                    }
+                });
+            });
+        });
+        function ajaxFileUpload() {
+            $.ajaxFileUpload({
+                url: dataURL+'/app.php/uplaod/uploadFile',
+                secureuri: false,
+                fileElementId: 'file',
+                dataType: 'json',
+                data: {name: 'file', id: 'file'},
+                success: function(data, status) {
+                    var fileval=$('#files').val();
+                    fileval==''?"":fileval+=',';
+                    if (data.code != 1) {
+                        $('#files').val(fileval+data.id);
+                        $('#file').after('<span style="display:block;">'+data.filename+'<span>');
+                    } else {
+                        console.error(data.msg);
+                    }
+                },
+                error: function(data, status, e) {
+                    console.error(e);
+                }
+            });
+            return false;
+        }
+    </script>
+</body>
+</html>

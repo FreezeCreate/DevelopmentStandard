@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>详情</title>
+    <link rel="stylesheet" href="../css/public.css">
+</head>
+<body>
+    <div class="Frame">
+        <div class="FrameTit"><span class="FrameTitName">详情</span><span class="Close"></span></div>
+        <div class="FrameBox">
+            <div class="FrameCont">
+                <div class="FrameTable">
+                    <div class="FrameTableTitl">详情</div>
+                    <table class="FrameTableCont" id="dataItem">
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="FrameTableFoot">
+            <span class="Succ BgGreen" id="addDataSub" style="display:none;">提交</span>
+        </div>
+    </div>
+    <script src="../js/jquery-1.11.0.js"></script>
+    <script src="../js/public.js"></script>
+    <script src="../js/jedate.js" type="text/javascript" charset="utf-8"></script>
+    <script src="../js/dataAdd.js"></script>
+    <script>
+        $(function(){
+            showDataList("/app.php/meeting/meetingInfo",function(data){
+                if(data.code!=0){
+                    console.error(data.msg);
+                    return false;
+                }
+                var res=data.results,html='';
+                var files_html='',files=res.files;
+                if(files){
+                    for(var i in files){
+                        files_html += '<a itemid="'+files[i].id+'" style="display:block;" class="download colorGre">'+files[i].filename+'</a>';
+                    }
+                }
+                //{ "id": "id", "recordid": "记录人id", "recordname": "记录人", "title": "会议标题", "meetperson": "参会人", "meetdesc": "会议说明", "files": "文件", "optid": "操作人id", "optname": "操作人", "optdt": "操作时间", "cid": "公司id", "del": "是否删除1、删除0、未删除", "startdt": "开始时间", "enddt": "结束时间" }
+                html='<tr>'+
+                        '<td class="FrameGroupName">会议标题：</td>'+
+                        '<td colspan="3">'+res.title+'</td>'+
+                    '</tr>'+
+                    '<tr>'+
+                        '<td class="FrameGroupName">记录人：</td>'+
+                        '<td>'+res.recordname+'</td>'+
+                        '<td class="FrameGroupName">参会人：</td>'+
+                        '<td>'+res.meetperson+'</td>'+
+                    '</tr>'+
+                    '<tr>'+
+                       '<td class="FrameGroupName">开始时间：</td>'+
+                        '<td>'+res.startdt+'</td>'+
+                        '<td class="FrameGroupName">结束时间：</td>'+
+                        '<td>'+res.enddt+'</td>'+
+                    '</tr>'+
+                    '<tr>'+
+                        '<td class="FrameGroupName">操作人：</td>'+
+                        '<td>'+res.optname+'</td>'+
+                        '<td class="FrameGroupName">操作时间：</td>'+
+                        '<td>'+res.optdt+'</td>'+
+                    '</tr>'+
+                    '<tr>'+
+                        '<td class="FrameGroupName">文件：</td>'+
+                        '<td colspan="3">'+files_html+'</td>'+
+                    '</tr>'+
+                    '<tr>'+
+                        '<td class="FrameGroupName">会议说明：</td>'+
+                        '<td colspan="3">'+res.meetdesc+'</td>'+
+                    '</tr>';
+                $("#dataItem").html(html);
+            });        
+        });
+    </script>
+</body>
+</html>

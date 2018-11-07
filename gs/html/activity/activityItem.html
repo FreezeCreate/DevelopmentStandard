@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>详情</title>
+    <link rel="stylesheet" href="../css/public.css">
+</head>
+<body>
+    <div class="Frame">
+        <div class="FrameTit"><span class="FrameTitName">详情</span><span class="Close"></span></div>
+        <div class="FrameBox">
+            <div class="FrameCont">
+                <div class="FrameTable">
+                    <div class="FrameTableTitl">详情</div>
+                    <table class="FrameTableCont" id="dataItem">
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="FrameTableFoot">
+                <span class="Succ BgGreen" id="addDataSub" style="display:none;">提交</span>
+        </div>
+    </div>
+    <script src="../js/jquery-1.11.0.js"></script>
+    <script src="../js/public.js"></script>
+    <script src="../js/jedate.js" type="text/javascript" charset="utf-8"></script>
+    <script src="../js/dataAdd.js"></script>
+    <script>
+        $(function(){
+            showDataList('/app.php/activity/activityInfo',function(data){
+                var res=data.results,html='';
+                html='<tr>'+
+                        '<td class="FrameGroupName" >活动标题：</td>'+
+                        '<td>'+res.title+'</td>'+
+                        '<td class="FrameGroupName">活动类别：</td>'+
+                        '<td>'+res.type+'</td>'+
+                    '</tr>'+
+                    '<tr>'+
+                        '<td class="FrameGroupName">活动开始日期：</td>'+
+                        '<td>'+res.startdt+'</td>'+
+                        '<td class="FrameGroupName">活动结束日期：</td>'+
+                        '<td>'+res.enddt+'</td>'+
+                    '</tr>'+
+                    '<tr>'+
+                        '<td class="FrameGroupName">活动地点：</td>'+
+                        '<td>'+res.actwhere+'</td>'+
+                        '<td class="FrameGroupName">活动所需：</td>'+
+                        '<td>'+res.actneed+'</td>'+
+                    '</tr>'+
+                    '<tr>'+
+                        '<td class="FrameGroupName">活动背景：</td>'+
+                        '<td>'+res.actback+'</td>'+
+                        '<td class="FrameGroupName">活动线路说明：</td>'+
+                        '<td>'+res.actline+'</td>'+
+                    '</tr>'+
+                    '<tr>'+
+                        '<td class="FrameGroupName">活动预计花销：</td>'+
+                        '<td>'+res.paywill+'</td>'+
+                        '<td class="FrameGroupName">活动实际花销：</td>'+
+                        '<td>'+res.payfact+'</td>'+
+                    '</tr>'+
+                    '<tr>'
+                        '<td class="FrameGroupName">操作人</td>'+
+                        '<td>'+res.optname+'</td>'+
+                        '<td class="FrameGroupName">操作时间</td>'+
+                        '<td>'+res.optdt+'</td></tr>';
+                $("#dataItem").html(html);                
+            });					
+        });
+    </script>
+</body>
+</html>

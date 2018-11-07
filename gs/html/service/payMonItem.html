@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>详情</title>
+    <link rel="stylesheet" href="../css/public.css">
+</head>
+<body>
+    <div class="Frame">
+        <div class="FrameTit"><span class="FrameTitName">详情</span><span class="Close"></span></div>
+        <div class="FrameBox">
+            <div class="FrameCont">
+                <div class="FrameTable">
+                    <div class="FrameTableTitl">详情</div>
+                    <table class="FrameTableCont" id="dataItem">
+                    </table>
+                    <p class="colorGre" style="margin-top:30px;margin-bottom:10px;display: none;">处理记录</p>
+                    <table class="FrameTableCont textCenter" id="log_res">
+                    </table>
+                    <form id="addData">
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div class="FrameTableFoot">
+            <span class="Succ BgGreen" id="addDataSub" style="display:none;">提交</span>
+        </div>
+    </div>
+    <script src="../js/jquery-1.11.0.js"></script>
+    <script src="../js/public.js"></script>
+    <script src="../js/jedate.js" type="text/javascript" charset="utf-8"></script>
+    <script src="../js/dataAdd.js"></script>
+    <script>
+        $(()=>{
+            showDataList("/app.php/keep/payMonInfo",function(data){
+                if(data.code!=0){
+                    console.error(data.msg);
+                    return false;
+                }
+                var res=data,html='';
+                //{ "optname": "申请人名称", "optdt": "申请日期", "catename": "用款类别", "paymoney": "申请金额", "status": "当前状态(1、未报销2、拒绝3、同意)", "content": "说明", }
+                if(res){
+                    html=`<tr>
+                            <td class="FrameGroupName">申请人姓名：</td>
+                            <td>${res.optname}</td>
+                            <td class="FrameGroupName">申请日期：</td>
+                            <td>${res.optdt}</td>
+                        </tr>
+                        <tr>
+                            <td class="FrameGroupName">用款类别：</td>
+                            <td>${res.catename}</td>
+                            <td class="FrameGroupName">申请金额：</td>
+                            <td>${res.paymoney}</td>
+                        </tr>
+                        <tr>
+                            <td class="FrameGroupName">添加时间：</td>
+                            <td>${res.adddt}</td>
+                            <td class="FrameGroupName">当前状态：</td>
+                            <td>${res.status==1?"未报销":(res.status==2?"拒绝":"同意")}</td>
+                        </tr>
+                        <tr>
+                            <td class="FrameGroupName">说明：</td>
+                            <td colspan="3" style="min-height:50px;">${res.content}</td>
+                        </tr>`;
+                    $("#dataItem").html(html);
+                var log_res=data.log,
+                    log_html=`<tr class="BgGreen">
+                            <td>序号</td>
+                            <td>操作人</td>
+                            <td>操作时间</td>
+                            <td>操作状态</td>
+                            <td>说明</td>
+                            <td>相关文件</td>
+                        </tr>`;
+                if(log_res.length>0){
+                    for(var {id,files,checkname,optdt,statusname,explain} of log_res){
+                        log_html+=`<tr>
+                            <td>${id}</td>
+                            <td>${checkname}</td>
+                            <td>${optdt}</td>
+                            <td>${statusname}</td>
+                            <td>${explain}</td>
+                            <td>${files|"无"}</td>
+                        </tr>`;
+                    }
+                    $("#log_res").html(log_html).prev().show();
+                }
+                /*addtime:"2018-09-21 09:17:59"allcheckid:","applydt:"2018-09-21"checksm:nullcid:"81"cname:"合同申请"del:"0"id:"143"modelid:"43"modelname:"合同申请"nowcheckid:",1,"nowcheckname:"超级管理员"number:nulloptdt:"2018-09-21 09:17:59"optid:"1"optname:"超级管理员"status:"1"statustext:"待审核"summary:"【冠晟电气】合同申请"table:"contract_apply"tid:"44"udeptname:nulluid:"1"uname:"超级管理员"*/
+                var b_res=data.bill;
+                if(b_res!=''){
+                    $("#addData").append(`<div class="FrameTableTitl">${b_res.cname}</div>
+                        <table class="FrameTableCont" id="bill_res"></table>`);
+                    $("#addDataSub").show();
+                    var bHtml=`<tr>
+                            <td class="FrameGroupName">状态：</td>
+                            <td>${b_res.statustext}</td>
+                        </tr>
+                        <tr>
+                            <td class="FrameGroupName">处理流程：</td>
+                            <td>${b_res.nowcheckname}</td>
+                        </tr>
+                        <tr>
+                            <td class="FrameGroupName"><span style="color:red;">*</span> 处理人：</td>
+                            <td>${b_res.nowcheckname}</td>
+                        </tr>
+                        <tr>
+                            <td class="FrameGroupName"><span style="color:red;">*</span> 处理动作：</td>
+                            <td>
+                                <label>
+                                    <input type="radio" name="status" value="3"/>同意
+                                    <input type="radio" name="status" value="2"/>驳回
+                                </label>
+                                <input type="hidden" name="id" value="${b_res.id}"/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="FrameGroupName">说明 ：</td>
+                            <td colspan="3">
+                                <textarea name='checksm' class="FrameGroupInput"></textarea>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="FrameGroupName">相关文件：</td>
+                            <td>
+                                <ul class="FileBox">
+                                </ul>
+                                <input class="None addFileVal fileToUpload" type="file" name="files" id="files" value="" />
+                                <span class="addFile">+添加文件</span>
+                            </td>
+                        </tr>`;
+                    $("#bill_res").html(bHtml);
+                }
+                addDataList("app.php/apply/saveCheck");
+                }
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>home</title>
+		<link rel="stylesheet" type="text/css" href="css/public.css"/>
+		<style>
+			body{min-width: 930px;}
+			.jianbaoCont{padding: 0 16px;line-height: 26px;}
+			.jianbao{width: 100%;}
+			.jianbao td{height: 26px;line-height: 26px;}
+			.jianbao tr:nth-child(6n+3){border-bottom: 1px solid #e1e1e1;}
+
+
+			.IndexCake{position: relative;}
+			.IndexCakeBox{float: left;width: 50%; text-align: center;padding: 75px 0;height: 150px;position: relative;}
+			.jine{height: 70px;position: absolute;top: 50%;margin-top: -35px;left: 50%;margin-left: -60px;line-height: 24px;}
+
+			.dkjrTit{font-size: 20px;}
+			.dkTime{font-size: 36px;padding: 10px 0 0 0;}
+			.dkDate{padding: 10px 0;}
+			.dkjr{padding: 18px 0px;}
+			.dkjr span{padding-left: 10px;}
+			.Lg{padding:20px 40px;}
+		</style>
+	</head>
+	<body style="min-width: 930px;">
+		<div class="ContentBox">
+			<!-- <input type="text" placeholder="待优化" class="FrameGroupInput"> -->
+			<!-- <span class="Btn Btn-blue ad">添加</span> -->
+			<div class="row top20">
+				<div class="Module col6">
+					<div class="ModuleHead BgBlue">
+						<i class="icon-radio"></i>通知公告
+						<a class="float-right infor NewHtml" data-url="" data-clas="t_1" data-name="通知公告">更多 >></a>
+					</div>
+					<div class="ModuleCont">
+						<div class="ModuleScroll">
+							<ul class="ListBox BorderDas" id="workInfo">
+							</ul>
+						</div>
+					</div>
+				</div>
+				<div class="Module col6">
+					<div class="ModuleHead BgBlue">
+						<i class="icon-radio"></i>个人考勤情况
+					</div>
+					<div class="ModuleCont">
+						<div class="IndexCakeBox">
+							<p class="dkjrTit">今日打卡情况：</p>
+							<p class="dkjr"></p>
+							<p class="dkjr"></p>
+						</div>
+						<div class="IndexCakeBox ">
+							<p class="dkTime">00:00:00</p>
+							<p class="dkDate"></p>
+							<p><span class="Btn Lg BgBlue">打卡</span></p>
+						</div>
+					</div>
+				</div>
+			</div>
+			
+			<div class="top20 row">
+				<div class="Module col6">
+					<div class="ModuleHead BgGreen New">
+						<i class="icon-time"></i>待办事项
+						<a class="float-right upcoming NewHtml" data-url="" data-clas="d_1" data-name="待办事项">更多 >></a>
+					</div>
+					<div class="ModuleCont">
+						<div class="ModuleScroll">
+							<table class="Table TableBorder">
+								<thead class="TableHd">
+									<tr>
+										<th>模块</th>
+										<th>申请人</th>
+										<th>部门</th>
+										<th>申请日期</th>
+										<th>状态</th>
+										<th>操作</th>
+									</tr>
+								</thead>
+								<tbody class="textCenter" id="workUpcoming"></tbody>
+							</table>
+						</div>
+					</div>
+				</div>
+				<div class="Module col6">
+					<div class="ModuleHead BgGray">
+						<i class="icon-order"></i>查看订单
+						<a class="float-right NewHtml" data-url="/sell/orders" data-clas="c_1" data-name="订单列表">更多 >></a>
+					</div>
+					<div class="ModuleCont">
+						<div class="ModuleScroll">
+							<table class="Table TableBorder">
+								<thead class="TableHd">
+									<tr>
+										<th>订单编号</th>
+										<th>客户</th>
+										<th>价格</th>
+										<th>当前位置</th>
+										<th>时间</th>
+									</tr>
+								</thead>
+								<tbody class="textCenter" id="workOrders"></tbody>
+							</table>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</body>
+    <!-- <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script> -->
+	<script src="js/jquery-1.11.0.js" type="text/javascript" charset="utf-8"></script>
+	<script src="js/public.js"></script>
+	<!-- <script src="/js/ajaxfileupload.js" type="text/javascript" charset="utf-8"></script> -->
+	<script src="js/home.js"></script>
+</html>

@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>新增</title>
+    <link rel="stylesheet" href="../css/public.css">
+</head>
+<body>
+    <div class="Frame">
+        <div class="FrameTit"><span class="FrameTitName">新增</span><span class="Close"></span></div>
+        <div class="FrameBox">
+            <div class="FrameCont">
+                <div class="FrameTable">
+                    <div class="FrameTableTitl">新增</div>
+                    <form id="addData">
+                        <table class="FrameTableCont">
+                            <tr>
+                                <td class="FrameGroupName"><span class="colorRed">*</span>申请人：</td>
+                                <td>
+                                    <select id="uid" name="uname" class="FrameGroupInput saleNameList"></select>
+                                </td>
+                                <td class="FrameGroupName"><span class="colorRed">*</span>印章名称：</td>
+                                <td>
+                                    <select name="sealid" class="FrameGroupInput sealNameList"></select>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="FrameGroupName"><span class="colorRed">*</span>申请时间：</td>
+                                <td>
+                                    <input type="text" name="applydt" placeholder="点击选择时间" class="FrameDatGroup DatEnd">
+                                </td>
+                                <td class="FrameGroupName"><span class="colorRed">*</span>是否外带：</td>
+                                <td>
+                                    <select name="isout" id="isout" class="FrameGroupInput">
+                                        <option value="1">外带</option>
+                                        <option value="0">不外带</option>
+                                    </select>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="FrameGroupName"><span class="colorRed">*</span>说明内容：</td>
+                                <td colspan="3">
+                                    <textarea class="FrameGroupInput" name="explain"></textarea>
+                                </td>
+                            </tr>
+                        </table>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div class="FrameTableFoot">
+            <span class="Succ" id="addDataSub">提交</span>
+        </div>
+    </div>
+    <script src="../js/jquery-1.11.0.js"></script>
+    <script src="../js/public.js"></script>
+    <script src="../js/jedate.js" type="text/javascript" charset="utf-8"></script>
+    <script src="../js/dataAdd.js"></script>
+    <script>
+        $(()=>{
+			jeDate({
+				dateCell:".DatEnd",
+				format:"YYYY-MM-DD hh:mm:ss",
+				isinitVal:false,
+				isTime:true, //isClear:false,
+				minDate:"2014-09-19",
+				okfun:function(val){alert(val)}
+			})
+			addDataList("/app.php/sealapl/saveSealApl");
+        });
+    </script>
+</body>
+</html>

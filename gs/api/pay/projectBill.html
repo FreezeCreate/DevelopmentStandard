@@ -1,0 +1,173 @@
+
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title></title>
+        <link rel="stylesheet" type="text/css" href="../../source/api/public.css"/>
+        <style>
+            td { border: 1px solid #ccc;}
+            .BgGray.textCenter { text-align: left !important; background: #fff !important; font-size: 18px; line-height: 40px; font-weight: 700;}
+        </style>
+    </head>
+    <body>
+        <div style="width: 900px;margin: 50px auto;">
+            <table class="table border">
+                <thead>
+                    <tr>
+                        <td colspan="5" class="textCenter BgGreen">项目对账单</td>
+                    </tr>
+                </thead>
+                <tbody class="hover">
+                    <tr>
+                        <td colspan="5" class="BgGray textCenter">请求格式</td>
+                    </tr>
+                    <tr>
+                        <td>URL</td><td colspan="4">/app.php/custmang/projectBill?id=id&token=5523cbad2881cc1ea54a6b55083547c6a932eef2</td>
+                    </tr>
+                    <tr>
+                        <td>HTTP请求方式</td><td colspan="4">GET</td>
+                    </tr>
+                    <tr>
+                        <td>是否登录验证</td><td colspan="4">是</td>
+                    </tr>
+                    <tr>
+                        <td colspan="5" class="BgGray textCenter">参数说明</td>
+                    </tr>
+                    <tr class="BgGray">
+                        <td>字段名</td>
+                        <td >参数名</td>
+                        <td>必填</td>
+                        <td >参数类型</td>
+                        <td >说明</td>
+                    </tr>
+                    <tr>
+                        <td>分页</td>
+                        <td>page</td>
+                        <td>是</td>
+                        <td>int</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>id</td>
+                        <td>id</td>
+                        <td>是</td>
+                        <td>int</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>token</td>
+                        <td>token</td>
+                        <td>是</td>
+                        <td>string</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>搜索</td>
+                        <td>searchname</td>
+                        <td>否</td>
+                        <td>string</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td colspan="5" class="BgGray textCenter">正常返回结果</td>
+                    </tr>
+                    <tr class="BgGray">
+                        <td>字段名</td>
+                        <td >变量名</td>
+                        <td>必填</td>
+                        <td>类型</td>
+                        <td >说明</td>
+                    </tr>
+                    <tr>
+                        <td>返回信息</td>
+                        <td >msg</td>
+                        <td>是</td>
+                        <td>string</td>
+                        <td >成功</td>
+                    </tr>
+                    <tr>
+                        <td>返回状态码</td>
+                        <td >code</td>
+                        <td>是</td>
+                        <td>int</td>
+                        <td >0</td>
+                    </tr>
+                    <tr>
+                        <td>项目（合同）详细信息</td>
+                        <td >results</td>
+                        <td>是</td>
+                        <td>object</td>
+                        <td >
+                         { "id": "id", "optid": "操作人id", "number": "合同编号", "name": "合同名称", "optdt": "操作时间", "optname": "操作人", "adddt": "添加时间", "explain": "说明", "status": "状态1、提交2、驳回3、确认审核", "oid": "auth导航栏", "cname": "公司名称", "money": "签约金额", "startdt": "合同开始日期", "enddt": "合同终止日期", "content": 合同内容, "signdt": "合同签约日期", "phone": "客户电话", "files": "电子合同档案", "del": "删除：0、是1、否", "cid": "公司id", "saleid": "销售人员id", "salename": "销售人员名称", "custid": "客户id" }
+
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>收款列表信息</td>
+                        <td >paymon</td>
+                        <td>是</td>
+                        <td>object</td>
+                        <td >
+{
+            "id": "id",
+            "paynumber": "付款单号",
+            "custumid": "客户id",
+            "custname": "客户名称",
+            "contractid": "合同id",
+            "contractname": "合同名称",
+            "payall": "总金额",
+            "getmoney": "本次实付金额",
+            "record": "记录",
+            "optid": "操作人id",
+            "optdt": "操作时间",
+            "optname": "操作人",
+            "adddt": "添加时间",
+            "content": "内容",
+            "monstatus": "结清状态1、结清2、未结清",
+            "del": "删除状态1、删除0、未删除",
+            "cid": "公司id",
+            "files": "文件",
+            "saleid": "销售id",
+            "salename": "销售名称",
+            "paytypeid": "付款类型id",
+            "paytype": "付款类型",
+            "checkstatus": "收款类型1、合同收款2、其他收款",
+        }                        </td>
+                    </tr>
+                    <tr>
+                        <td>未收款</td>
+                        <td >balance</td>
+                        <td>是</td>
+                        <td>int</td>
+                        <td ></td>
+                    </tr>
+                    <tr>
+                        <td colspan="5" class="BgGray textCenter">错误返回结果</td>
+                    </tr>
+                    <tr class="BgGray">
+                        <td>字段名</td>
+                        <td >变量名</td>
+                        <td>必填</td>
+                        <td>类型</td>
+                        <td >说明</td>
+                    </tr>
+                    <tr>
+                        <td>返回信息</td>
+                        <td >msg</td>
+                        <td>是</td>
+                        <td>string</td>
+                        <td >失败</td>
+                    </tr>
+                    <tr>
+                        <td>返回状态码</td>
+                        <td >code</td>
+                        <td>是</td>
+                        <td>int</td>
+                        <td >1</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </body>
+</html>

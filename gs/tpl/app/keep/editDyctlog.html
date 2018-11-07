@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+    <title>检验项目</title>
+    <link rel="stylesheet" type="text/css" href="../../source/vue/css/style.css">
+    <!-- <link rel="stylesheet" href="../../source/vue/css/DateTime.css"> -->
+  <head>
+<body>
+  <!-- <div class="header">
+      <a class="header-container header-left" href="home.html">后退</a>
+      <a class="header-container header-title">检验项目</a>
+  </div> -->
+  <div class="swiper-container" id="right" v-cloak >
+    <select name="" id="oid" class="input" v-model="oid">
+      <option value="">订单选择</option>
+    </select>
+    <ul class="item">
+      <li v-for="(item,i) of headname[type-1]">
+        <div class="item-left">{{item.content}}</div>
+        <div class="item-right">
+          <input v-if="item.readonly" type="date" :class="(item.class)+' input'" :name="item.name" v-model="inputtext[type-1][item.name]">
+          <input v-else type="text" class="input" :name="item.name" v-model="inputtext[type-1][item.name]">
+        </div>
+      </li>
+    </ul>
+    <div class="swiper-container-box">
+      <ul class="swiper-container-ul">
+        <li class="swiper-container-ul-li" v-for="(item,i) of items[type-1]" :key="i">{{item.class}}</li>
+      </ul>
+    </div>
+    <div class="swiper-wrapper">
+      <div class="swiper-slide">
+        <div class="content">
+          <!-- <div class="left" id="left">
+            <ul>
+              <li v-for="item in items">{{item}}</li>
+            </ul>
+          </div> -->
+          <div class="right">
+            <ul>
+              <li v-for="item,j in items[type-1]" :key='j' class="item-box">
+                <div class="class-title"><span class="class-title-name">{{item.class}}</span></div>
+                <div v-for="(ite,i) of item.list" :key='i'>
+                  <!-- 当type等于1或2 -->
+                  <template v-if="type==1||type==2">
+                    <div class="item">
+                      <div class="item-left">{{tit[type-1][0]}}</div>
+                      <div class="item-right">{{ite.title}}</div>
+                      <table v-if="ite.tableLst" class="table">
+                          <thead>
+                              <tr>
+                                  <th>额定绝缘电压</th>
+                                  <th>试验电压（*）</th>
+                              </tr>
+                          </thead>
+                          <tbody>
+                              <tr v-for="t of ite.tableLst">
+                                  <td>{{t.name}}</td>
+                                  <td>{{t.content}}</td>
+                              </tr>
+                          </tbody>
+                      </table>
+                      <div class="item-left">{{tit[type-1][1]}}</div>
+                      <div class="item-right">
+                          <label for="">
+                              <a class="checkbox">合格</a>
+                              <input type="radio" class="None" v-model="inputtext[type-1][ite.status]" value="1"  :name="ite.status">
+                          </label>
+                          <label for="">
+                              <a class="checkbox">不合格</a>
+                              <input type="radio" class="None"  v-model="inputtext[type-1][ite.status]" value="0"   :name="ite.status">
+                          </label>
+                      </div>
+                      <div class="item-left">{{tit[type-1][2]}}</div>
+                      <div class="item-right"><input type="text" v-model="inputtext[type-1][ite.info]" :name="ite.info" class="input"/></div>
+                      <div class="item-left">{{tit[type-1][3]}}</div>
+                      <div class="item-right">
+                          <textarea class="input" v-model="inputtext[type-1][ite.content]" :name="ite.content">{{inputtext[ite.status]}}</textarea>
+                      </div>
+                    </div>
+                  </template>
+                  <!-- 当type等于3或5 -->
+                  <template v-else-if="type==3||type==5">
+                    <div class="item">
+                      <div class="item-left">{{tit[type-1][0]}}</div>
+                      <div class="item-right">{{ite.title}}</div>
+                      <div class="item-left">{{tit[type-1][1]}}</div>
+                      <div class="item-right">{{ite.content}}</div>
+                      <div class="item-left">{{tit[type-1][2]}}</div>
+                      <div class="item-right" v-if="ite.info">
+                          <label for="">
+                              <a class="checkbox">是</a>
+                              <input type="radio" class="None" value="1" v-model="inputtext[type-1][ite.info.name]" :name="ite.info.name">
+                          </label>
+                          <label for="">
+                              <a class="checkbox">否</a>
+                              <input type="radio" class="None" value="0" v-model="inputtext[type-1][ite.info.name]" :name="ite.info.name">
+                          </label>
+                          <span>{{ite.info.content||''}}</span>
+                      </div>
+                      <div class="item-right" v-if="ite.infor">
+                          <p v-for="(inf,i) of ite.infor" :key="i">{{inf.tit}}<input type="text" v-model="inputtext[type-1][inf.name][i]" class="input-mini" :name="inf.name">{{inf.unit}}</p>
+                      </div>
+                      <div class="item-left">{{tit[type-1][3]}}</div>
+                      <div class="item-right">
+                          <label for="">
+                              <a class="checkbox">合格</a>
+                              <input type="radio" class="None" :name="ite.status" value="1"  v-model="inputtext[type-1][ite.status]">
+                          </label>
+                          <label for="">
+                              <a class="checkbox">不合格</a>
+                              <input type="radio" class="None" :name="ite.status" value="0" v-model="inputtext[type-1][ite.status]">
+                          </label>
+                      </div>
+                    </div>
+                  </template>
+                  <!-- 当type等于4 -->
+                  <template v-else-if="type==4">
+                    <div class="item">
+                      <div class="item-left">{{tit[type-1][0]}}</div>
+                      <div class="item-right">
+                        <p v-for="(titem,ti) of ite.title" :key="ti">{{titem}}</p>
+                      </div>
+                      <div class="item-left">{{tit[type-1][1]}}</div>
+                      <div class="item-right" v-if="ite.info">
+                          <label for="">
+                              <a class="checkbox">是</a>
+                              <input type="radio" class="None" value="1" :name="ite.info.name" v-model="inputtext[type-1][ite.info.name]">
+                          </label>
+                          <label for="">
+                              <a class="checkbox">否</a>
+                              <input type="radio" class="None" value="0" :name="ite.info.name" v-model="inputtext[type-1][ite.info.name]">
+                          </label>
+                          <span>{{ite.info.content||''}}</span>
+                      </div>
+                      <div class="item-right" v-if="ite.infor">
+                          <p v-for="(inf,i) of ite.infor" :key="i">{{inf.tit}}<input type="text" v-model="inputtext[type-1][inf.name][i]" class="input-mini" :name="inf.name">{{inf.unit}}</p>
+                      </div>
+                      <div class="item-left">{{tit[type-1][2]}}</div>
+                      <div class="item-right">
+                        <input type="text" :value="ite.user" class="input" v-model="inputtext[type-1][ite.user]">
+                      </div>
+                      <div class="item-left">{{tit[type-1][3]}}</div>
+                      <div class="item-right">
+                        <input type="date" :value="ite.status" class="input" v-model="inputtext[type-1][ite.status]">
+                        <!-- <input type="text" :value="ite.status" class="input DateTime" readonly v-model="inputtext[type-1][ite.status]"> -->
+                      </div>
+                    </div>
+                  </template>
+                </div>
+              </li>
+            </ul>
+            <button class="submit" @click="submit">新增</button>
+            <!-- <div id="dtBox"></div> -->
+          </div>
+        </div>
+      </div>
+      <!-- <div class="swiper-slide" style="display:none;">
+        绝缘电阻的验证
+      </div>
+      <div class="swiper-slide" style="display:none;">
+        介点强度的验证
+      </div> -->
+    </div>
+  </div>
+  <script src="http://www.jq22.com/jquery/jquery-1.10.2.js"></script>
+  <script src="http://www.jq22.com/jquery/vue.min.js"></script>
+  <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+  <!-- <script src="../../source/vue/js/DateTime.js"></script> -->
+  <script src="../../source/vue/js/public.js"></script>
+  <script src="../../source/vue/js/index-vue.js"></script>
+  <script src="../../source/vue/js/index.js"></script>
+</body>
+</html>

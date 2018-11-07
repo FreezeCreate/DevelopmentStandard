@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>详情</title>
+    <link rel="stylesheet" href="../css/public.css">
+</head>
+<body>
+    <div class="Frame">
+        <div class="FrameTit"><span class="FrameTitName">详情</span><span class="Close"></span></div>
+        <div class="FrameBox">
+            <div class="FrameCont">
+                <div class="FrameTable">
+                    <div class="FrameTableTitl">详情</div>
+                    <table class="FrameTableCont" id="dataItem">
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="FrameTableFoot">
+        </div>
+    </div>
+    <script src="../js/jquery-1.11.0.js"></script>
+    <script src="../js/public.js"></script>
+    <script src="../js/jedate.js" type="text/javascript" charset="utf-8"></script>
+    <script src="../js/dataAdd.js"></script>
+    <script>
+        $(function(){
+            showDataList("app.php/devicedesccheck/deviceDescCheckInfo",function(data){
+                if(data.code!=0){
+                    console.error(data.msg);
+                    return false;
+                }
+                var res=data.results,html='';
+                //{ "id": "id", "name": "标题", "content": "内容", "checkid": "汇报表id", "optid": "操作人id", "optname": "操作人", "optdt": "操作时间", "del": "是否删除1、删除0、未删除", "cid": "公司id", "status": "状态：0、未验收2、验收", "checkname": "核验人" }
+                html='<tr>'+
+                        '<td class="FrameGroupName">标题：</td>'+
+                        '<td>'+res.name+'</td>'+
+                        '<td class="FrameGroupName">状态：</td>'+
+                        '<td>'+(res.status==0?"未验收":"验收")+'</td>'+
+                    '</tr>'+
+                    '<tr>'+
+                        '<td class="FrameGroupName">核验人：</td>'+
+                        '<td colspan="3">'+res.checkname+'</td>'+
+                    '</tr>'+
+                    '<tr>'+
+                        '<td class="FrameGroupName">内容：</td>'+
+                        '<td colspan="3">'+res.content+'</td>'+
+                    '</tr>';
+                $("#dataItem").html(html);
+            });        
+        });
+    </script>
+</body>
+</html>

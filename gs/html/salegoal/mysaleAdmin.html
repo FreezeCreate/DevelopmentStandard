@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>所有业绩</title>
+		<link rel="stylesheet" type="text/css" href="../css/public.css"/>
+	</head>
+	<body style="min-width: 930px;">
+		<div class="ContentBox">
+			<div class="Tables">
+				<div class="TablesHead">
+					<label>
+						<input type="text"class="FrameGroupInput radius searchname" placeholder="搜索"/>
+					</label>
+					<span class="Btn Btn-blue" id="searchNameId"><i class="icon-serch"></i> 查询</span>
+					<span class="Btn Btn-green TablesSerchReset"><i class="icon-reset"></i> 重置</span>
+					<span class="Btn l_refresh Btn-blue">刷新</span>
+				</div>
+				<div class="top20">
+					<table class="Table">
+						<thead>
+							<tr>
+								<th width="80">序号</th>
+								<th>目标定制人</th>
+								<th>合同名称</th>
+								<th>实际完成金额</th>
+								<th>合同对方电话</th>
+								<th>合同签约日期</th>
+								<th>销售人</th>
+							</tr>
+						</thead>
+						<tbody class="textCenter TabBg" id="dataList">
+						</tbody>
+					</table>
+				</div>
+				<div class="noMsg">
+					<div class="noMsgCont">
+						<img class="" src="../images/noMsg.png"/>
+						<span>抱歉！暂时没有数据</span>
+					</div>
+				</div>
+				<div class="Pages textRight top20">
+					<ul class="PagesBox">
+					</ul>
+				</div>
+			</div>
+		</div>
+		<!-- 内容结束 -->
+	</body>
+	<script src="../js/jquery-1.11.0.js" type="text/javascript" charset="utf-8"></script>
+	<script src="../js/public.js" type="text/javascript" charset="utf-8"></script>
+	<!--日期插件-->
+	<script src="../js/jedate.js" type="text/javascript" charset="utf-8"></script>
+	<!--日期插件-->
+	<script src="../js/table.js" type="text/javascript" charset="utf-8"></script>
+	<script type="text/javascript">
+		jeDate({
+			dateCell:"#DatStr",
+			format:"YYYY-MM-DD",
+			isinitVal:false,
+			isTime:false, //isClear:false,
+			minDate:"2014-09-19",
+			okfun:function(val){alert(val)}
+		})
+		jeDate({
+			dateCell:"#DatEnd",
+			format:"YYYY-MM-DD",
+			isinitVal:false,
+			isTime:false, //isClear:false,
+			minDate:"2014-09-19",
+			okfun:function(val){alert(val)}
+		})
+		$(()=>{
+			getPagesBox({
+				nowUrl:"app.php/salegoal/mysaleAdmin",
+				addList(data){
+					var res=data.results,html='',i=0;
+					for(var {id,optname,name,factpay,phone,signdt,salename} of res){
+						i++;
+						html+=`<tr>
+								<td>${i}</td>
+								<td>${optname}</td>
+								<td>${name}</td>
+								<td>${factpay}</td>
+								<td>${phone}</td>
+								<td>${signdt||'无'}</td>
+								<td>${salename}</td>
+							</tr>`;
+					}
+					$("#dataList").html(html);
+				}
+			});
+		});
+	</script>
+</html>

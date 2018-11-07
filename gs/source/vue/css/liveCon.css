@@ -1,0 +1,41 @@
+/*hello world*/
+*{
+    padding: 0;
+    margin: 0;
+    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+    font-size: 0.9rem;
+}
+a{
+    text-decoration: #0785fe;
+}
+li{
+    list-style: none;
+}
+.header{
+    width: 100%;
+    line-height: 40px;
+    padding-top: 40px;
+    background: #0785fe;
+    position: relative;
+    text-align: center;
+    color: #fff;
+}
+.header-left{
+  position: absolute;
+  left:10px;
+  bottom: 0px;
+}
+.header-title{
+  font-size: 1.2rem;
+}
+.box{
+    padding: 10px 20px;
+}
+.box-header{
+    text-align: center;
+    font-size: 1.1rem;
+    line-height: 30px;
+}
+.box-container{
+    line-height: 20px;
+}

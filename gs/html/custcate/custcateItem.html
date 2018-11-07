@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>详情</title>
+    <link rel="stylesheet" href="../css/public.css">
+</head>
+<body>
+    <div class="Frame">
+        <div class="FrameTit"><span class="FrameTitName">详情</span><span class="Close"></span></div>
+        <div class="FrameBox">
+            <div class="FrameCont">
+                <div class="FrameTable">
+                    <div class="FrameTableTitl">详情</div>
+                    <table class="FrameTableCont" id="dataItem">
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="FrameTableFoot">
+        </div>
+    </div>
+    <script src="../js/jquery-1.11.0.js"></script>
+    <script src="../js/public.js"></script>
+    <script src="../js/jedate.js" type="text/javascript" charset="utf-8"></script>
+    <script src="../js/dataAdd.js"></script>
+    <script>
+        $(function(){
+        	showDataList("app.php/custcate/custCateInfo",function(data){
+                var res=data.results,html;
+                html='<tr>'+
+                        '<td class="FrameGroupName">类型名称：</td>'+
+                        '<td>'+res.catename+'</td>'+
+                        '<td class="FrameGroupName">类型描述：</td>'+
+                        '<td>'+res.catedesc+'</td>'+
+                    '</tr>'+
+                    '<tr>'+
+                        '<td class="FrameGroupName">类型描述：</td>'+
+                        '<td colspan="3">'+res.cateability+'</td>'+
+                    '</tr>'+
+                    '<tr>'+
+                        '<td class="FrameGroupName">操作人：</td>'+
+                        '<td>'+res.applyname+'</td>'+
+                        '<td class="FrameGroupName">操作时间：</td>'+
+                        '<td>'+res.applydt+'</td>'+
+                    '</tr>';
+                $("#dataItem").html(html);							
+            });        
+        });
+    </script>
+</body>
+</html>

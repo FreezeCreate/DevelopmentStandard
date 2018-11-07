@@ -1,0 +1,12 @@
+
+
+/*下拉菜单*/
+.menu{position: fixed;background-color: #fff;border: 1px solid #bed5f1;z-index: 99;display: none;min-width: 100px;color: #4e4e4e;
+-moz-box-shadow:0px 0px 3px #bed5f1;/*firefox*/ 
+-webkit-box-shadow:0px 0px  3px #bed5f1;/*webkit*/ 
+box-shadow:0px 0px  3px #bed5f1;/*opera或ie9*/ }
+.menu .menu-item a{display: block;line-height: 26px;padding: 0 10px; color: inherit;min-width: max-content;text-align: left;border-bottom: 1px solid #e1e1e1;}
+.menu .menu-item:last-child a{border-bottom: none;}
+.menu .menu-item.read{color: #f65622;}
+.menu .menu-item:hover{background-color: #bed5f1;}
+.list-menu.menu-active .menu{display: block;}
